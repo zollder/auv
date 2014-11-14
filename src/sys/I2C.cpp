@@ -54,11 +54,11 @@ int I2C::writeI2CDeviceByte(char address, char value) {
 	buffer[0] = address;
 	buffer[1] = value;
 	if (write(file, buffer, 2) != 2) {
-		cout << "Failure to write values to I2C Device address." << endl;
+		cout << "Failure to write values to I2C Device address. Address: " << address << " Value: " << value << endl;
 		return (3);
 	}
 	close(file);
-//   cout << "Finished I2C sensor state write" << endl;
+   cout << "Finished I2C sensor state write" << endl;
 	return 0;
 }
 
@@ -102,6 +102,7 @@ int I2C::readI2CDeviceMultipleByte(char address, int quantity) {
 	return 0;
 }
 
+// address <=> register address
 char I2C::readI2CDeviceByte(char address) {
 
 	cout << "Starting BMA180 I2C sensor state byte read" << endl;

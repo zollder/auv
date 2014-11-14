@@ -15,7 +15,6 @@ class I2C {
 private:
 	int I2CBus;
 	int I2CAddress;
-//	char dataBuffer[BUFFER_SIZE];
 
 public:
 	char dataBuffer[BUFFER_SIZE];

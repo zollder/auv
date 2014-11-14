@@ -7,20 +7,72 @@
 
 #include "LSM303.h"
 #include "../sys/I2C.h"
+//#include <stdio.h>
 
-#define LSM303_ACC_ADDRESS_SA0_A_HIGH (0x32 >> 1)
-#define LSM303_MAG_ADDRESS            (0x3C >> 1)
+// for LSM303D magnetometer and accelerometer addresses are equal
+#define LSM303_ACC_ADDRESS (0x1D >> 1)	// 00011101b
+#define LSM303_MAG_ADDRESS (0x1D >> 1)	// 00011101b
+
 #define BUS	1
 
-// Construct I2C class
-I2C Wire_Acc = I2C(BUS, LSM303_ACC_ADDRESS_SA0_A_HIGH);
+// Initialize I2Cs ()
+I2C Wire_Acc = I2C(BUS, LSM303_ACC_ADDRESS);
 I2C Wire_Mag = I2C(BUS, LSM303_MAG_ADDRESS);
 
-// Turns on the LSM303's accelerometer and magnetometers and places them in normal mode.
+// Turns on the LSM303's accelerometer and magnetometer and places them in normal mode.
 void LSM303::enableDefault(void) {
-	writeAccReg(LSM303_CTRL_REG1_A, 0x47); // normal power mode, all axes enabled, 50 Hz
-	writeAccReg(LSM303_CTRL_REG4_A, 0x28); // 8 g full scale: FS = 10 on DLHC; high resolution output mode
-	writeMagReg(LSM303_MR_REG_M, 0x00); // continuous conversion mode, 15 Hz default
+	/*
+	 * CTRL1 register (accelerometer)
+	 * 0-3: 0001 - 3.125Hz
+	 * 4: 0 - continuous update
+	 * 5: 1 - Z-axis enabled
+	 * 6: 1 - Y-axis enabled
+	 * 7: 1 - X-axis enabled
+	 * result: 00010111 => 0x17
+	 */
+	writeAccReg(LSM303_CTRL_REG1_A, 0x17);
+
+	/*
+	 * CTRL2 register (accelerometer)
+	 * 0-1: 00 - anti-alias filter (773Hz)
+	 * 2-4: 011 - ±8g full-scale acceleration
+	 * 5: 0 - reserved
+	 * 6: 0 - self-test disabled
+	 * 7: 0 - 4-wire serial interface
+	 * result: 00011000 => 0x18
+	 */
+	writeAccReg(LSM303_CTRL_REG2_A, 0x18);
+
+	/*
+	 * CTRL5 register (magnetometer)
+	 * 0: 0 - temperature sensor disabled
+	 * 1-2: 11 - high resolution
+	 * 3-5: 000 - data rate 3.125Hz
+	 * 6-7: 00 - interrupt requests
+	 * result: 01100000 => 0x60
+	 */
+	writeMagReg(LSM303_CTRL_REG5_A, 0x60);
+
+	/*
+	 * CTRL6 register (magnetometer)
+	 * 0: 0 - reserved
+	 * 1-2: 10 - ±8 gauss full-scale
+	 * 3-7: 00000 - reserved
+	 * result: 01000000 => 0x40
+	 */
+	writeMagReg(LSM303_CTRL_REG6_A, 0x40);
+
+	/*
+	 * CTRL7 register (magnetometer)
+	 * 0-1: 00 - high-pass filtermode - normal mode (resets axis registers)
+	 * 2: 0 - bypass acceleration data filter
+	 * 3: 0 - temperature sensor only mode OFF
+	 * 4: 0 - reserved
+	 * 5: 0 - magnetic data low-power mode OFF
+	 * 6-7: 00 - continuous-conversion mode ON
+	 * result: 00000000 => 0x00
+	 */
+	writeMagReg(LSM303_REFERENCE_A, 0x00);
 }
 
 // Writes an accelerometer register
