@@ -1,135 +1,150 @@
 /*
- * I2C.cpp
- *
- *  Created on: 23.08.2013
- *      Author: tuuzdu
+ *	I2C.cpp
+ *  Created on: 10.11.2014
+ *	Author: zollder
  */
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <linux/i2c.h>
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <stdio.h>
 #include "I2C.h"
-#include <iostream>
 
 using namespace std;
 
-#define MAX_BUS 64
-
-I2C::I2C(int bus, int address) {
-	I2CBus = bus;
-	I2CAddress = address;
-	//readFullSensorState();
-}
-
-int I2C::writeI2CDeviceByte(char address, char value) {
-
-    cout << "Starting I2C sensor state write" << endl;
-	char namebuf[MAX_BUS];
-	snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", I2CBus);
-	int file;
-	if ((file = open(namebuf, O_RDWR)) < 0) {
-		cout << "Failed to open Sensor on " << namebuf << " I2C Bus" << endl;
-		return (1);
-	}
-	if (ioctl(file, I2C_SLAVE, I2CAddress) < 0) {
-		cout << "I2C_SLAVE address " << I2CAddress << " failed..." << endl;
-		return (2);
+	//-----------------------------------------------------------------------------------------
+	/** Constructor. */
+	//-----------------------------------------------------------------------------------------
+	I2C::I2C(int bus, int address)
+	{
+		I2CBus = bus;
+		I2CAddress = address;
 	}
 
-	// need to set the ctrl_reg0 ee_w bit. With that set the image registers change properly.
-	// need to do this or can't write to 20H ... 3Bh
-	// Very Important... wrote a 0x10 to 0x0D and it worked!!!
-	//   char buf[2];
-	//     buf[0] = BANDWIDTH;
-	//     buf[1] = 0x28;
-	//     buf[2] = 0x65;
-	//  if ( write(file,buf,2) != 2) {
-	//	  cout << "Failure to write values to I2C Device " << endl;
-	//  }
+	//-----------------------------------------------------------------------------------------
+	/** Writes a register value to specified register address. */
+	//-----------------------------------------------------------------------------------------
+	int I2C::writeI2CDeviceByte(char regAddress, char regValue)
+	{
+		char filename[BUS_SIZE];
+		int fileDescriptor = this->openI2CBus(filename, sizeof(filename));
+		this->initiateCommunication(fileDescriptor);
 
-	char buffer[2];
-	buffer[0] = address;
-	buffer[1] = value;
-	if (write(file, buffer, 2) != 2) {
-		cout << "Failure to write values to I2C Device address. Address: " << address << " Value: " << value << endl;
-		return (3);
-	}
-	close(file);
-   cout << "Finished I2C sensor state write" << endl;
-	return 0;
-}
+		// prepare data and write to IMU
+		char writeBuffer[2];
+		writeBuffer[0] = regAddress;
+		writeBuffer[1] = regValue;
 
-int I2C::readI2CDeviceMultipleByte(char address, int quantity) {
+		ssize_t writeResult = write(fileDescriptor, writeBuffer, 2);
+		if (writeResult != 2) {
+			printf("Failed to write to I2C device.\n");
+			exit(1);
+		}
+		else
+			printf("Completed writing to I2C device.\n");
 
-	char namebuf[MAX_BUS];
-	snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", I2CBus);
-	int file;
-	if ((file = open(namebuf, O_RDWR)) < 0) {
-		cout << "Failed to open BMA180 Sensor on " << namebuf << " I2C Bus"
-				<< endl;
-		return (1);
-	}
-	if (ioctl(file, I2C_SLAVE, I2CAddress) < 0) {
-		cout << "I2C_SLAVE address " << I2CAddress << " failed..." << endl;
-		return (2);
+		close(fileDescriptor);
+		return 0;
 	}
 
-	char buf[1];
-	buf[0] = address;
-	if (write(file, buf, 1) != 1) {
-		cout << "Failed to Reset Address in readFullSensorState() " << endl;
+	//-----------------------------------------------------------------------------------------
+	/** Reads specified number of bytes starting from specified register address. */
+	//-----------------------------------------------------------------------------------------
+	int I2C::readI2CDeviceMultipleByte(char regAddress, int quantity) {
+
+		char filename[BUS_SIZE];
+		int fileDescriptor = this->openI2CBus(filename, sizeof(filename));
+		this->initiateCommunication(fileDescriptor);
+
+		// reset register address
+		char writeBuffer[1];
+		writeBuffer[0] = regAddress;
+
+		ssize_t writeResult = write(fileDescriptor, writeBuffer, 1);
+		if (writeResult != 1)
+			printf("Failed to reset address.\n");
+		else
+			printf("Address reset success.\n");
+
+		//int numberBytes = BUFFER_SIZE;
+		int bytesRead = read(fileDescriptor, this->dataBuffer, quantity);
+		if (bytesRead < 0)
+			printf("Failed to read byte stream.\n");
+		else
+			printf("Byte stream read success.\n");
+
+		close(fileDescriptor);
+
+		printf("Number of bytes read: %d\n", bytesRead);
+		for (int i=0; i<quantity; i++)
+			printf("Byte %02d is 0x%02x\n", i, dataBuffer[i]);
+
+		return 0;
 	}
 
-	//int numberBytes = BUFFER_SIZE;
-	int bytesRead = read(file, this->dataBuffer, quantity);
-	if (bytesRead == -1) {
-		cout << "Failure to read Byte Stream in readFullSensorState()" << endl;
-	}
-	close(file);
+	//-----------------------------------------------------------------------------------------
+	/**
+	 * Reads one byte from specified register address.
+	 * TODO: revise and re-implement.
+	 */
+	//-----------------------------------------------------------------------------------------
+	char I2C::readI2CDeviceByte(char address) {
 
-//	    if (this->dataBuffer[0]!=0x03){
-//	    	cout << "MAJOR FAILURE: DATA WITH BMA180 HAS LOST SYNC!" << endl;
-//	    }
-//
-//	    cout << "Number of bytes read was " << bytesRead << endl;
-//	    for (int i=0; i<quantity; i++){
-//	    	printf("Byte %02d is 0x%02x\n", i, dataBuffer[i]);
-//	    }
-	//cout << "Closing BMA180 I2C sensor state read" << endl;
-	return 0;
-}
+		cout << "Starting BMA180 I2C sensor state byte read" << endl;
+		char namebuf[BUS_SIZE];
+		snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", I2CBus);
+		int file;
+		if ((file = open(namebuf, O_RDWR)) < 0) {
+			cout << "Failed to open Sensor on " << namebuf << " I2C Bus" << endl;
+			return (1);
+		}
+		if (ioctl(file, I2C_SLAVE, I2CAddress) < 0) {
+			cout << "I2C_SLAVE address " << I2CAddress << " failed..." << endl;
+			return (2);
+		}
 
-// address <=> register address
-char I2C::readI2CDeviceByte(char address) {
+		char buf[1];
+		buf[0] = address;
+		if (write(file, buf, 1) != 1) {
+			cout << "Failed to Reset Address in readFullSensorState() " << endl;
+		}
 
-	cout << "Starting BMA180 I2C sensor state byte read" << endl;
-	char namebuf[MAX_BUS];
-	snprintf(namebuf, sizeof(namebuf), "/dev/i2c-%d", I2CBus);
-	int file;
-	if ((file = open(namebuf, O_RDWR)) < 0) {
-		cout << "Failed to open Sensor on " << namebuf << " I2C Bus" << endl;
-		return (1);
-	}
-	if (ioctl(file, I2C_SLAVE, I2CAddress) < 0) {
-		cout << "I2C_SLAVE address " << I2CAddress << " failed..." << endl;
-		return (2);
-	}
-
-	char buf[1];
-	buf[0] = address;
-	if (write(file, buf, 1) != 1) {
-		cout << "Failed to Reset Address in readFullSensorState() " << endl;
+		unsigned char buffer[1];
+		buffer[0] = address;
+		if (read(file, buffer, 2) != 2) {
+			cout << "Failure to read value from I2C Device address." << endl;
+		}
+		close(file);
+		//cout << (int) buffer [0] << endl;
+		return buffer[0];
 	}
 
-	unsigned char buffer[1];
-	buffer[0] = address;
-	if (read(file, buffer, 2) != 2) {
-		cout << "Failure to read value from I2C Device address." << endl;
+	//-----------------------------------------------------------------------------------------
+	/** Opens I2C bus. Returns a file descriptor. */
+	//-----------------------------------------------------------------------------------------
+	int I2C::openI2CBus(char* filename, size_t fileSize)
+	{
+		// open I2C bus
+		snprintf(filename, fileSize, "/dev/i2c-%d", I2CBus);
+		int fileDescriptor = open(filename, O_RDWR);
+		if (fileDescriptor < 0)
+		{
+			perror("Failed to open the i2c bus");
+			exit(1);
+		}
+		else
+			printf("I2C bus opened.\n");
+
+		return fileDescriptor;
 	}
-	close(file);
-	//cout << (int) buffer [0] << endl;
-	return buffer[0];
-}
+
+	//-----------------------------------------------------------------------------------------
+	/** Initiates communication for specified bus (requires a file descriptor). */
+	//-----------------------------------------------------------------------------------------
+	void I2C::initiateCommunication(int fileDescriptor)
+	{
+		// initiate communication
+		int ioCtrResult = ioctl(fileDescriptor, I2C_SLAVE, I2CAddress);
+		if (ioCtrResult < 0)
+		{
+			printf("Failed to acquire bus access and/or talk to slave.\n");
+			exit(1);
+		}
+		else
+			printf("Communication initiated.\n");
+	}

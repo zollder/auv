@@ -34,32 +34,33 @@
 #define L3G_INT1_THS_ZL   0x37
 #define L3G_INT1_DURATION 0x38
 
-class L3G {
-public:
-	typedef struct vector {
-		float x, y, z;
-	} vector;
+class L3G
+{
+	public:
+		/** Raw data holder structure. */
+		typedef struct RawData
+		{
+			float x, y, z;
+		} RawData;
 
-	vector g; // gyro angular velocity readings
-//
-//    bool init(byte device = L3G_DEVICE_AUTO, byte sa0 = L3G_SA0_AUTO);
-//
-	void enableDefault(void);
+		/** Gyroscope's raw data holder (angular velocity data). */
+		RawData gyroData;
 
-	void writeReg(char reg, char value);
-	char readReg(char reg);
-	void read(void);
-	short convertMsbLsb(char msb, char lsb);
-//
-//    // vector functions
-//    static void vector_cross(const vector *a, const vector *b, vector *out);
-//    static float vector_dot(const vector *a,const vector *b);
-//    static void vector_normalize(vector *a);
+		void enable(void);
 
-private:
+		void writeRegister(char reg, char value);
+		char readRegister(char reg);
+		void readGyroscopeData(void);
+		short convertMsbLsb(char msb, char lsb);
+	//
+	//    // vector functions
+	//    static void vector_cross(const vector *a, const vector *b, vector *out);
+	//    static float vector_dot(const vector *a,const vector *b);
+	//    static void vector_normalize(vector *a);
 
-	unsigned char address;
+	private:
 
+		unsigned char address;
 };
 
 #endif
