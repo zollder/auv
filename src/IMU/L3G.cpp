@@ -2,7 +2,7 @@
 #include "../sys/I2C.h"
 #include <stdio.h>
 
-#define GYRO_ADDRESS 0xD6	// read/write bit is set by ioCtr in I2C.cpp
+#define GYRO_ADDRESS 0x6B	// read/write bit is set by ioCtr in I2C.cpp
 #define I2C_BUS	1
 
 	// Construct I2C class
@@ -75,7 +75,7 @@
 		gyroData.y = (float) convertMsbLsb(yhg, ylg);
 		gyroData.z = (float) convertMsbLsb(zhg, zlg);
 
-		printf("X: %.2f \tY: %.2f  \tZ: %.2f\n", gyroData.x, gyroData.y, gyroData.z);
+		printf("gyroX: %.2f \tgyroY: %.2f  \tgyroZ: %.2f", gyroData.x, gyroData.y, gyroData.z);
 	}
 
 	short L3G::convertMsbLsb(char msb, char lsb)

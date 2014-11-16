@@ -31,13 +31,13 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-//	L3G gyro;
+	L3G gyro;
 	LSM303 compass;
 
-//	gyro.enable();
+	gyro.enable();
 	compass.enable();
 
-//	gyro.readGyroscopeData();
+	gyro.readGyroscopeData();
 	compass.readAccelerometerData();
 	compass.readMagnetometerData();
 }

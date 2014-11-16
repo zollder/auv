@@ -25,14 +25,14 @@
 	void LSM303::enable(void) {
 		/*
 		 * CTRL1 register (accelerometer)
-		 * 0-3: 0001 - 3.125Hz
+		 * 0-3: 0100 - 25Hz
 		 * 4: 0 - continuous update
 		 * 5: 1 - Z-axis enabled
 		 * 6: 1 - Y-axis enabled
 		 * 7: 1 - X-axis enabled
-		 * result: 00010111 => 0x17
+		 * result: 01000111 => 0x47
 		 */
-		writeAccelerometerRegister(CTRL_REG1_A, 0x17);
+		writeAccelerometerRegister(CTRL_REG1_A, 0x47);
 
 		/*
 		 * CTRL2 register (accelerometer)
@@ -49,11 +49,11 @@
 		 * CTRL5 register (magnetometer)
 		 * 0: 0 - temperature sensor disabled
 		 * 1-2: 11 - high resolution
-		 * 3-5: 000 - data rate 3.125Hz
+		 * 3-5: 011 - data rate 25Hz
 		 * 6-7: 00 - interrupt requests
-		 * result: 01100000 => 0x60
+		 * result: 01101100 => 0x6C
 		 */
-		writeMagnetometerRegister(CTRL_REG5_A, 0x60);
+		writeMagnetometerRegister(CTRL_REG5_A, 0x6C);
 
 		/*
 		 * CTRL6 register (magnetometer)
@@ -126,7 +126,8 @@
 		accelData.y = (float) convertMsbLsb(yha, yla);
 		accelData.z = (float) convertMsbLsb(zha, zla);
 
-		printf("aroll: %.2f \tapitch: %.2f  \tayaw: %.2f\n", accelData.x, accelData.y, accelData.z);
+//		printf("aroll: %.2f \tapitch: %.2f  \tayaw: %.2f\n", accelData.x, accelData.y, accelData.z);
+		printf("\taccelX: %.2f \taccelY: %.2f  \taccelZ: %.2f", accelData.x, accelData.y, accelData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -150,7 +151,7 @@
 		magnetData.y = (float) convertMsbLsb(yhm, ylm);
 		magnetData.z = (float) convertMsbLsb(zhm, zlm);
 
-		printf("mroll: %.2f \tmpitch: %.2f \tmyaw: %.2f\n", magnetData.x, magnetData.y, magnetData.z);
+		printf("\tmagX: %.2f \tmagY: %.2f \tmagZ: %.2f\n", magnetData.x, magnetData.y, magnetData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------
