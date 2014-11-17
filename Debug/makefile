@@ -9,7 +9,8 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include src/sys/subdir.mk
--include src/IMU/subdir.mk
+-include src/imu/subdir.mk
+-include src/devices/subdir.mk
 -include src/subdir.mk
 -include subdir.mk
 -include objects.mk
@@ -46,7 +47,7 @@ all: auv
 auv: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross G++ Linker'
-	arm-linux-gnueabihf-g++ -L/usr/arm-linux-gnueabihf/lib -o "auv" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-linux-gnueabihf-g++ -std=c++11 -L/usr/arm-linux-gnueabihf/lib -o "auv" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

@@ -26,6 +26,7 @@ class I2C
 
 		/** Constructor. */
 		I2C(int bus, int address);
+		~I2C();
 
 		/** Writes a register value to specified register address. */
 		int writeI2CDeviceByte(char address, char value);
