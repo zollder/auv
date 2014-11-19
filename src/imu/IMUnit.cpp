@@ -24,7 +24,7 @@
 		magData = new SensorData<int>(0, 0, 0);
 		corrMagData = new SensorData<float>(0, 0, 0);
 
-		// initialize holders
+		// initialize variables
 		roll = 0;
 		pitch = 0;
 		yaw = 0;
@@ -71,7 +71,7 @@
 		// gravity compensation
 		sensorOffset[5] = sensorOffset[5] - GRAVITY*sensorSign[5];
 
-		printf("offset: %d, %d, %d, %d, %d, %d", sensorOffset[0], sensorOffset[1], sensorOffset[2],
+		printf("offset: %d, %d, %d, %d, %d, %d\n", sensorOffset[0], sensorOffset[1], sensorOffset[2],
 				sensorOffset[3], sensorOffset[4], sensorOffset[5]);
 	}
 
@@ -136,7 +136,7 @@
 		corrMagData->y = (float) (magData->y - sensorSign[7] * M_Y_MIN) / (M_Y_MAX - M_Y_MIN) - sensorSign[7]*0.5;
 		corrMagData->z = (float) (magData->z - sensorSign[8] * M_Z_MIN) / (M_Z_MAX - M_Z_MIN) - sensorSign[8]*0.5;
 
-		printf("corrected: %.2f, %.2f, %.2f   \n", corrMagData->x, corrMagData->y, corrMagData->z);
+//		printf("corrected: %.2f, %.2f, %.2f   \n", corrMagData->x, corrMagData->y, corrMagData->z);
 		//  printf ("\033[1Aroll: %.2f \tpitch: %.2f  \tyaw: %.2f\n", c_magnetom_x, c_magnetom_y, c_magnetom_z);
 
 		// Calculate tilt-compensated magnetic fields for X and Y axis:

@@ -4,6 +4,10 @@
 #ifndef L3G_h
 #define L3G_h
 
+// read/write bit is set by ioCtr in I2C.cpp
+#define GYRO_ADDRESS 0x6B
+#define I2C_BUS	1
+
 // register addresses
 
 #define L3G_WHO_AM_I      0x0F

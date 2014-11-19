@@ -120,6 +120,7 @@
 	{
 		// asserts the MSB of the address to get the accelerometer
 		// to do slave-transmit sub-address updating.
+		// XYZ order, little endian.
 		accelerometerWire->readI2CDeviceMultipleByte(OUT_X_L_A | (1 << 7), 6);
 
 		char xla = accelerometerWire->dataBuffer[0];
@@ -134,8 +135,7 @@
 		accelRawData.y = (int) convertMsbLsb(yha, yla);
 		accelRawData.z = (int) convertMsbLsb(zha, zla);
 
-//		printf("aroll: %.2f \tapitch: %.2f  \tayaw: %.2f\n", accelData.x, accelData.y, accelData.z);
-//		printf("\taccelX: %.2f \taccelY: %.2f  \taccelZ: %.2f\n", accelRawData.x, accelRawData.y, accelRawData.z);
+		printf("%7d %7d %7d", accelRawData.x, accelRawData.y, accelRawData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -145,28 +145,26 @@
 	{
 		// assert MSB of the address to get the magnetometer
 		// to do slave-transmit sub-address updating (specific to LSM303D).
+		// XYZ order, little endian.
 		magnetometerWire->readI2CDeviceMultipleByte(D_OUT_X_L_M | (1 << 7), 6);
 
-		char xhm = magnetometerWire->dataBuffer[0];
-		char xlm = magnetometerWire->dataBuffer[1];
-		char zhm = magnetometerWire->dataBuffer[2];
-		char zlm = magnetometerWire->dataBuffer[3];
-		char yhm = magnetometerWire->dataBuffer[4];
-		char ylm = magnetometerWire->dataBuffer[5];
+		char xlm = magnetometerWire->dataBuffer[0];
+		char xhm = magnetometerWire->dataBuffer[1];
+		char ylm = magnetometerWire->dataBuffer[2];
+		char yhm = magnetometerWire->dataBuffer[3];
+		char zlm = magnetometerWire->dataBuffer[4];
+		char zhm = magnetometerWire->dataBuffer[5];
 
 		// combine high and low bytes
 		magnetRawData.x = (int) convertMsbLsb(xhm, xlm);
 		magnetRawData.y = (int) convertMsbLsb(yhm, ylm);
 		magnetRawData.z = (int) convertMsbLsb(zhm, zlm);
 
-//		printf("\tmagX: %.2f \tmagY: %.2f \tmagZ: %.2f\n", magnetRawData.x, magnetRawData.y, magnetRawData.z);
+		printf("%7d %7d %7d\n", magnetRawData.x, magnetRawData.y, magnetRawData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/**
-	 * Combines high & low bytes.
-	 * There is no need to discard 4 lower bits as LSM303D has 16-bit resolution.
-	 */
+	/** Combines high & low bytes. */
 	//-----------------------------------------------------------------------------------------
 	short LSM303::convertMsbLsb(char msb, char lsb)
 	{

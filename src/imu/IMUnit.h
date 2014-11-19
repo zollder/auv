@@ -18,8 +18,8 @@ using namespace std;
 #ifndef imunit_h
 #define imunit_h
 
-/** LSM303 accelerometer: 8 g sensitivity, 3.8 mg/digit; 1g = 256 */
-#define GRAVITY 256  //this equivalent to 1G in the raw data coming from the accelerometer
+/** LSM303 accelerometer: 8g sensitivity, 3.8 mg/digit; 1g = (2^16)/2/8g = 4096 */
+#define GRAVITY 4096  //this equivalent to 1G of accelerometer raw data
 
 #define ToRad(x) ((x)*0.01745329252)  // *pi/180
 #define ToDeg(x) ((x)*57.2957795131)  // *180/pi

@@ -43,26 +43,34 @@ int main(int argc, char *argv[])
 //	compass.readMagnetometerData();
 
 	IMUnit* imu = new IMUnit();
-	imu->initialize();
 	imu->setCalibrationMode(false);
-//	imu->findMagnetometerHeading();
-	int counter = 300;
-	while(counter > 0)
+	imu->initialize();
+
+	imu->readAccelerometer();
+	imu->readGyroscope();
+	imu->readMagnetometer();
+
+	for(int i=0; i<1000; i++)
 	{
+//		imu->readAccelerometer();
 		imu->readGyroscope();
-		imu->readAccelerometer();
-		imu->readMagnetometer();
-
-		imu->findMagnetometerHeading();
-		imu->updateMatrix();
-		imu->normalize();
-		imu->correctDrift();
-		imu->calculateEulerAngles();
-
-		printf("h:%.2f, r:%.2f, p:%.2f, y%.2f\n", imu->magHeading, imu->roll, imu->pitch, imu->yaw);
-		counter--;
-		usleep(200000);
+//		imu->readMagnetometer();
+		usleep(100000);
 	}
-
+//
+//	imu->findMagnetometerHeading();
+//	while(counter > 0)
+//	{
+//		imu->findMagnetometerHeading();
+//		imu->updateMatrix();
+//		imu->normalize();
+//		imu->correctDrift();
+//		imu->calculateEulerAngles();
+//
+//		printf("h:%.2f, r:%.2f, p:%.2f, y%.2f\n", imu->magHeading, imu->roll, imu->pitch, imu->yaw);
+//		counter--;
+//		usleep(200000);
+//	}
+//
 	delete imu;
 }

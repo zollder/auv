@@ -1,7 +1,10 @@
-#include "L3G.h"
+/*
+ *	L3G.cpp
+ *  Created on: 10.11.2014
+ *	Author: zollder
+ */
 
-#define GYRO_ADDRESS 0x6B	// read/write bit is set by ioCtr in I2C.cpp
-#define I2C_BUS	1
+#include "L3G.h"
 
 	/** Constructor. */
 	L3G::L3G()
@@ -88,11 +91,11 @@
 		char zhg = gyroscopeWire->dataBuffer[5];
 
 		// combine high and low bytes
-		gyroRawData.x = (float) convertMsbLsb(xhg, xlg);
-		gyroRawData.y = (float) convertMsbLsb(yhg, ylg);
-		gyroRawData.z = (float) convertMsbLsb(zhg, zlg);
+		gyroRawData.x = (int) convertMsbLsb(xhg, xlg);
+		gyroRawData.y = (int) convertMsbLsb(yhg, ylg);
+		gyroRawData.z = (int) convertMsbLsb(zhg, zlg);
 
-//		printf("gyroX: %.2f \tgyroY: %.2f  \tgyroZ: %.2f", gyroRawData.x, gyroRawData.y, gyroRawData.z);
+		printf("%7d %7d %7d", gyroRawData.x, gyroRawData.y, gyroRawData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------
