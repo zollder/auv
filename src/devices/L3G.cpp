@@ -48,7 +48,7 @@
 		/*
 		 * CTRL4 register (gyro)
 		 * 0 (BDU): 0 - block data update, normal mode
-		 * 1 (BLE): 0 data LSB @ lower address
+		 * 1 (BLE): 0 data LSB @ lower address (little endian)
 		 * 2-3 (FS1-FS0): 11 - full-scale selection, 2000 dps
 		 * 4 (IMPen): 0 - level-sensitive latched disabled
 		 * 5-6 (ST2-ST1): 00 - self-test disabled
@@ -95,7 +95,7 @@
 		gyroRawData.y = (int) convertMsbLsb(yhg, ylg);
 		gyroRawData.z = (int) convertMsbLsb(zhg, zlg);
 
-		printf("%7d %7d %7d", gyroRawData.x, gyroRawData.y, gyroRawData.z);
+//		printf("%7d %7d %7d \n", gyroRawData.x, gyroRawData.y, gyroRawData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------

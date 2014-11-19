@@ -61,7 +61,7 @@ class L3G
 		/** Raw data holder structure. */
 		typedef struct RawData
 		{
-			float x, y, z;
+			int x, y, z;
 		} RawData;
 
 		/** Turns on and configures L3G gyroscope. */

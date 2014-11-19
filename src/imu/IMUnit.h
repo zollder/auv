@@ -18,29 +18,34 @@ using namespace std;
 #ifndef imunit_h
 #define imunit_h
 
-/** LSM303 accelerometer: 8g sensitivity, 3.8 mg/digit; 1g = (2^16)/2/8g = 4096 */
+/** LSM303 accelerometer:
+ *  - range: ±8g,
+ *  - sensitivity: 8g/(2^16/2) = 0.244 mg/digit;
+ *  - gravity: 1g = (2^16)/2/8g = 4096
+ */
 #define GRAVITY 4096  //this equivalent to 1G of accelerometer raw data
+
+/** L3GD20H gyroscope:
+ * - range: 2000 dps full scale
+ * - sensivity: 2000/(2^16/2) = 61 mdps/digit
+ * - gain: 1dps = 0.07 */
+#define GYRO_GAIN 0.07
 
 #define ToRad(x) ((x)*0.01745329252)  // *pi/180
 #define ToDeg(x) ((x)*57.2957795131)  // *180/pi
 
-/** L3G4200D gyro: 2000 dps full scale, 70 mdps/digit, 1dps = 0.07 */
-#define Gyro_Gain_X 0.07 //X axis Gyro gain
-#define Gyro_Gain_Y 0.07 //Y axis Gyro gain
-#define Gyro_Gain_Z 0.07 //Z axis Gyro gain
-
 /** Returns scaled ADC raw gyro data in rad/s */
-#define Gyro_Scaled_X(x) ((x)*ToRad(Gyro_Gain_X))
-#define Gyro_Scaled_Y(x) ((x)*ToRad(Gyro_Gain_Y))
-#define Gyro_Scaled_Z(x) ((x)*ToRad(Gyro_Gain_Z))
+#define Gyro_Scaled_X(x) ((x)*ToRad(GYRO_GAIN))
+#define Gyro_Scaled_Y(x) ((x)*ToRad(GYRO_GAIN))
+#define Gyro_Scaled_Z(x) ((x)*ToRad(GYRO_GAIN))
 
 /** LSM303 magnetometer calibration constants. */
-#define M_X_MIN -3030
-#define M_X_MAX 4630
-#define M_Y_MIN -3160
-#define M_Y_MAX 4000
-#define M_Z_MIN -3200
-#define M_Z_MAX 3830
+#define M_X_MIN -1522
+#define M_X_MAX 2208
+#define M_Y_MIN -1567
+#define M_Y_MAX 1947
+#define M_Z_MIN -1574
+#define M_Z_MAX 1885
 
 #define Kp_ROLLPITCH 0.02
 #define Ki_ROLLPITCH 0.00002
@@ -53,6 +58,10 @@ using namespace std;
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 #define abs(x) ((x)>0?(x):-(x))
+
+// magnetometer calibration-related definitions
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
 
 class IMUnit
 {
@@ -78,6 +87,7 @@ class IMUnit
 		void correctDrift(void);
 		void updateMatrix(void);
 		void calculateEulerAngles(void);
+		void calibrateMagnetometer();
 
 	    // vector functions
 	    template <typename Ta, typename Tb, typename To> static void findCrossProduct(const vector<Ta> *a, const vector<Tb> *b, vector<To> *out);

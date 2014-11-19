@@ -135,7 +135,7 @@
 		accelRawData.y = (int) convertMsbLsb(yha, yla);
 		accelRawData.z = (int) convertMsbLsb(zha, zla);
 
-		printf("%7d %7d %7d", accelRawData.x, accelRawData.y, accelRawData.z);
+//		printf("%7d %7d %7d", accelRawData.x, accelRawData.y, accelRawData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -160,7 +160,7 @@
 		magnetRawData.y = (int) convertMsbLsb(yhm, ylm);
 		magnetRawData.z = (int) convertMsbLsb(zhm, zlm);
 
-		printf("%7d %7d %7d\n", magnetRawData.x, magnetRawData.y, magnetRawData.z);
+//		printf("%7d %7d %7d\n", magnetRawData.x, magnetRawData.y, magnetRawData.z);
 	}
 
 	//-----------------------------------------------------------------------------------------

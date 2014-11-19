@@ -329,3 +329,27 @@
 	  a->y /= mag;
 	  a->z /= mag;
 	}
+
+	void IMUnit::calibrateMagnetometer()
+	{
+		vector<int> runningMin = {2047, 2047, 2047};
+		vector<int> runningMax = {-2048, -2048, -2048};
+
+		for(int i=0; i<500; i++)
+		{
+			readMagnetometer();
+
+			runningMin.x = min(runningMin.x, magData->x);
+			runningMin.y = min(runningMin.y, magData->y);
+			runningMin.z = min(runningMin.z, magData->z);
+
+			runningMax.x = max(runningMax.x, magData->x);
+			runningMax.y = max(runningMax.y, magData->y);
+			runningMax.z = max(runningMax.z, magData->z);
+
+			printf ("minX:%d   minY:%d   minZ:%d   maxX:%d   maxY:%d   maxZ:%d\n",
+				runningMin.x, runningMin.y, runningMin.z, runningMax.x, runningMax.y, runningMax.z);
+
+			usleep (100000);
+		}
+	}
