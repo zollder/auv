@@ -30,7 +30,7 @@
 		yaw = 0;
 		magHeading = 0;
 		counter = 0;
-		G_Dt = 0.04;
+		G_Dt = 0;
 	}
 
 	/**-----------------------------------------------------------------------------------------
@@ -61,7 +61,7 @@
 			for(int i=0; i<6; i++)
 				sensorOffset[i] = sensorOffset[i] + sensorData[i];
 
-			usleep(40000);
+			usleep(20000);
 		}
 
 		// populate offset holder
@@ -75,6 +75,7 @@
 				sensorOffset[3], sensorOffset[4], sensorOffset[5]);
 	}
 
+	/** Returns gyroscope readings expressed as raw values (digits). */
 	void IMUnit::readGyroscope()
 	{
 		gyro->readGyroscopeData();
@@ -87,9 +88,13 @@
 		gyroData->y = sensorSign[1] * (sensorData[1] - sensorOffset[1]);
 		gyroData->z = sensorSign[2] * (sensorData[2] - sensorOffset[2]);
 
-//		printf("gX: %d \tgY: %d  \tgZ: %.d\n", gyroData->x, gyroData->y, gyroData->z);
+//		printf("%d  %d  %d     \n", gyroData->x, gyroData->y, gyroData->z);
 	}
 
+	/**
+	 * Removes an offset and returns accelerometer readings
+	 * expressed as raw values (digits).
+	 */
 	void IMUnit::readAccelerometer()
 	{
 		compass->readAccelerometerData();
@@ -102,7 +107,7 @@
 		accelData->y = sensorSign[4] * (sensorData[4] - sensorOffset[4]);
 		accelData->z = sensorSign[5] * (sensorData[5] - sensorOffset[5]);
 
-//		printf("aX: %d \taY: %d  \taZ: %d\n", accelData->x, accelData->y, accelData->z);
+//		printf("%d  %d  %d     \n", accelData->x, accelData->y, accelData->z);
 	}
 
 	void IMUnit::readMagnetometer()
@@ -113,13 +118,15 @@
 		magData->y = sensorSign[7] * compass->magnetRawData.y;
 		magData->z = sensorSign[8] * compass->magnetRawData.z;
 
-//		printf("raw: %d, %d, %d   \n", magData->x, magData->y, magData->z);
+//		printf("raw: %d  %d  %d     \n", magData->x, magData->y, magData->z);
 	}
 
 	void IMUnit::setCalibrationMode(bool mode)
 	{
 		calibrationMode = mode;
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void IMUnit:: findMagnetometerHeading()
 	{
@@ -236,10 +243,10 @@
 		accelWeight = constrain(1 - 2*abs(1 - accelMagnitude), 0, 1); //
 
 		Vector_Cross_Product(&errorRollPitch[0], &accelVector[0], &DCM_Matrix[2][0]); //adjust the ground of reference
-		Vector_Scale(&Omega_P[0], &errorRollPitch[0], Kp_ROLLPITCH * accelWeight);
+		Vector_Scale(&Omega_Proportional[0], &errorRollPitch[0], Kp_ROLLPITCH * accelWeight);
 
 		Vector_Scale(&Scaled_Omega_I[0], &errorRollPitch[0], Ki_ROLLPITCH * accelWeight);
-		Vector_Add(Omega_I, Omega_I, Scaled_Omega_I);
+		Vector_Add(Omega_Integrator, Omega_Integrator, Scaled_Omega_I);
 
 		//*****YAW***************
 		// We make the gyro YAW drift correction based on compass magnetic heading
@@ -250,14 +257,15 @@
 		Vector_Scale(errorYaw, &DCM_Matrix[2][0], errorCourse); //Applys the yaw correction to the XYZ rotation of the aircraft, depeding the position.
 
 		Vector_Scale(&Scaled_Omega_P[0], &errorYaw[0], Kp_YAW); //.01proportional of YAW.
-		Vector_Add(Omega_P, Omega_P, Scaled_Omega_P); //Adding  Proportional.
+		Vector_Add(Omega_Proportional, Omega_Proportional, Scaled_Omega_P); //Adding  Proportional.
 
 		Vector_Scale(&Scaled_Omega_I[0], &errorYaw[0], Ki_YAW); //.00001Integrator
-		Vector_Add(Omega_I, Omega_I, Scaled_Omega_I); //adding integrator to the Omega_I
+		Vector_Add(Omega_Integrator, Omega_Integrator, Scaled_Omega_I); //adding integrator to the Omega_I
 	}
 
 	void IMUnit::updateMatrix()
 	{
+		// scale to degrees and convert to radians
 		gyroVector[0] = Gyro_Scaled_X(accelData->x); //gyro x roll
 		gyroVector[1] = Gyro_Scaled_Y(accelData->y); //gyro y pitch
 		gyroVector[2] = Gyro_Scaled_Z(accelData->z); //gyro Z yaw
@@ -266,35 +274,22 @@
 		accelVector[1] = accelData->y;
 		accelVector[2] = accelData->z;
 
-		Vector_Add(&Omega[0], &gyroVector[0], &Omega_I[0]); //adding proportional term
-		Vector_Add(&Omega_Vector[0], &Omega[0], &Omega_P[0]); //adding Integrator term
+		// add proportional term, omega = gyro + integrator
+		Vector_Add(&Omega[0], &gyroVector[0], &Omega_Integrator[0]);
 
-		//Accel_adjust();    //Remove centrifugal acceleration.   We are not using this function in this version - we have no speed measurement
+		// add integrator term, omega_vector = omega + omega_proportional
+		Vector_Add(&Omega_Vector[0], &Omega[0], &Omega_Proportional[0]);
 
-		if(!calibrationMode)	 // with drift correction
-		{
-			Update_Matrix[0][0] = 0;
-			Update_Matrix[0][1] = -G_Dt * Omega_Vector[2]; //-z
-			Update_Matrix[0][2] = G_Dt * Omega_Vector[1]; //y
-			Update_Matrix[1][0] = G_Dt * Omega_Vector[2]; //z
-			Update_Matrix[1][1] = 0;
-			Update_Matrix[1][2] = -G_Dt * Omega_Vector[0]; //-x
-			Update_Matrix[2][0] = -G_Dt * Omega_Vector[1]; //-y
-			Update_Matrix[2][1] = G_Dt * Omega_Vector[0]; //x
-			Update_Matrix[2][2] = 0;
-		}
-		else	// no drift correction
-		{
-			Update_Matrix[0][0]=0;
-			Update_Matrix[0][1]=-G_Dt*gyroVector[2]; //-z
-			Update_Matrix[0][2]=G_Dt*gyroVector[1];//y
-			Update_Matrix[1][0]=G_Dt*gyroVector[2];//z
-			Update_Matrix[1][1]=0;
-			Update_Matrix[1][2]=-G_Dt*gyroVector[0];
-			Update_Matrix[2][0]=-G_Dt*gyroVector[1];
-			Update_Matrix[2][1]=G_Dt*gyroVector[0];
-			Update_Matrix[2][2]=0;
-		}
+		// drift correction
+		Update_Matrix[0][0] = 0;
+		Update_Matrix[0][1] = -G_Dt*Omega_Vector[2];//-z	-y
+		Update_Matrix[0][2] = G_Dt*Omega_Vector[1];//y		z
+		Update_Matrix[1][0] = G_Dt*Omega_Vector[2];//z		y
+		Update_Matrix[1][1] = 0;
+		Update_Matrix[1][2] = -G_Dt*Omega_Vector[0];//-x	-x
+		Update_Matrix[2][0] = -G_Dt*Omega_Vector[1];//-y	-z
+		Update_Matrix[2][1] = G_Dt*Omega_Vector[0];//x		x
+		Update_Matrix[2][2] = 0;
 
 		Matrix_Multiply(DCM_Matrix, Update_Matrix, Temporary_Matrix); //a*b=c
 
@@ -308,6 +303,43 @@
 		pitch = -asin(DCM_Matrix[2][0]);
 		roll = atan2(DCM_Matrix[2][1], DCM_Matrix[2][2]);
 		yaw = atan2(DCM_Matrix[1][0], DCM_Matrix[0][0]);
+	}
+
+	void IMUnit::printData(int mode)
+	{
+		if (mode == 1)	// print Euler angles
+		{
+			printf("Angles: %.2f    %.2f    %.2f  \n", ToDeg(roll), ToDeg(pitch), ToDeg(yaw));
+		}
+		else if (mode == 2)	// print raw values
+		{
+			printf("%d  %d  %d  |  %d  %d  %d  |  %d  %d  %d  \n",
+					gyroData->x, gyroData->y, gyroData->z,
+					accelData->x, accelData->y, accelData->z,
+					magData->x, magData->y, magData->z);
+		}
+		else if (mode == 3)	// print DCM
+		{
+			printf("%ld  %ld  %ld  |  %ld  %ld  %ld  |  %ld  %ld  %ld  \n",
+					convert_to_dec(DCM_Matrix[0][0]),
+					convert_to_dec(DCM_Matrix[0][1]),
+					convert_to_dec(DCM_Matrix[0][2]),
+					convert_to_dec(DCM_Matrix[1][0]),
+					convert_to_dec(DCM_Matrix[1][1]),
+					convert_to_dec(DCM_Matrix[1][1]),
+					convert_to_dec(DCM_Matrix[2][0]),
+					convert_to_dec(DCM_Matrix[2][1]),
+					convert_to_dec(DCM_Matrix[2][2]));
+		}
+		else	// print magnetometer heading
+		{
+
+		}
+	}
+
+	long IMUnit::convert_to_dec(float x)
+	{
+	  return x*10000000;
 	}
 
 	template <typename Ta, typename Tb, typename To> void IMUnit::findCrossProduct(const vector<Ta> *a,const vector<Tb> *b, vector<To> *out)
