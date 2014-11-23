@@ -5,6 +5,8 @@
  */
 
 #include "../sys/I2C.h"
+#include "../commons/Vector.h"
+
 #include <stdio.h>
 
 #ifndef LSM303_H_
@@ -54,12 +56,6 @@ class LSM303
 		// Methods and structures
 		//-----------------------------------------------------------------------------------------
 
-		/** Raw data holder structure. */
-		typedef struct RawData
-		{
-			int x, y, z;
-		} RawData;
-
 		/** Turns on and configures LSM303's accelerometer and magnetometer. */
 		void enable(void);
 
@@ -72,8 +68,8 @@ class LSM303
 		//-----------------------------------------------------------------------------------------
 		// Instance variables
 		//-----------------------------------------------------------------------------------------
-		RawData accelRawData;	/** Accelerometer's raw data holder. */
-		RawData magnetRawData;	/** Magnetometer's raw data holder. */
+		Vector<int> accelRawData;	/** Accelerometer's raw data holder. */
+		Vector<int> magnetRawData;	/** Magnetometer's raw data holder. */
 
 	//-----------------------------------------------------------------------------------------
 	// Private members

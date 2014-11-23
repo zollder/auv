@@ -1,4 +1,11 @@
+/*
+ *	LSM303.h
+ *	Author: zollder
+ */
+
 #include "../sys/I2C.h"
+#include "../commons/Vector.h"
+
 #include <stdio.h>
 
 #ifndef L3G_h
@@ -28,19 +35,6 @@
 #define L3G_OUT_Z_L       0x2C
 #define L3G_OUT_Z_H       0x2D
 
-#define L3G_FIFO_CTRL_REG 0x2E
-#define L3G_FIFO_SRC_REG  0x2F
-
-#define L3G_INT1_CFG      0x30
-#define L3G_INT1_SRC      0x31
-#define L3G_INT1_THS_XH   0x32
-#define L3G_INT1_THS_XL   0x33
-#define L3G_INT1_THS_YH   0x34
-#define L3G_INT1_THS_YL   0x35
-#define L3G_INT1_THS_ZH   0x36
-#define L3G_INT1_THS_ZL   0x37
-#define L3G_INT1_DURATION 0x38
-
 class L3G
 {
 	//-----------------------------------------------------------------------------------------
@@ -58,12 +52,6 @@ class L3G
 		// Methods and structures
 		//-----------------------------------------------------------------------------------------
 
-		/** Raw data holder structure. */
-		typedef struct RawData
-		{
-			int x, y, z;
-		} RawData;
-
 		/** Turns on and configures L3G gyroscope. */
 		void enable(void);
 
@@ -74,7 +62,7 @@ class L3G
 		// Instance variables
 		//-----------------------------------------------------------------------------------------
 
-		RawData gyroRawData;	/** Gyroscope's raw data holder (angular velocity data). */
+		Vector<int> gyroRawData;	/** Gyroscope's raw data holder (angular velocity data). */
 
 		//-----------------------------------------------------------------------------------------
 		// Private members

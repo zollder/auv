@@ -1,45 +1,47 @@
 /*
- * IMU.h
- *
- *  Created on: 04.10.2013
- *      Author: tuuzdu
+ *	IMUnit.h
+ *	Created on: 16.11.2014
+ *	Author: zollder
  */
+#include "../commons/Vector.h"
+#include "Matrix.h"
+#include "Vectors.h"
 
-#ifndef IMU_H_
-#define IMU_H_
+#include "../devices/L3G.h"
+#include "../devices/LSM303.h"
 
-// Uncomment the below line to use this axis definition:
-// X axis pointing forward
-// Y axis pointing to the right
-// and Z axis pointing down.
-// Positive pitch : nose up
-// Positive roll : right wing down
-// Positive yaw : clockwise
-extern int SENSOR_SIGN[9]; //Correct directions x,y,z - gyro, accelerometer, magnetometer
-// Uncomment the below line to use this axis definition:
-// X axis pointing forward
-// Y axis pointing to the left
-// and Z axis pointing up.
-// Positive pitch : nose down
-// Positive roll : right wing down
-// Positive yaw : counterclockwise
-//int SENSOR_SIGN[9] = {1,-1,-1,-1,1,1,1,-1,-1}; //Correct directions x,y,z - gyro, accelerometer, magnetometer
+#include <stdio.h>
+#include <unistd.h>
+#include <math.h>
 
-// LSM303 accelerometer: 8 g sensitivity
-// 3.8 mg/digit; 1 g = 256
-#define GRAVITY 4096  //this equivalent to 1G in the raw data coming from the accelerometer
+using namespace std;
+
+#ifndef IMU_h
+#define IMU_h
+
+/** LSM303 accelerometer:
+ *  - range: ±8g,
+ *  - sensitivity: 8g/(2^16/2) = 0.244 mg/digit;
+ *  - gravity: 1g = (2^16)/2/8g = 4096
+ *  gravity value is equivalent to 1G of accelerometer raw data */
+#define GRAVITY 4096
+
+/** L3GD20H gyroscope:
+ * - range: 2000 dps full scale
+ * - sensivity: 2000/(2^16/2) = 61 mdps/digit (approx 70mdps/digit)
+ * - gain: 1dps = 0.070 */
+#define GYRO_GAIN 0.07
+#define GYRO_GAIN_RAD 0.00122173
+
 #define ToRad(x) ((x)*0.01745329252)  // *pi/180
 #define ToDeg(x) ((x)*57.2957795131)  // *180/pi
-// L3G4200D gyro: 2000 dps full scale
-// 70 mdps/digit; 1 dps = 0.07
-#define Gyro_Gain_X 0.07 //X axis Gyro gain
-#define Gyro_Gain_Y 0.07 //Y axis Gyro gain
-#define Gyro_Gain_Z 0.07 //Z axis Gyro gain
-#define Gyro_Scaled_X(x) ((x)*ToRad(Gyro_Gain_X)) //Return the scaled ADC raw data of the gyro in radians for second
-#define Gyro_Scaled_Y(x) ((x)*ToRad(Gyro_Gain_Y)) //Return the scaled ADC raw data of the gyro in radians for second
-#define Gyro_Scaled_Z(x) ((x)*ToRad(Gyro_Gain_Z)) //Return the scaled ADC raw data of the gyro in radians for second
-// LSM303 magnetometer calibration constants; use the Calibrate example from
-// the Pololu LSM303 library to find the right values for your board
+
+/** Returns scaled ADC raw gyro data in rad/s */
+#define Gyro_Scaled_X(x) ((x)*GYRO_GAIN_RAD)
+#define Gyro_Scaled_Y(x) ((x)*GYRO_GAIN_RAD)
+#define Gyro_Scaled_Z(x) ((x)*GYRO_GAIN_RAD)
+
+/** Magnetometer calibration constants. */
 #define M_X_MIN -1587
 #define M_Y_MIN -1596
 #define M_Z_MIN -1677
@@ -47,63 +49,115 @@ extern int SENSOR_SIGN[9]; //Correct directions x,y,z - gyro, accelerometer, mag
 #define M_Y_MAX 1972
 #define M_Z_MAX 1918
 
+/** Integrator and proportionality constants */
 #define Kp_ROLLPITCH 0.02
 #define Ki_ROLLPITCH 0.00002
 #define Kp_YAW 1.2
 #define Ki_YAW 0.00002
 
-/*For debugging purposes*/
-//OUTPUTMODE=1 will print the corrected data,
-//OUTPUTMODE=0 will print uncorrected data of the gyros (with drift)
-#define OUTPUTMODE 1
-#define CALIBRMODE 0
+#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
+#define abs(x) ((x)>0?(x):-(x))
 
-extern float G_Dt; // Integration time (DCM algorithm)  We will run the integration loop at 50Hz if possible
+#define min(a,b) ((a)<(b)?(a):(b))
+#define max(a,b) ((a)>(b)?(a):(b))
 
-//extern ros::Time timer; //general purpuse timer
-//extern ros::Time timer_old;
-extern int AN[6]; //array that stores the gyro and accelerometer data
-extern int AN_OFFSET[6]; //Array that stores the Offset of the sensors
+class IMU
+{
+	//-----------------------------------------------------------------------------------------
+	// Public members
+	//-----------------------------------------------------------------------------------------
+	public:
 
-extern int gyro_x;
-extern int gyro_y;
-extern int gyro_z;
-extern int accel_x;
-extern int accel_y;
-extern int accel_z;
-extern int magnetom_x;
-extern int magnetom_y;
-extern int magnetom_z;
-extern float c_magnetom_x;
-extern float c_magnetom_y;
-extern float c_magnetom_z;
-extern float MAG_Heading;
+		/** Constructor. */
+		IMU();
 
-extern float Accel_Vector[3]; //Store the acceleration in a vector
-extern float Gyro_Vector[3]; //Store the gyros turn rate in a vector
-extern float Omega_Vector[3]; //Corrected Gyro_Vector data
-extern float Omega_P[3]; //Omega Proportional correction
-extern float Omega_I[3]; //Omega Integrator
-extern float Omega[3];
+		/** Destructor. */
+		~IMU();
 
-// Euler angles
-extern float roll;
-extern float pitch;
-extern float yaw;
+		//-----------------------------------------------------------------------------------------
+		// Methods
+		//-----------------------------------------------------------------------------------------
+		void initialize(void);
+		void calibrateMagnetometer(void);
+		void calculateOffset(void);
 
-extern float errorRollPitch[3];
-extern float errorYaw[3];
+		void execute(int mode);
 
-extern unsigned int counter;
+		void readGyroscope(void);
+		void readAccelerometer(void);
+		void readMagnetometer(void);
+		void readSensors(void)
+		{
+			readGyroscope();
+			readAccelerometer();
+			readMagnetometer();
+		};
 
-extern float DCM_Matrix[3][3];
-extern float Update_Matrix[3][3]; //Gyros here
+		void calculateHeading(void);
+		void printData(int mode);
 
-extern float Temporary_Matrix[3][3];
+		void normalize(void);
+		void correctDrift(void);
+		void updateMatrix(void);
+		void calculateEulerAngles(void);
 
-void IMU_Init();
-void Read_Gyro();
-void Read_Accel();
-void Read_Compass();
+		//-----------------------------------------------------------------------------------------
+		// Instance variables
+		//-----------------------------------------------------------------------------------------
 
-#endif /* IMU_H_ */
+		/** Sensor data holders. */
+		Vector<int> gyroData = {0,0,0};;
+		Vector<int> accData = {0,0,0};;
+		Vector<int> magData = {0,0,0};;
+		Vector<float> corrMagData = {0,0,0};;
+
+		float magHeading = 0;
+
+		/**
+		 * Correct XYZ directions of gyro, accelerometer and magnetometer.
+		 * X-axis (forward), Y-axis (right), Z-axis (down).
+		 * pitch+ (nose up), roll+ (right wing down), yaw+ (clockwise)
+		 */
+		int SENSOR_SIGN[9] = {1,1,1,1,1,1,1,1,1};
+
+		/** Gyro & accelerometer raw data and offset holders. */
+		int rawData[6] = {0,0,0,0,0,0};
+		int offset[6] = {0,0,0,0,0,0};
+
+		/** Gyro (turn rate) and accelerometer (acceleration) vector data holders. */
+		float Accel_Vector[3] = {0,0,0};
+		float Gyro_Vector[3] = {0,0,0};
+
+		/** DCM algorithm-related data holders. */
+		float Omega_Vector[3] = {0,0,0}; //Corrected Gyro_Vector data
+		float Omega_P[3] = {0,0,0}; //Omega Proportional correction
+		float Omega_I[3] = {0,0,0}; //Omega Integrator
+		float Omega[3] = {0,0,0};
+
+		/** Integration time constant (DCM algorithm). */
+		float G_Dt = 0.02;
+
+		/** Euler angles. */
+		float roll = 0;
+		float pitch = 0;
+		float yaw = 0;
+
+		float errorRollPitch[3] = {0,0,0};
+		float errorYaw[3] = {0,0,0};
+
+		float DCM_Matrix[3][3] = { {1,0,0},{0,1,0},{0,0,1} };		/** estimated DCM */
+		float Update_Matrix[3][3] = { {0,1,2},{3,4,5},{6,7,8} }; //Gyros here
+		float Temporary_Matrix[3][3] = { {0,0,0},{0,0,0},{0,0,0} };
+
+		unsigned int counter = 0;
+
+	private:
+
+		long convert_to_dec(float x);
+
+		/** Device objects. */
+		L3G* gyro;
+		LSM303* compass;
+};
+
+#endif
