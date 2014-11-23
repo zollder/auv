@@ -27,7 +27,7 @@ extern int SENSOR_SIGN[9]; //Correct directions x,y,z - gyro, accelerometer, mag
 
 // LSM303 accelerometer: 8 g sensitivity
 // 3.8 mg/digit; 1 g = 256
-#define GRAVITY 256  //this equivalent to 1G in the raw data coming from the accelerometer
+#define GRAVITY 4096  //this equivalent to 1G in the raw data coming from the accelerometer
 #define ToRad(x) ((x)*0.01745329252)  // *pi/180
 #define ToDeg(x) ((x)*57.2957795131)  // *180/pi
 // L3G4200D gyro: 2000 dps full scale
@@ -40,12 +40,12 @@ extern int SENSOR_SIGN[9]; //Correct directions x,y,z - gyro, accelerometer, mag
 #define Gyro_Scaled_Z(x) ((x)*ToRad(Gyro_Gain_Z)) //Return the scaled ADC raw data of the gyro in radians for second
 // LSM303 magnetometer calibration constants; use the Calibrate example from
 // the Pololu LSM303 library to find the right values for your board
-#define M_X_MIN -705
-#define M_Y_MIN -650
-#define M_Z_MIN -83
-#define M_X_MAX 350
-#define M_Y_MAX 425
-#define M_Z_MAX 960
+#define M_X_MIN -1587
+#define M_Y_MIN -1596
+#define M_Z_MIN -1677
+#define M_X_MAX 2295
+#define M_Y_MAX 1972
+#define M_Z_MAX 1918
 
 #define Kp_ROLLPITCH 0.02
 #define Ki_ROLLPITCH 0.00002

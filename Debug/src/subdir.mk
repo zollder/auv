@@ -4,15 +4,12 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/SimpleGPIO.cpp \
 ../src/auv.cpp 
 
 OBJS += \
-./src/SimpleGPIO.o \
 ./src/auv.o 
 
 CPP_DEPS += \
-./src/SimpleGPIO.d \
 ./src/auv.d 
 
 
