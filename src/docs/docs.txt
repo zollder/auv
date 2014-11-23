@@ -1,0 +1,35 @@
+	/**
+		Returns the angular difference in the horizontal plane between the "from" vector and north, in degrees.
+		Description of heading algorithm:
+		Shift and scale the magnetic reading based on calibration data to find the North vector.
+		Use the acceleration readings to determine the Up vector (gravity is measured as an upward acceleration).
+		The cross product of North and Up vectors is East. The vectors East and North form a basis for the
+		horizontal plane. The From vector is projected into the horizontal plane and the angle between
+		the projected vector and horizontal north is returned.
+	*/
+/*	float IMU:: getHeading()
+	{
+		readMagnetometer();
+		readAccelerometer();
+
+		vector<int> tempMagData = {magData->x, magData->y, magData->z};
+		vector<int> tempAccData = {accelData->x, accelData->y, accelData->z};
+
+		// subtract offset (average of min and max) from magnetometer readings
+		tempMagData.x -= - (M_X_MIN + M_X_MAX)/2;
+		tempMagData.y -= - (M_Y_MIN + M_Y_MAX)/2;
+		tempMagData.z -= - (M_Z_MIN + M_Z_MAX)/2;
+
+		// calculate North and East
+		vector<float> east;
+		vector<float> north;
+		vector<int> reference = {1,0,0};
+
+		findCrossProduct(&tempMagData, &tempAccData, &east);
+		normalizeData(&east);
+		findCrossProduct(&tempAccData, &east, &north);
+		normalizeData(&north);
+
+		float heading = ToDeg(atan2(findDotProduct(&east, &reference), findDotProduct(&north, &reference)));
+		return heading;
+	}*/

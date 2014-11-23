@@ -5,9 +5,9 @@
  *      Author: tuuzdu
  */
 
-#include "IMU.h"
+#include "IMUs.h"
 #include "DCM.h"
-#include "Vector.h"
+#include "Vectors.h"
 #include "Matrix.h"
 #include <math.h>
 
@@ -79,15 +79,6 @@ void Drift_correction(void)
 	Vector_Scale(&Scaled_Omega_I[0], &errorYaw[0], Ki_YAW); //.00001Integrator
 	Vector_Add(Omega_I, Omega_I, Scaled_Omega_I); //adding integrator to the Omega_I
 }
-/**************************************************/
-/*
- void Accel_adjust(void)
- {
- Accel_Vector[1] += Accel_Scale(speed_3d*Omega[2]);  // Centrifugal force on Acc_y = GPS_speed*GyroZ
- Accel_Vector[2] -= Accel_Scale(speed_3d*Omega[1]);  // Centrifugal force on Acc_z = GPS_speed*GyroY
- }
- */
-/**************************************************/
 
 void Matrix_update(void) {
 	Gyro_Vector[0] = Gyro_Scaled_X(gyro_x); //gyro x roll
