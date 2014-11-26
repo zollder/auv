@@ -3,6 +3,7 @@
  *	Created on: 16.11.2014
  *	Author: zollder
  */
+
 #include "IMU.h"
 
 	/**-----------------------------------------------------------------------------------------
@@ -26,6 +27,55 @@
 
 		delete compass;
 		delete gyro;
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Initializes sensors, reads, interprets and prints data in specified format. */
+	//-----------------------------------------------------------------------------------------
+	void IMU::execute(int mode)
+	{
+		this->initialize();
+
+		unsigned long timer = millis();
+		unsigned long oldTimer;
+		unsigned int printCounter = 0;
+
+		while (1)
+		{
+			if((millis()-timer) >= 20)  // Main loop runs at 50Hz
+			{
+				counter++;
+				oldTimer = timer;
+				timer = millis();
+				if (timer > oldTimer)
+					G_Dt = (timer-oldTimer)/1000.0;
+				else
+					G_Dt = 0;
+			}
+
+			this->readGyroscope();
+			this->readAccelerometer();
+
+			if (counter > 5)
+			{
+				counter = 0;
+				this->readMagnetometer();
+				this->calculateHeading();
+			}
+
+			this->updateMatrix();
+			this->normalize();
+			this->correctDrift();
+			this->calculateEulerAngles();
+
+			printCounter++;
+			if (printCounter > 5)
+			{
+				printCounter = 0;
+				this->printData(mode);
+			}
+		}
+
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -193,24 +243,24 @@
 		float temp[3][3];
 		float renorm = 0;
 
-		error = -Vector_Dot_Product(&dcm[0][0], &dcm[1][0]) * .5; //eq.19
+		error = -utils.calculateDotProduct(&dcm[0][0], &dcm[1][0]) * .5; //eq.19
 
-		Vector_Scale(&temp[0][0], &dcm[1][0], error); //eq.19
-		Vector_Scale(&temp[1][0], &dcm[0][0], error); //eq.19
+		utils.scaleVector(&temp[0][0], &dcm[1][0], error); //eq.19
+		utils.scaleVector(&temp[1][0], &dcm[0][0], error); //eq.19
 
-		Vector_Add(&temp[0][0], &temp[0][0], &dcm[0][0]); //eq.19
-		Vector_Add(&temp[1][0], &temp[1][0], &dcm[1][0]); //eq.19
+		utils.addVector(&temp[0][0], &temp[0][0], &dcm[0][0]); //eq.19
+		utils.addVector(&temp[1][0], &temp[1][0], &dcm[1][0]); //eq.19
 
-		Vector_Cross_Product(&temp[2][0], &temp[0][0], &temp[1][0]); // c= a x b //eq.20
+		utils.calculateCrossProduct(&temp[2][0], &temp[0][0], &temp[1][0]); // c= a x b //eq.20
 
-		renorm = .5 * (3 - Vector_Dot_Product(&temp[0][0], &temp[0][0])); //eq.21
-		Vector_Scale(&dcm[0][0], &temp[0][0], renorm);
+		renorm = .5 * (3 - utils.calculateDotProduct(&temp[0][0], &temp[0][0])); //eq.21
+		utils.scaleVector(&dcm[0][0], &temp[0][0], renorm);
 
-		renorm = .5 * (3 - Vector_Dot_Product(&temp[1][0], &temp[1][0])); //eq.21
-		Vector_Scale(&dcm[1][0], &temp[1][0], renorm);
+		renorm = .5 * (3 - utils.calculateDotProduct(&temp[1][0], &temp[1][0])); //eq.21
+		utils.scaleVector(&dcm[1][0], &temp[1][0], renorm);
 
-		renorm = .5 * (3 - Vector_Dot_Product(&temp[2][0], &temp[2][0])); //eq.21
-		Vector_Scale(&dcm[2][0], &temp[2][0], renorm);
+		renorm = .5 * (3 - utils.calculateDotProduct(&temp[2][0], &temp[2][0])); //eq.21
+		utils.scaleVector(&dcm[2][0], &temp[2][0], renorm);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -235,11 +285,12 @@
 		// Weight for accelerometer info (<0.5G = 0.0, 1G = 1.0 , >1.5G = 0.0)
 		accelWeight = constrain(1 - 2*abs(1 - accelMagnitude), 0, 1); //
 
-		Vector_Cross_Product(&errorRollPitch[0], &accelVector[0], &dcm[2][0]); //adjust the ground of reference
-		Vector_Scale(&omegaProp[0], &errorRollPitch[0], Kp_ROLLPITCH * accelWeight);
+		// adjust reference ground
+		utils.calculateCrossProduct(&errorRollPitch[0], &accelVector[0], &dcm[2][0]);
+		utils.scaleVector(&omegaProp[0], &errorRollPitch[0], Kp_ROLLPITCH * accelWeight);
 
-		Vector_Scale(&scaledOmegaI[0], &errorRollPitch[0], Ki_ROLLPITCH * accelWeight);
-		Vector_Add(omegaInteg, omegaInteg, scaledOmegaI);
+		utils.scaleVector(&scaledOmegaI[0], &errorRollPitch[0], Ki_ROLLPITCH * accelWeight);
+		utils.addVector(omegaInteg, omegaInteg, scaledOmegaI);
 
 		// 2. yaw drift correction based on compass heading
 
@@ -250,13 +301,13 @@
 		errorCourse = (dcm[0][0] * magHeadingY) - (dcm[1][0] * magHeadingX);
 
 		// apply yaw correction to XYZ rotation, depending on the device position.
-		Vector_Scale(errorYaw, &dcm[2][0], errorCourse);
+		utils.scaleVector(errorYaw, &dcm[2][0], errorCourse);
 
-		Vector_Scale(&scaledOmegaP[0], &errorYaw[0], Kp_YAW);	// .01 proportional of YAW.
-		Vector_Add(omegaProp, omegaProp, scaledOmegaP);			// adding  proportional term.
+		utils.scaleVector(&scaledOmegaP[0], &errorYaw[0], Kp_YAW);	// .01 proportional of YAW.
+		utils.addVector(omegaProp, omegaProp, scaledOmegaP);			// adding  proportional term.
 
-		Vector_Scale(&scaledOmegaI[0], &errorYaw[0], Ki_YAW);	// .00001Integrator
-		Vector_Add(omegaInteg, omegaInteg, scaledOmegaI);		// adding integrator to the Omega_I
+		utils.scaleVector(&scaledOmegaI[0], &errorYaw[0], Ki_YAW);	// .00001Integrator
+		utils.addVector(omegaInteg, omegaInteg, scaledOmegaI);		// adding integrator to the Omega_I
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -273,8 +324,8 @@
 		accelVector[2] = accData.z;
 
 		// adding proportional and integrator terms
-		Vector_Add(&Omega[0], &gyroVector[0], &omegaInteg[0]);
-		Vector_Add(&correctedGyroVector[0], &Omega[0], &omegaProp[0]);
+		utils.addVector(&Omega[0], &gyroVector[0], &omegaInteg[0]);
+		utils.addVector(&correctedGyroVector[0], &Omega[0], &omegaProp[0]);
 
 		updMatrix[0][0] = 0;
 		updMatrix[0][1] = -G_Dt * correctedGyroVector[2]; //-z
@@ -287,7 +338,7 @@
 		updMatrix[2][2] = 0;
 
 		// a*b=c
-		Matrix_Multiply(dcm, updMatrix, tempMatrix);
+		utils.multiplyMatrices(dcm, updMatrix, tempMatrix);
 
 		// add matrices (update)
 		for (int x = 0; x < 3; x++)
@@ -302,7 +353,7 @@
 	{
 		pitch = -asin(dcm[2][0]);
 		roll = atan2(dcm[2][1], dcm[2][2]);
-		yaw = atan2(dcm[1][0], dcm[0][0]);
+		yaw = -atan2(dcm[1][0], dcm[0][0]);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -322,27 +373,19 @@
 		else if (mode == 3)
 		{
 			printf("%ld  %ld  %ld  |  %ld  %ld  %ld  |  %ld  %ld  %ld  \n",
-					convert_to_dec(dcm[0][0]),
-					convert_to_dec(dcm[0][1]),
-					convert_to_dec(dcm[0][2]),
-					convert_to_dec(dcm[1][0]),
-					convert_to_dec(dcm[1][1]),
-					convert_to_dec(dcm[1][1]),
-					convert_to_dec(dcm[2][0]),
-					convert_to_dec(dcm[2][1]),
-					convert_to_dec(dcm[2][2]));
+					utils.convert_to_dec(dcm[0][0]),
+					utils.convert_to_dec(dcm[0][1]),
+					utils.convert_to_dec(dcm[0][2]),
+					utils.convert_to_dec(dcm[1][0]),
+					utils.convert_to_dec(dcm[1][1]),
+					utils.convert_to_dec(dcm[1][1]),
+					utils.convert_to_dec(dcm[2][0]),
+					utils.convert_to_dec(dcm[2][1]),
+					utils.convert_to_dec(dcm[2][2]));
 		}
 		else
 		{
 			printf("Unknown mode");
 			exit(1);
 		}
-	}
-
-	//-----------------------------------------------------------------------------------------
-	/** Converts specified number to decimal. */
-	//-----------------------------------------------------------------------------------------
-	long IMU::convert_to_dec(float x)
-	{
-	  return x*10000000;
 	}

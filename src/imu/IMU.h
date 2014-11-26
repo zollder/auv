@@ -4,11 +4,11 @@
  *	Author: zollder
  */
 #include "../commons/Vector.h"
-#include "Matrix.h"
-#include "Vectors.h"
+#include "../commons/Utils.h"
 
 #include "../devices/L3G.h"
 #include "../devices/LSM303.h"
+#include "../sys/Timer.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -77,11 +77,11 @@ class IMU
 		//-----------------------------------------------------------------------------------------
 		// Methods
 		//-----------------------------------------------------------------------------------------
+		void execute(int mode);
+
 		void initialize(void);
 		void calibrateMagnetometer(void);
 		void calculateOffset(void);
-
-		void execute(int mode);
 
 		void readGyroscope(void);
 		void readAccelerometer(void);
@@ -96,6 +96,14 @@ class IMU
 		void calculateHeading(void);
 		void printData(int mode);
 
+	//-----------------------------------------------------------------------------------------
+	// Private members
+	//-----------------------------------------------------------------------------------------
+	private:
+
+		//-----------------------------------------------------------------------------------------
+		// Methods
+		//-----------------------------------------------------------------------------------------
 		void normalize(void);
 		void correctDrift(void);
 		void updateMatrix(void);
@@ -104,6 +112,16 @@ class IMU
 		//-----------------------------------------------------------------------------------------
 		// Instance variables
 		//-----------------------------------------------------------------------------------------
+		L3G* gyro;
+		LSM303* compass;
+		Utils utils;
+
+		/**
+		 * Correct XYZ directions of gyro, accelerometer and magnetometer.
+		 * X-axis (forward), Y-axis (right), Z-axis (down).
+		 * pitch+ (nose up), roll+ (right wing down), yaw+ (clockwise)
+		 */
+		int SENSOR_SIGN[9] = {1,1,1,1,1,1,1,1,1};
 
 		/** Sensor data holders. */
 		Vector<int> gyroData = {0,0,0};;
@@ -112,13 +130,6 @@ class IMU
 		Vector<float> corrMagData = {0,0,0};;
 
 		float magHeading = 0;
-
-		/**
-		 * Correct XYZ directions of gyro, accelerometer and magnetometer.
-		 * X-axis (forward), Y-axis (right), Z-axis (down).
-		 * pitch+ (nose up), roll+ (right wing down), yaw+ (clockwise)
-		 */
-		int SENSOR_SIGN[9] = {1,1,1,1,1,1,1,1,1};
 
 		/** Gyro & accelerometer raw data and offset holders. */
 		int rawData[6] = {0,0,0,0,0,0};
@@ -150,14 +161,6 @@ class IMU
 		float tempMatrix[3][3] = { {0,0,0},{0,0,0},{0,0,0} };
 
 		unsigned int counter = 0;
-
-	private:
-
-		long convert_to_dec(float x);
-
-		/** Device objects. */
-		L3G* gyro;
-		LSM303* compass;
 };
 
 #endif

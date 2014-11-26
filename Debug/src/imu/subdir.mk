@@ -4,19 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/imu/IMU.cpp \
-../src/imu/Matrix.cpp \
-../src/imu/Vectors.cpp 
+../src/imu/IMU.cpp 
 
 OBJS += \
-./src/imu/IMU.o \
-./src/imu/Matrix.o \
-./src/imu/Vectors.o 
+./src/imu/IMU.o 
 
 CPP_DEPS += \
-./src/imu/IMU.d \
-./src/imu/Matrix.d \
-./src/imu/Vectors.d 
+./src/imu/IMU.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

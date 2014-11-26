@@ -29,7 +29,7 @@
 	void LSM303::enable(void) {
 		/*
 		 * CTRL1 register (accelerometer)
-		 * 0-3: 0101 - 50Hz
+		 * 0-3: 0101 - data rate 50Hz
 		 * 4: 0 - continuous update
 		 * 5: 1 - Z-axis enabled
 		 * 6: 1 - Y-axis enabled
