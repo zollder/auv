@@ -27,23 +27,23 @@
 	{
 		/*
 		 * CTRL1 register (gyro)
-		 * 0-1 (DR1 & DR0): 01 - data rate (ODR) = 25Hz
-		 * 2-3 (BW1 & BW0): 00 - data rate (ODR) = 25Hz
+		 * 0-1 (DR1 & DR0): 10 - data rate (ODR) = 50Hz
+		 * 2-3 (BW1 & BW0): 00 - data rate (ODR) = 50Hz
 		 * 4 (PD): 1 - normal power mode
 		 * 5-7 (Zen, Xen, Yen): 111 - enable ZXY axis
-		 * result: 01001111 => 0x4F
+		 * result: 10001111 => 0x8F
 		 */
-		writeRegister(L3G_CTRL_REG1, 0x4F);
+		writeRegister(L3G_CTRL_REG1, 0x8F);
 
 		/*
 		 * CTRL2 register (gyro) - default selections:
 		 * 0: 0 - disabled external edge-sensitive trigger
 		 * 1: 0 - disabled level-sensitive trigger
 		 * 2-3: 00 - normal HP filter mode
-		 * 4-7: 0000 - HP cut-off frequency = 2Hz (for ODR = 25Hz)
-		 * result: 00000000 => 0x00
+		 * 4-7: 0001 - HP cut-off frequency = 2Hz (for ODR = 50Hz)
+		 * result: 00000001 => 0x01
 		 */
-		writeRegister(L3G_CTRL_REG2, 0x00);
+		writeRegister(L3G_CTRL_REG2, 0x01);
 
 		/*
 		 * CTRL4 register (gyro)

@@ -33,6 +33,7 @@ int main()
 
 	unsigned long timer = millis();
 	unsigned long oldTimer;
+	unsigned int printCounter = 0;
 	while (1)
 	{
 		if((millis()-timer) >= 20)  // Main loop runs at 50Hz
@@ -61,6 +62,11 @@ int main()
 		imu.correctDrift();
 		imu.calculateEulerAngles();
 
-		imu.printData(1);
+		printCounter++;
+		if (printCounter > 5)
+		{
+			printCounter = 0;
+			imu.printData(1);
+		}
 	}
 }

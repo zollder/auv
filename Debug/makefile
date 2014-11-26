@@ -58,6 +58,7 @@ clean:
 	-@echo ' '
 
 post-build:
+	-@echo 'sshpass -p "root" scp -r ${workspace_loc:/auv/Debug}/auv root@192.168.7.2:/root/auv'
 	-sshpass -p "root" scp -r /home/zollder/beagle/workspace-beagle/auv/Debug/auv root@192.168.0.10:/root/auv
 	-@echo ' '
 

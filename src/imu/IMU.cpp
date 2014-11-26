@@ -24,10 +24,6 @@
 	{
 		printf("Destroying IMU ...\n");
 
-//		delete corrMagData;
-//		delete magData;
-//		delete accelData;
-//		delete gyroData;
 		delete compass;
 		delete gyro;
 	}
@@ -188,115 +184,134 @@
 		/*printf ("\033[1Aroll: %.2f\n", MAG_Heading);*/
 	}
 
+	//-----------------------------------------------------------------------------------------
+	/** Normalizes DCM vectors. */
+	//-----------------------------------------------------------------------------------------
 	void IMU::normalize()
 	{
 		float error = 0;
-		float temporary[3][3];
+		float temp[3][3];
 		float renorm = 0;
 
-		error = -Vector_Dot_Product(&DCM_Matrix[0][0], &DCM_Matrix[1][0]) * .5; //eq.19
+		error = -Vector_Dot_Product(&dcm[0][0], &dcm[1][0]) * .5; //eq.19
 
-		Vector_Scale(&temporary[0][0], &DCM_Matrix[1][0], error); //eq.19
-		Vector_Scale(&temporary[1][0], &DCM_Matrix[0][0], error); //eq.19
+		Vector_Scale(&temp[0][0], &dcm[1][0], error); //eq.19
+		Vector_Scale(&temp[1][0], &dcm[0][0], error); //eq.19
 
-		Vector_Add(&temporary[0][0], &temporary[0][0], &DCM_Matrix[0][0]); //eq.19
-		Vector_Add(&temporary[1][0], &temporary[1][0], &DCM_Matrix[1][0]); //eq.19
+		Vector_Add(&temp[0][0], &temp[0][0], &dcm[0][0]); //eq.19
+		Vector_Add(&temp[1][0], &temp[1][0], &dcm[1][0]); //eq.19
 
-		Vector_Cross_Product(&temporary[2][0], &temporary[0][0], &temporary[1][0]); // c= a x b //eq.20
+		Vector_Cross_Product(&temp[2][0], &temp[0][0], &temp[1][0]); // c= a x b //eq.20
 
-		renorm = .5 * (3 - Vector_Dot_Product(&temporary[0][0], &temporary[0][0])); //eq.21
-		Vector_Scale(&DCM_Matrix[0][0], &temporary[0][0], renorm);
+		renorm = .5 * (3 - Vector_Dot_Product(&temp[0][0], &temp[0][0])); //eq.21
+		Vector_Scale(&dcm[0][0], &temp[0][0], renorm);
 
-		renorm = .5 * (3 - Vector_Dot_Product(&temporary[1][0], &temporary[1][0])); //eq.21
-		Vector_Scale(&DCM_Matrix[1][0], &temporary[1][0], renorm);
+		renorm = .5 * (3 - Vector_Dot_Product(&temp[1][0], &temp[1][0])); //eq.21
+		Vector_Scale(&dcm[1][0], &temp[1][0], renorm);
 
-		renorm = .5 * (3 - Vector_Dot_Product(&temporary[2][0], &temporary[2][0])); //eq.21
-		Vector_Scale(&DCM_Matrix[2][0], &temporary[2][0], renorm);
+		renorm = .5 * (3 - Vector_Dot_Product(&temp[2][0], &temp[2][0])); //eq.21
+		Vector_Scale(&dcm[2][0], &temp[2][0], renorm);
 	}
 
+	//-----------------------------------------------------------------------------------------
+	/** Corrects gyro's roll and pitch based on accelerometer readings.
+	 *  Corrects gyro's yaw based on calculated magnetometer heading. */
+	//-----------------------------------------------------------------------------------------
 	void IMU::correctDrift(void)
 	{
-		float mag_heading_x;
-		float mag_heading_y;
-		float errorCourse;
-		//Compensation the Roll, Pitch and Yaw drift.
-		static float Scaled_Omega_P[3];
-		static float Scaled_Omega_I[3];
-		float Accel_magnitude;
-		float Accel_weight;
+		float magHeadingX, magHeadingY, errorCourse;
 
-		//*****Roll and Pitch***************
+		// Roll, Pitch and Yaw drift compensation variables.
+		static float scaledOmegaP[3], scaledOmegaI[3];
+		float accelMagnitude, accelWeight;
 
-		// Calculate the magnitude of the accelerometer vector
-		Accel_magnitude = sqrt(Accel_Vector[0] * Accel_Vector[0] + Accel_Vector[1] * Accel_Vector[1] + Accel_Vector[2] * Accel_Vector[2]);
-		Accel_magnitude = Accel_magnitude / GRAVITY; // Scale to gravity.
-		// Dynamic weighting of accelerometer info (reliability filter)
+		// 1. roll & pitch correction
+
+		// Calculate accelerometer vector magnitude
+		accelMagnitude = sqrt(accelVector[0]*accelVector[0] + accelVector[1]*accelVector[1] + accelVector[2]*accelVector[2]);
+		accelMagnitude = accelMagnitude / GRAVITY; // Scale to gravity.
+
+		// Dynamic accelerometer weighting (reliability filter)
 		// Weight for accelerometer info (<0.5G = 0.0, 1G = 1.0 , >1.5G = 0.0)
-		Accel_weight = constrain(1 - 2*abs(1 - Accel_magnitude),0,1); //
+		accelWeight = constrain(1 - 2*abs(1 - accelMagnitude), 0, 1); //
 
-		Vector_Cross_Product(&errorRollPitch[0], &Accel_Vector[0], &DCM_Matrix[2][0]); //adjust the ground of reference
-		Vector_Scale(&Omega_P[0], &errorRollPitch[0], Kp_ROLLPITCH * Accel_weight);
+		Vector_Cross_Product(&errorRollPitch[0], &accelVector[0], &dcm[2][0]); //adjust the ground of reference
+		Vector_Scale(&omegaProp[0], &errorRollPitch[0], Kp_ROLLPITCH * accelWeight);
 
-		Vector_Scale(&Scaled_Omega_I[0], &errorRollPitch[0], Ki_ROLLPITCH * Accel_weight);
-		Vector_Add(Omega_I, Omega_I, Scaled_Omega_I);
+		Vector_Scale(&scaledOmegaI[0], &errorRollPitch[0], Ki_ROLLPITCH * accelWeight);
+		Vector_Add(omegaInteg, omegaInteg, scaledOmegaI);
 
-		//*****YAW***************
-		// We make the gyro YAW drift correction based on compass magnetic heading
+		// 2. yaw drift correction based on compass heading
 
-		mag_heading_x = cos(magHeading);
-		mag_heading_y = sin(magHeading);
-		errorCourse = (DCM_Matrix[0][0] * mag_heading_y) - (DCM_Matrix[1][0] * mag_heading_x); //Calculating YAW error
-		Vector_Scale(errorYaw, &DCM_Matrix[2][0], errorCourse); //Applys the yaw correction to the XYZ rotation of the aircraft, depeding the position.
+		magHeadingX = cos(magHeading);
+		magHeadingY = sin(magHeading);
 
-		Vector_Scale(&Scaled_Omega_P[0], &errorYaw[0], Kp_YAW); //.01proportional of YAW.
-		Vector_Add(Omega_P, Omega_P, Scaled_Omega_P); //Adding  Proportional.
+		// calculate yaw error
+		errorCourse = (dcm[0][0] * magHeadingY) - (dcm[1][0] * magHeadingX);
 
-		Vector_Scale(&Scaled_Omega_I[0], &errorYaw[0], Ki_YAW); //.00001Integrator
-		Vector_Add(Omega_I, Omega_I, Scaled_Omega_I); //adding integrator to the Omega_I
+		// apply yaw correction to XYZ rotation, depending on the device position.
+		Vector_Scale(errorYaw, &dcm[2][0], errorCourse);
+
+		Vector_Scale(&scaledOmegaP[0], &errorYaw[0], Kp_YAW);	// .01 proportional of YAW.
+		Vector_Add(omegaProp, omegaProp, scaledOmegaP);			// adding  proportional term.
+
+		Vector_Scale(&scaledOmegaI[0], &errorYaw[0], Ki_YAW);	// .00001Integrator
+		Vector_Add(omegaInteg, omegaInteg, scaledOmegaI);		// adding integrator to the Omega_I
 	}
 
+	//-----------------------------------------------------------------------------------------
+	/** Updates DCM using the latest sensor readings (dt). */
+	//-----------------------------------------------------------------------------------------
 	void IMU::updateMatrix(void)
 	{
-		Gyro_Vector[0] = Gyro_Scaled_X(gyroData.x); //gyro x roll
-		Gyro_Vector[1] = Gyro_Scaled_Y(gyroData.y); //gyro y pitch
-		Gyro_Vector[2] = Gyro_Scaled_Z(gyroData.z); //gyro Z yaw
+		gyroVector[0] = Gyro_Scaled_X(gyroData.x); //gyro x roll
+		gyroVector[1] = Gyro_Scaled_Y(gyroData.y); //gyro y pitch
+		gyroVector[2] = Gyro_Scaled_Z(gyroData.z); //gyro Z yaw
 
-		Accel_Vector[0] = accData.x;
-		Accel_Vector[1] = accData.y;
-		Accel_Vector[2] = accData.z;
+		accelVector[0] = accData.x;
+		accelVector[1] = accData.y;
+		accelVector[2] = accData.z;
 
-		Vector_Add(&Omega[0], &Gyro_Vector[0], &Omega_I[0]); //adding proportional term
-		Vector_Add(&Omega_Vector[0], &Omega[0], &Omega_P[0]); //adding Integrator term
+		// adding proportional and integrator terms
+		Vector_Add(&Omega[0], &gyroVector[0], &omegaInteg[0]);
+		Vector_Add(&correctedGyroVector[0], &Omega[0], &omegaProp[0]);
 
-		Update_Matrix[0][0] = 0;
-		Update_Matrix[0][1] = -G_Dt * Omega_Vector[2]; //-z
-		Update_Matrix[0][2] = G_Dt * Omega_Vector[1]; //y
-		Update_Matrix[1][0] = G_Dt * Omega_Vector[2]; //z
-		Update_Matrix[1][1] = 0;
-		Update_Matrix[1][2] = -G_Dt * Omega_Vector[0]; //-x
-		Update_Matrix[2][0] = -G_Dt * Omega_Vector[1]; //-y
-		Update_Matrix[2][1] = G_Dt * Omega_Vector[0]; //x
-		Update_Matrix[2][2] = 0;
+		updMatrix[0][0] = 0;
+		updMatrix[0][1] = -G_Dt * correctedGyroVector[2]; //-z
+		updMatrix[0][2] = G_Dt * correctedGyroVector[1]; //y
+		updMatrix[1][0] = G_Dt * correctedGyroVector[2]; //z
+		updMatrix[1][1] = 0;
+		updMatrix[1][2] = -G_Dt * correctedGyroVector[0]; //-x
+		updMatrix[2][0] = -G_Dt * correctedGyroVector[1]; //-y
+		updMatrix[2][1] = G_Dt * correctedGyroVector[0]; //x
+		updMatrix[2][2] = 0;
 
+		// a*b=c
+		Matrix_Multiply(dcm, updMatrix, tempMatrix);
 
-		Matrix_Multiply(DCM_Matrix, Update_Matrix, Temporary_Matrix); //a*b=c
-
-		for (int x = 0; x < 3; x++) //Matrix Addition (update)
+		// add matrices (update)
+		for (int x = 0; x < 3; x++)
 			for (int y = 0; y < 3; y++)
-				DCM_Matrix[x][y] += Temporary_Matrix[x][y];
+				dcm[x][y] += tempMatrix[x][y];
 	}
 
+	//-----------------------------------------------------------------------------------------
+	/** Calculates Euler angles from DCM. */
+	//-----------------------------------------------------------------------------------------
 	void IMU::calculateEulerAngles(void)
 	{
-		pitch = -asin(DCM_Matrix[2][0]);
-		roll = atan2(DCM_Matrix[2][1], DCM_Matrix[2][2]);
-		yaw = atan2(DCM_Matrix[1][0], DCM_Matrix[0][0]);
+		pitch = -asin(dcm[2][0]);
+		roll = atan2(dcm[2][1], dcm[2][2]);
+		yaw = atan2(dcm[1][0], dcm[0][0]);
 	}
 
+	//-----------------------------------------------------------------------------------------
+	/** Prints interpreted sensor data according to the specified mode. */
+	//-----------------------------------------------------------------------------------------
 	void IMU::printData(int mode)
 	{
 		if (mode == 1)
-			printf("Angle:   %.2f    %.2f    %.2f \n", ToDeg(roll), ToDeg(pitch), ToDeg(yaw));
+			printf("Angle:   %10.2f    %10.2f    %10.2f \n", ToDeg(roll), ToDeg(pitch), ToDeg(yaw));
 		else if (mode == 2)
 		{
 			printf("%d  %d  %d  |  %d  %d  %d  |  %d  %d  %d  \n",
@@ -307,15 +322,15 @@
 		else if (mode == 3)
 		{
 			printf("%ld  %ld  %ld  |  %ld  %ld  %ld  |  %ld  %ld  %ld  \n",
-					convert_to_dec(DCM_Matrix[0][0]),
-					convert_to_dec(DCM_Matrix[0][1]),
-					convert_to_dec(DCM_Matrix[0][2]),
-					convert_to_dec(DCM_Matrix[1][0]),
-					convert_to_dec(DCM_Matrix[1][1]),
-					convert_to_dec(DCM_Matrix[1][1]),
-					convert_to_dec(DCM_Matrix[2][0]),
-					convert_to_dec(DCM_Matrix[2][1]),
-					convert_to_dec(DCM_Matrix[2][2]));
+					convert_to_dec(dcm[0][0]),
+					convert_to_dec(dcm[0][1]),
+					convert_to_dec(dcm[0][2]),
+					convert_to_dec(dcm[1][0]),
+					convert_to_dec(dcm[1][1]),
+					convert_to_dec(dcm[1][1]),
+					convert_to_dec(dcm[2][0]),
+					convert_to_dec(dcm[2][1]),
+					convert_to_dec(dcm[2][2]));
 		}
 		else
 		{
@@ -324,6 +339,9 @@
 		}
 	}
 
+	//-----------------------------------------------------------------------------------------
+	/** Converts specified number to decimal. */
+	//-----------------------------------------------------------------------------------------
 	long IMU::convert_to_dec(float x)
 	{
 	  return x*10000000;

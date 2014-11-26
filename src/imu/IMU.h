@@ -1,5 +1,5 @@
 /*
- *	IMUnit.h
+ *	IMU.h
  *	Created on: 16.11.2014
  *	Author: zollder
  */
@@ -125,13 +125,13 @@ class IMU
 		int offset[6] = {0,0,0,0,0,0};
 
 		/** Gyro (turn rate) and accelerometer (acceleration) vector data holders. */
-		float Accel_Vector[3] = {0,0,0};
-		float Gyro_Vector[3] = {0,0,0};
+		float accelVector[3] = {0,0,0};
+		float gyroVector[3] = {0,0,0};
 
 		/** DCM algorithm-related data holders. */
-		float Omega_Vector[3] = {0,0,0}; //Corrected Gyro_Vector data
-		float Omega_P[3] = {0,0,0}; //Omega Proportional correction
-		float Omega_I[3] = {0,0,0}; //Omega Integrator
+		float correctedGyroVector[3] = {0,0,0};	//Corrected Gyro_Vector data
+		float omegaProp[3] = {0,0,0};	// Proportional correction
+		float omegaInteg[3] = {0,0,0};	// Integrator
 		float Omega[3] = {0,0,0};
 
 		/** Integration time constant (DCM algorithm). */
@@ -145,9 +145,9 @@ class IMU
 		float errorRollPitch[3] = {0,0,0};
 		float errorYaw[3] = {0,0,0};
 
-		float DCM_Matrix[3][3] = { {1,0,0},{0,1,0},{0,0,1} };		/** estimated DCM */
-		float Update_Matrix[3][3] = { {0,1,2},{3,4,5},{6,7,8} }; //Gyros here
-		float Temporary_Matrix[3][3] = { {0,0,0},{0,0,0},{0,0,0} };
+		float dcm[3][3] = { {1,0,0},{0,1,0},{0,0,1} };		/** estimated DCM */
+		float updMatrix[3][3] = { {0,1,2},{3,4,5},{6,7,8} }; //Gyros here
+		float tempMatrix[3][3] = { {0,0,0},{0,0,0},{0,0,0} };
 
 		unsigned int counter = 0;
 

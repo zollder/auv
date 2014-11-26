@@ -29,14 +29,14 @@
 	void LSM303::enable(void) {
 		/*
 		 * CTRL1 register (accelerometer)
-		 * 0-3: 0100 - 25Hz
+		 * 0-3: 0101 - 50Hz
 		 * 4: 0 - continuous update
 		 * 5: 1 - Z-axis enabled
 		 * 6: 1 - Y-axis enabled
 		 * 7: 1 - X-axis enabled
-		 * result: 01000111 => 0x47
+		 * result: 01010111 => 0x47
 		 */
-		writeAccelerometerRegister(CTRL_REG1_A, 0x47);
+		writeAccelerometerRegister(CTRL_REG1_A, 0x57);
 
 		/*
 		 * CTRL2 register (accelerometer)
@@ -53,11 +53,11 @@
 		 * CTRL5 register (magnetometer)
 		 * 0: 0 - temperature sensor disabled
 		 * 1-2: 11 - high resolution
-		 * 3-5: 011 - data rate 25Hz
+		 * 3-5: 100 - data rate 50Hz
 		 * 6-7: 00 - interrupt requests
-		 * result: 01101100 => 0x6C
+		 * result: 01110000 => 0x70
 		 */
-		writeMagnetometerRegister(CTRL_REG5_A, 0x6C);
+		writeMagnetometerRegister(CTRL_REG5_A, 0x70);
 
 		/*
 		 * CTRL6 register (magnetometer)
