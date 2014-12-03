@@ -58,9 +58,6 @@ using namespace std;
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 #define abs(x) ((x)>0?(x):-(x))
 
-#define min(a,b) ((a)<(b)?(a):(b))
-#define max(a,b) ((a)>(b)?(a):(b))
-
 class IMU
 {
 	//-----------------------------------------------------------------------------------------
@@ -108,6 +105,9 @@ class IMU
 		void correctDrift(void);
 		void updateMatrix(void);
 		void calculateEulerAngles(void);
+		int min(int, int);
+		int max(int, int);
+
 
 		//-----------------------------------------------------------------------------------------
 		// Instance variables

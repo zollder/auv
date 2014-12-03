@@ -41,8 +41,6 @@ using namespace std;
 			printf("Failed to write to I2C device.\n");
 			exit(1);
 		}
-//		else
-//			printf("Completed writing to I2C device.\n");
 
 		close(fileDescriptor);
 		return 0;
@@ -64,22 +62,13 @@ using namespace std;
 		ssize_t writeResult = write(fileDescriptor, writeBuffer, 1);
 		if (writeResult != 1)
 			printf("Failed to reset address.\n");
-//		else
-//			printf("Address reset success.\n");
 
 		//int numberBytes = BUFFER_SIZE;
 		int bytesRead = read(fileDescriptor, this->dataBuffer, quantity);
 		if (bytesRead < 0)
 			printf("Failed to read byte stream.\n");
-//		else
-//			printf("Byte stream read success.\n");
 
 		close(fileDescriptor);
-
-//		printf("Number of bytes read: %d\n", bytesRead);
-//		for (int i=0; i<quantity; i++)
-//			printf("Byte %02d is 0x%02x\n", i, dataBuffer[i]);
-
 		return 0;
 	}
 
@@ -115,8 +104,8 @@ using namespace std;
 		if (read(file, buffer, 2) != 2) {
 			cout << "Failure to read value from I2C Device address." << endl;
 		}
+
 		close(file);
-		//cout << (int) buffer [0] << endl;
 		return buffer[0];
 	}
 
@@ -133,8 +122,6 @@ using namespace std;
 			perror("Failed to open the i2c bus");
 			exit(1);
 		}
-//		else
-//			printf("I2C bus opened.\n");
 
 		return fileDescriptor;
 	}
@@ -151,6 +138,4 @@ using namespace std;
 			printf("Failed to acquire bus access and/or talk to slave.\n");
 			exit(1);
 		}
-//		else
-//			printf("Communication initiated.\n");
 	}
