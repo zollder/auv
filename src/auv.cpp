@@ -20,8 +20,13 @@ int main()
 //	imu.execute(1);
 
 	PWM pwm;
-	pwm.initialize(1);
-	pwm.getPeriod(1);
-	pwm.setPeriod(1, 1);
-	pwm.getPeriod(1);
+	pwm.initialize();
+	pwm.getPeriodHz(11);
+	pwm.getDuty(11);
+
+	pwm.setPeriod(1, 2);
+	pwm.setDuty(11, 50);
+	pwm.getDuty(11);
+	pwm.start(11);
+//	pwm.getPeriod(1);
 }

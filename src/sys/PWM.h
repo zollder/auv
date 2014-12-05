@@ -31,6 +31,12 @@ using namespace std;
 #define P9_29 "pwm_test_P9_29.16"
 #define P9_31 "pwm_test_P9_31.17"
 
+/** Conversion constant: 1HZ <=> 1s */
+#define CONVERSION_CONST 1000000000
+
+/** Default period value: 1HZ */
+#define DEFAULT_PERIOD_HZ 1
+
 
 /**
  * PWM Interface.
@@ -46,7 +52,7 @@ using namespace std;
  * 		module IDs (names) to the channel IDs (pins) mappings:
  * 		- 1 (ehrpwm0) maps to 11(P9_29), 12(P9_31)
  * 		- 2 (ehrpwm1) maps to 21(P9_14), 22(P9_16)
- * 		- 3 (ehrpwm2) 31(P8_13), 32(P8_19)
+ * 		- 3 (ehrpwm2) maps to 31(P8_13), 32(P8_19)
  */
 class PWM
 {
@@ -63,9 +69,13 @@ class PWM
 		void initialize(int, int);
 
 		/** Sets/returns PWM period (frequency) for specified PWM module.
-		 *  NOTE: same period is set for both module channels. */
+		 *  notes:
+		 *  - same period is set for both module channels.
+		 *  - period can be retrieved by module or channel ID in HZ or ns.
+		 */
 		void setPeriod(int moduleId, int value);
-		int getPeriod(int moduleId);
+		int getPeriodHz(int channelId);
+		int getPeriodNs(int channelId);
 
 		/** Sets/returns duty cycle (in %) for specified channel ID. */
 		void setDuty(int channelId, int value);
@@ -87,9 +97,11 @@ class PWM
 
 		void resetDuty();
 		void resetPolarity();
-		void writeRawValue(string channel, string target, int value);
-		int readRawValue(string channel, string target);
 
+		string getPinByChannelId(int channelId);
+
+		int writeRawValue(string channel, string target, int value);
+		int readRawValue(string channel, string target);
 };
 
 
