@@ -14,9 +14,11 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	FdTimer::FdTimer(double interval)
+	FdTimer::FdTimer(int id, double interval)
 	{
-		printf("Creating and initializing FdTimer ...\n");
+		printf("Creating and initializing FdTimer %d ...\n", id);
+
+		timerId = id;
 
 		// convert interval to seconds and nanoseconds and initialize corresponding members
 		setInterval(interval);
@@ -30,7 +32,7 @@
 	//-----------------------------------------------------------------------------------------
 	FdTimer::~FdTimer()
 	{
-		printf("Destroying FdTimer ...\n");
+		printf("Destroying FdTimer %d ...\n", timerId);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -53,15 +55,15 @@
 		timerRef = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC);
 		if (timerRef < 0)
 		{
-			printf("Timer creation error \n");
+			printf("Timer %d creation error.\n", timerId);
 			exit(EXIT_FAILURE);
 		}
 
 		// initialize timer info holder
-		info.descriptor = timerRef;
-		info.missedEvents = 0;
+		timerInfo.descriptor = timerRef;
+		timerInfo.missedEvents = 0;
 
-		printf("Timer created successfully \n");
+		printf("Timer %d created successfully. \n", timerId);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -76,11 +78,11 @@
 		int result = timerfd_settime (timerRef, 0, &timer, NULL);
 		if (result != 0)
 		{
-			printf("Error creating timer.\n");
+			printf("Error creating timer %d.\n", timerId);
 			exit(EXIT_FAILURE);
 		}
 		else
-			printf("Timer started.\n");
+			printf("Timer %d started.\n", timerId);
 
 		return result;
 	}
@@ -97,11 +99,28 @@
 
 		int result = timerfd_settime (timerRef, 0, &timer, NULL);
 		if (result != 0)
-			printf("Error stopping timer.\n");
+			printf("Error stopping timer %d.\n", timerId);
 		else
-			printf("Timer stopped.\n");
+			printf("Timer %d stopped.\n", timerId);
 
 		return result;
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Blocks the execution until the next timer event.
+	 *  Keeps track of missed timer events. */
+	//-----------------------------------------------------------------------------------------
+	void FdTimer::waitTimerEvent()
+	{
+		unsigned long long missedEvent;
+		int result = read(timerInfo.descriptor, &missedEvent, sizeof(missedEvent));
+		if (result < 0)
+		{
+			printf("Error reading timer %d.\n", timerId);
+			exit(EXIT_FAILURE);
+		}
+
+		timerInfo.missedEvents += missedEvent;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -130,4 +149,12 @@
 	long FdTimer::getNanoseconds()
 	{
 		return nanoseconds;
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Returns timer ID.*/
+	//-----------------------------------------------------------------------------------------
+	int FdTimer::getTimerId()
+	{
+		return timerId;
 	}

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sys/time.h>
 #include <sys/timerfd.h>
+#include <unistd.h>
 
 // include -lmath linker option at compile time to avoid "undefined reference" error
 #include <math.h>
@@ -35,7 +36,7 @@ class FdTimer
 
 
 		// constructor
-		FdTimer(double);
+		FdTimer(int, double);
 
 		// destructor
 		~FdTimer();
@@ -46,6 +47,8 @@ class FdTimer
 		// stops timer
 		int stop();
 
+		void waitTimerEvent();
+
 		// (re)initializes the guts of the timer structure
 		void reset();
 
@@ -55,12 +58,19 @@ class FdTimer
 		// returns nanoseconds portion of the time interval
 		long getNanoseconds();
 
+		// returns timer info data holder
+		TimerInfo getTimerInfo();
+
+		int getTimerId();
+
 	//-----------------------------------------------------------------------------------------
 	// Private members
 	//-----------------------------------------------------------------------------------------
 	private:
 
-		TimerInfo info;
+		int timerId;
+
+		TimerInfo timerInfo;
 		int result;
 		int timerRef;
 		struct itimerspec timer;
