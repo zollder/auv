@@ -9,13 +9,14 @@
 	/**-----------------------------------------------------------------------------------------
 	 * Constructor
 	 * -----------------------------------------------------------------------------------------*/
-	IMU::IMU()
+	IMU::IMU(float interval)
 	{
 		printf("Constructing IMU ...\n");
 
 		// instantiate devices
 		gyro = new L3G();
 		compass = new LSM303();
+		G_Dt = interval;
 	}
 
 	/**-----------------------------------------------------------------------------------------
@@ -48,7 +49,10 @@
 				oldTimer = timer;
 				timer = millis();
 				if (timer > oldTimer)
+				{
 					G_Dt = (timer-oldTimer)/1000.0;
+					printf("G_Dt: %f\n", G_Dt);
+				}
 				else
 					G_Dt = 0;
 			}
@@ -354,6 +358,16 @@
 		pitch = -asin(dcm[2][0]);
 		roll = atan2(dcm[2][1], dcm[2][2]);
 		yaw = -atan2(dcm[1][0], dcm[0][0]);
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Converts Euler angles to degrees and stores data in the imuDataDegrees data holder. */
+	//-----------------------------------------------------------------------------------------
+	void IMU::convertToDegrees(void)
+	{
+		imuDataDegrees.x = ToDeg(roll);
+		imuDataDegrees.y = ToDeg(pitch);
+		imuDataDegrees.z = ToDeg(yaw);
 	}
 
 	//-----------------------------------------------------------------------------------------

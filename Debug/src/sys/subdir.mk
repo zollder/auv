@@ -9,19 +9,19 @@ CPP_SRCS += \
 ../src/sys/Timer.cpp 
 
 CC_SRCS += \
-../src/sys/FdTimer.cc \
-../src/sys/PulseTimer.cc 
+../src/sys/BaseThread.cc \
+../src/sys/FdTimer.cc 
 
 OBJS += \
+./src/sys/BaseThread.o \
 ./src/sys/FdTimer.o \
 ./src/sys/I2C.o \
 ./src/sys/PWM.o \
-./src/sys/PulseTimer.o \
 ./src/sys/Timer.o 
 
 CC_DEPS += \
-./src/sys/FdTimer.d \
-./src/sys/PulseTimer.d 
+./src/sys/BaseThread.d \
+./src/sys/FdTimer.d 
 
 CPP_DEPS += \
 ./src/sys/I2C.d \

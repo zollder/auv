@@ -33,3 +33,46 @@
 		float heading = ToDeg(atan2(findDotProduct(&east, &reference), findDotProduct(&north, &reference)));
 		return heading;
 	}*/
+
+measuring time in the thread:
+
+	//-----------------------------------------------------------------------------------------
+	// Overrides BaseThread's run() method
+	//-----------------------------------------------------------------------------------------
+	void* ImuThread::run()
+	{
+		timer->start();
+		printf("Timer %d started.\n", timer->getTimerId());
+
+		imu->initialize();
+
+		unsigned long newTimer = millis();
+		unsigned long oldTimer;
+
+		int counter = 0;
+		while(counter < 1000)
+		{
+			timer->waitTimerEvent();
+
+			imu->readGyroscope();
+			imu->readAccelerometer();
+			imu->readMagnetometer();
+
+			imu->calculateHeading();
+			imu->updateMatrix();
+			imu->normalize();
+			imu->correctDrift();
+			imu->calculateEulerAngles();
+
+			imu->printData(1);
+//			oldTimer = newTimer;
+//			newTimer = millis();
+//			printf("difference: %f\n", (newTimer - oldTimer)/1000.0);
+//			mutex.lock();
+//			mutex.unlock();
+
+			counter++;
+		}
+
+		return NULL;
+	}

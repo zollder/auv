@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 
+using namespace std;
+
 #ifndef L3G_h
 #define L3G_h
 

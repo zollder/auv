@@ -5,69 +5,21 @@
 // Description :
 //============================================================================
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <iostream>
-
-#include "imu/IMU.h"
-#include "sys/PWM.h"
-#include "sys/FdTimer.h"
-
-using namespace std;
-
-int thread_1_count;
-int thread_2_count = 0;
-
-void *thread_1 (void *arg)
-{
-	thread_1_count = 0;
-	FdTimer* timer1 = new FdTimer(1, 2.0);
-
-	printf ("Thread 1 period 2ms\n");
-	timer1->start();
-	while (1)
-	{
-		timer1->waitTimerEvent();
-		thread_1_count++;
-		printf ("Thread 1:%d\n",thread_1_count);
-	}
-	delete timer1;
-	return NULL;
-}
-
-void *thread_2 (void *arg)
-{
-	thread_2_count = 0;
-	FdTimer* timer2 = new FdTimer(2, 0.1);
-
-	printf ("Thread 1 period 1s\n");
-	timer2->start();
-	while (1)
-	{
-		timer2->waitTimerEvent();
-		thread_2_count++;
-		printf ("---------------------Thread 2:%d\n",thread_2_count);
-	}
-	delete timer2;
-	return NULL;
-}
+#include "imu/ImuThread.h"
 
 int main()
 {
-	pthread_t t_1;
-	pthread_t t_2;
+	printf("Main thread started!\n");
 
-	printf ("Periodic threads using timerfd\n");
+	Mutex mutex;
+	SensorData* sensorData = new SensorData();
 
-	pthread_create (&t_1, NULL, thread_1, NULL) ;
-	pthread_create (&t_2, NULL, thread_2, NULL) ;
+	ImuThread* thread1 = new ImuThread(mutex, sensorData);
+	thread1->start();
+	thread1->join();
 
-	sleep (100);
-	printf ("thread1 %d iterations\n", thread_1_count);
-	printf ("thread2 %d iterations\n", thread_2_count);
-	return 0 ;
+	delete thread1;
+	delete sensorData;
 
 
 //	IMU imu;

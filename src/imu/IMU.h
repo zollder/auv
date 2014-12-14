@@ -3,16 +3,18 @@
  *	Created on: 16.11.2014
  *	Author: zollder
  */
-#include "../commons/Vector.h"
-#include "../commons/Utils.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <math.h>
 
 #include "../devices/L3G.h"
 #include "../devices/LSM303.h"
 #include "../sys/Timer.h"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <math.h>
+#include "../commons/Vector.h"
+#include "../commons/Utils.h"
+
+
 
 using namespace std;
 
@@ -66,7 +68,7 @@ class IMU
 	public:
 
 		/** Constructor. */
-		IMU();
+		IMU(float interval);
 
 		/** Destructor. */
 		~IMU();
@@ -80,9 +82,7 @@ class IMU
 		void calibrateMagnetometer(void);
 		void calculateOffset(void);
 
-		void readGyroscope(void);
-		void readAccelerometer(void);
-		void readMagnetometer(void);
+		// cumulative read service
 		void readSensors(void)
 		{
 			readGyroscope();
@@ -90,8 +90,31 @@ class IMU
 			readMagnetometer();
 		};
 
+		// cumulative calculate service
+		void calculateAngles(void)
+		{
+			calculateHeading();
+			updateMatrix();
+			normalize();
+			correctDrift();
+			calculateEulerAngles();
+			convertToDegrees();
+		};
+
+		void readGyroscope(void);
+		void readAccelerometer(void);
+		void readMagnetometer(void);
+
+		void normalize(void);
+		void correctDrift(void);
+		void updateMatrix(void);
+		void calculateEulerAngles(void);
 		void calculateHeading(void);
+		void convertToDegrees(void);
+
 		void printData(int mode);
+
+		Vector<float> imuDataDegrees = {0,0,0};
 
 	//-----------------------------------------------------------------------------------------
 	// Private members
@@ -101,10 +124,6 @@ class IMU
 		//-----------------------------------------------------------------------------------------
 		// Methods
 		//-----------------------------------------------------------------------------------------
-		void normalize(void);
-		void correctDrift(void);
-		void updateMatrix(void);
-		void calculateEulerAngles(void);
 		int min(int, int);
 		int max(int, int);
 
@@ -124,10 +143,10 @@ class IMU
 		int SENSOR_SIGN[9] = {1,1,1,1,1,1,1,1,1};
 
 		/** Sensor data holders. */
-		Vector<int> gyroData = {0,0,0};;
-		Vector<int> accData = {0,0,0};;
-		Vector<int> magData = {0,0,0};;
-		Vector<float> corrMagData = {0,0,0};;
+		Vector<int> gyroData = {0,0,0};
+		Vector<int> accData = {0,0,0};
+		Vector<int> magData = {0,0,0};
+		Vector<float> corrMagData = {0,0,0};
 
 		float magHeading = 0;
 
@@ -146,7 +165,7 @@ class IMU
 		float Omega[3] = {0,0,0};
 
 		/** Integration time constant (DCM algorithm). */
-		float G_Dt = 0.02;
+		float G_Dt;
 
 		/** Euler angles. */
 		float roll = 0;
