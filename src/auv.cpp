@@ -11,10 +11,9 @@ int main()
 {
 	printf("Main thread started!\n");
 
-	Mutex mutex;
 	SensorData* sensorData = new SensorData();
 
-	ImuThread* thread1 = new ImuThread(mutex, sensorData);
+	ImuThread* thread1 = new ImuThread(sensorData);
 	thread1->start();
 	thread1->join();
 

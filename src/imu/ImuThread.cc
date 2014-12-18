@@ -13,7 +13,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	ImuThread::ImuThread(Mutex& mutex_r, SensorData* sensorData_p) : BaseThread(mutex_r)
+	ImuThread::ImuThread(SensorData* sensorData_p)
 	{
 		printf("Constructing ImuThread ...\n");
 
@@ -51,11 +51,11 @@
 			imu->readSensors();
 			imu->calculateAngles();
 
-			mutex.lock();
+			sensorData->mutex.lock();
 				sensorData->roll = imu->imuDataDegrees.x;
 				sensorData->pitch = imu->imuDataDegrees.y;
 				sensorData->yaw = imu->imuDataDegrees.z;
-			mutex.unlock();
+			sensorData->mutex.unlock();
 
 			// TODO: remove, used for testing and debugging purposes only
 			imu->printData(1);

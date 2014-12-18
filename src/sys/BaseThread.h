@@ -23,7 +23,7 @@ class BaseThread
 	public:
 
 		// constructor
-		BaseThread(Mutex&);
+		BaseThread();
 
 		// virtual destructor
 		// forces subclass destructor call upon object deletion through a base class pointer
@@ -62,8 +62,6 @@ class BaseThread
 	// Protected members
 	//-----------------------------------------------------------------------------------------
 	protected:
-
-		Mutex& mutex;
 
 		// sets thread id
 		void setThreadId(int id);

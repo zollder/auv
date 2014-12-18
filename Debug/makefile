@@ -11,6 +11,7 @@ RM := rm -rf
 -include src/sys/subdir.mk
 -include src/imu/subdir.mk
 -include src/devices/subdir.mk
+-include src/controller/subdir.mk
 -include src/subdir.mk
 -include subdir.mk
 -include objects.mk

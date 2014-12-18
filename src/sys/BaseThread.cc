@@ -13,14 +13,13 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	BaseThread::BaseThread(Mutex& mutex_r) : mutex(mutex_r)
+	BaseThread::BaseThread()
 	{
 		printf("Constructing BaseThread ...\n");
 
 		setThreadId(1);
 		setRunning(false);
 		setDetached(false);
-		mutex = mutex_r;
 	}
 
 	//-----------------------------------------------------------------------------------------

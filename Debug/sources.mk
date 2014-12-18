@@ -26,5 +26,6 @@ SUBDIRS := \
 src/sys \
 src/imu \
 src/devices \
+src/controller \
 src \
 

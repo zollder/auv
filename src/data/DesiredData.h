@@ -1,16 +1,18 @@
 /*
- *	SensorData.h
- *  Created on: 13.12.2014
+ *	DesiredData.h
+ *  Created on: 17.12.2014
  *	Author: zollder
  */
 
-#ifndef sensdata_h
-#define sensdata_h
+#include "Mutex.h"
+
+#ifndef desireddata_h
+#define desireddata_h
 
 //-----------------------------------------------------------------------------------------
-// SensorData interface.
+// DesiredData interface.
 //-----------------------------------------------------------------------------------------
-class SensorData
+class DesiredData
 {
 
 	//-----------------------------------------------------------------------------------------
@@ -19,16 +21,19 @@ class SensorData
 	public:
 
 		// constructor
-		SensorData() {}
+		DesiredData() {}
 
 		// destructor
-		~SensorData() {}
+		~DesiredData() {}
 
-		double roll = 0;
-		double pitch = 0;
-		double yaw = 0;
-
+		// desired depth in cm (integer can be used)
 		int depth = 0;
+
+		// desired direction (degrees relative to North)
+		int heading = 0;
+
+		// desired horizontal (forward/reverse) speed in m/s
+		float speed = 0;
 
 		// read/write protection mechanism
 		Mutex mutex;
