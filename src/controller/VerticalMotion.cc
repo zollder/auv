@@ -18,7 +18,7 @@
 		printf("Constructing VerticalMotion controller thread...\n");
 
 		setThreadId(2);
-		timer = new FdTimer(getThreadId(), INTERVAL);
+		timer = new FdTimer(getThreadId(), T2_INTERVAL);
 		pwm = new PWM();
 
 		sensorData = sensorData_p;
@@ -43,11 +43,19 @@
 		timer->start();
 		printf("Timer %d started.\n", timer->getTimerId());
 
-		pwm->initialize(PWM_MODULE_ID);
-		pwm->setPeriod(PWM_MODULE_ID, 50);
+		pwm->setPeriod(PWM_MODULE_ID, BASE_PERIOD);
+
+		pwm->setPolarity(11, 0);
+		pwm->setPolarity(12, 0);
+
+		pwm->setDuty(11, 0);
+		pwm->setDuty(12, 0);
+
+		pwm->start(11);
+		pwm->start(12);
 
 		int counter = 0;
-		while(counter < 1000)
+		while(1)
 		{
 			timer->waitTimerEvent();
 
@@ -60,22 +68,10 @@
 			// calculate corrective duty cycle for each motor
 			this->calculateCorrectiveDuties();
 
+			// write calculated duty cycle values
 			this->adjustDutyCycle();
-			// verify if the difference is large enough to apply the changes, if necessary
-			int newDuty1 = baseDuty + correctiveDuty1;
-			int newDuty2 = baseDuty + correctiveDuty2;
 
-			if (abs(newDuty1 - currentDuty1) > 1)
-			{
-				pwm->setDuty(11, newDuty1);
-				currentDuty1 = newDuty1;
-			}
-
-			if (abs(newDuty2 - currentDuty2) > 1)
-			{
-				pwm->setDuty(12, newDuty2);
-				currentDuty2 = newDuty2;
-			}
+			printf("----------------------------------Duties: %d  %d  .\n", currentDuty1, currentDuty2);
 
 			counter++;
 		}
@@ -88,7 +84,7 @@
 	//-----------------------------------------------------------------------------------------
 	void VerticalMotion::getherData()
 	{
-		printf("Calculating corrective duty values ...\n");
+//		printf("Calculating corrective duty values ...\n");
 		desiredData->mutex.lock();
 			desiredDepth = desiredData->depth;
 		desiredData->mutex.unlock();
@@ -105,8 +101,11 @@
 	//-----------------------------------------------------------------------------------------
 	void VerticalMotion::calculateBaseDuty()
 	{
-		// TODO: implement
-		printf("Calculating base duty value ...\n");
+		// TODO: needs control algorithm
+//		printf("Calculating base duty value ...\n");
+
+		// for testing purposes only
+		baseDuty = 40;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -115,8 +114,21 @@
 	//-----------------------------------------------------------------------------------------
 	void VerticalMotion::calculateCorrectiveDuties()
 	{
-		// TODO: implement
-		printf("Calculating corrective duty values ...\n");
+		// TODO: needs control algorithm
+//		printf("Calculating corrective duty values ...\n");
+
+		// for testing purposes only
+		normalizedPitch = currentPitch/2;
+		if (currentPitch < 0)
+		{
+			correctiveDuty1 = normalizedPitch;
+			correctiveDuty2 = -normalizedPitch;
+		}
+		else
+		{
+			correctiveDuty1 = normalizedPitch;
+			correctiveDuty2 = -normalizedPitch;
+		}
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -124,6 +136,22 @@
 	//-----------------------------------------------------------------------------------------
 	void VerticalMotion::adjustDutyCycle()
 	{
-		printf("Calculating corrective duty values ...\n");
+//		printf("Adjusting duty cycle for motors 1 & 2 ...\n");
+
+		// verify if the difference is large enough to apply the changes, if necessary
+		int newDuty1 = baseDuty + correctiveDuty1;
+		int newDuty2 = baseDuty + correctiveDuty2;
+
+		if (abs(newDuty1 - currentDuty1) > 1)
+		{
+			pwm->setDuty(11, newDuty1);
+			currentDuty1 = newDuty1;
+		}
+
+		if (abs(newDuty2 - currentDuty2) > 1)
+		{
+			pwm->setDuty(12, newDuty2);
+			currentDuty2 = newDuty2;
+		}
 	}
 

@@ -34,8 +34,8 @@ using namespace std;
 /** Conversion constant: 1HZ <=> 1s */
 #define CONVERSION_CONST 1000000000
 
-/** Default period value: 1HZ */
-#define DEFAULT_PERIOD_HZ 1
+/** Default period value: 500Hz */
+#define DEFAULT_PERIOD_HZ 500
 
 
 /**

@@ -13,8 +13,9 @@
 #ifndef verticalnotion_h
 #define verticalmotion_h
 
-#define INTERVAL 0.1
-#define PWM_MODULE_ID 1
+#define T2_INTERVAL 0.05	// 50 ms
+#define PWM_MODULE_ID 1	// motors 1 & 2
+#define BASE_PERIOD 500	// Hz
 
 //-----------------------------------------------------------------------------------------
 // VerticalMotion interface.
@@ -49,6 +50,7 @@ class VerticalMotion : public BaseThread
 
 		/* position-related data holders */
 		float currentPitch = 0;
+		int normalizedPitch = 0;
 		int currentDepth = 0;
 		int desiredDepth = 0;
 

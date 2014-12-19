@@ -18,8 +18,8 @@
 		printf("Constructing ImuThread ...\n");
 
 		setThreadId(1);
-		timer = new FdTimer(getThreadId(), INTERVAL);
-		imu = new IMU(INTERVAL);
+		timer = new FdTimer(getThreadId(), IMU_INTERVAL);
+		imu = new IMU(IMU_INTERVAL);
 		sensorData = sensorData_p;
 	}
 
@@ -44,7 +44,7 @@
 		imu->initialize();
 
 		int counter = 0;
-		while(counter < 1000)
+		while(1)
 		{
 			timer->waitTimerEvent();
 
@@ -58,7 +58,7 @@
 			sensorData->mutex.unlock();
 
 			// TODO: remove, used for testing and debugging purposes only
-			imu->printData(1);
+//			imu->printData(1);
 
 			counter++;
 		}
