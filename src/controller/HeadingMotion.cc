@@ -72,7 +72,7 @@
 			// write calculated duty cycle values
 			this->adjustDutyCycle();
 
-			printf("------------3:%d 4:%d\n", currentDuty3, currentDuty4);
+			/*printf("------------3:%d 4:%d\n", currentDuty3, currentDuty4);*/
 		}
 
 		return NULL;
@@ -83,7 +83,6 @@
 	//-----------------------------------------------------------------------------------------
 	void HeadingMotion::getherData()
 	{
-//		printf("Collecting data ...\n");
 		desiredData->mutex.lock();
 			desiredHeading = desiredData->heading;
 			rightDrift = desiredData->rightDrift;
@@ -103,7 +102,6 @@
 	void HeadingMotion::calculateCorrectiveDuty()
 	{
 		// TODO: needs control algorithm
-//		printf("Calculating corrective duty values ...\n");
 
 		// for testing purposes only
 		normalizedYaw = currentYaw/2;
@@ -133,8 +131,6 @@
 	//-----------------------------------------------------------------------------------------
 	void HeadingMotion::adjustDutyCycle()
 	{
-//		printf("Adjusting duty cycle for motors 1 & 2 ...\n");
-
 		// verify if the difference is large enough to apply the changes, if necessary
 		if (abs(newDuty3 - currentDuty3) > 0)
 		{

@@ -42,7 +42,6 @@
 
 		imu->initialize();
 
-		int counter = 0;
 		while(1)
 		{
 			timer->waitTimerEvent();
@@ -56,10 +55,8 @@
 				sensorData->yaw = imu->imuDataDegrees.z;
 			sensorData->mutex.unlock();
 
-			// TODO: remove, used for testing and debugging purposes only
-//			imu->printData(1);
-
-			counter++;
+			// For testing and debugging purposes only
+			/*imu->printData(1);*/
 		}
 
 		return NULL;

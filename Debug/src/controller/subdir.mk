@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CC_SRCS += \
 ../src/controller/HeadingMotion.cc \
+../src/controller/HorizontalMotion.cc \
 ../src/controller/VerticalMotion.cc 
 
 OBJS += \
 ./src/controller/HeadingMotion.o \
+./src/controller/HorizontalMotion.o \
 ./src/controller/VerticalMotion.o 
 
 CC_DEPS += \
 ./src/controller/HeadingMotion.d \
+./src/controller/HorizontalMotion.d \
 ./src/controller/VerticalMotion.d 
 
 

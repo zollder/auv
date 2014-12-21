@@ -32,13 +32,16 @@ class DesiredData
 		// desired direction (degrees relative to North)
 		float heading = 0;
 
-		// desired horizontal (forward/reverse) speed in m/s
-		float speed = 0;
+		/* desired horizontal (forward/reverse) speed (predefined levels, from 0 to 8) */
+		int speed = 0;
 
 		// desired drift properties
 		bool rightDrift = false;
 		bool leftDrift = false;
 		float driftAngle = 0;
+
+		// forward/reverse flag
+		bool reverse = false;
 
 		// read/write protection mechanism
 		Mutex mutex;
