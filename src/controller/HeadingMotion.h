@@ -1,6 +1,6 @@
 /*
- *	VerticalMotion.h
- *	Created on: 17.12.2014
+ *	HeadingMotion.h
+ *	Created on: 20.12.2014
  *	Author: zollder
  */
 
@@ -10,15 +10,15 @@
 #include "../data/DesiredData.h"
 #include "../sys/PWM.h"
 
-#ifndef verticalmotion_h
-#define verticalmotion_h
+#ifndef headingmotion_h
+#define headingmotion_h
 
-#define T1_INTERVAL 0.05	// 20 ms
+#define T2_INTERVAL 0.03	// 30 ms
 
 //-----------------------------------------------------------------------------------------
-// VerticalMotion interface.
+// HeadingMotion interface.
 //-----------------------------------------------------------------------------------------
-class VerticalMotion : public BaseThread
+class HeadingMotion : public BaseThread
 {
 	//-----------------------------------------------------------------------------------------
 	// Public members
@@ -26,10 +26,10 @@ class VerticalMotion : public BaseThread
 	public:
 
 		// constructor
-		VerticalMotion(SensorData* sData, DesiredData* dData);
+		HeadingMotion(SensorData* sData, DesiredData* dData);
 
 		// destructor
-		~VerticalMotion();
+		~HeadingMotion();
 
 		// overrides BaseThread's run() method
 		void* run();
@@ -47,24 +47,28 @@ class VerticalMotion : public BaseThread
 		SensorData* sensorData;
 
 		/* position-related data holders */
-		float currentPitch = 0;
-		int normalizedPitch = 0;
-		int currentDepth = 0;
-		int desiredDepth = 0;
+		float currentYaw = 0;
+		int normalizedYaw = 0;
+
+		int currentHeading = 0;
+		float desiredHeading = 0;
+
+		// drift-related instance variables
+		bool rightDrift = false;
+		bool leftDrift = false;
+		float driftAngle = 0;
 
 		/* duty cycle related instance variables */
-		int currentDuty1 = 0;
-		int currentDuty2 = 0;
+		int currentDuty3 = 0;
+		int currentDuty4 = 0;
 
-		int baseDuty = 0;
-
-		int correctiveDuty1 = 0;
-		int correctiveDuty2 = 0;
+		int newDuty3 = 0;
+		int newDuty4 = 0;
 
 		/* private helper methods */
 		void getherData(void);
-		void calculateBaseDuty(void);
-		void calculateCorrectiveDuties(void);
+		void calculateCorrectiveDuty(void);
+		void calculateDriftDuty(void);
 		void adjustDutyCycle(void);
 };
 

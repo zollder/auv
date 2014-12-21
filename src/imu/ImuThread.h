@@ -12,7 +12,7 @@
 #ifndef imuthread_h
 #define imuthread_h
 
-#define IMU_INTERVAL 0.02
+#define IMU_INTERVAL 0.02	// 20ms
 
 //-----------------------------------------------------------------------------------------
 // ImuThread interface.

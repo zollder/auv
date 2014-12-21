@@ -24,6 +24,10 @@ using namespace std;
 #define POLARITY "/polarity"
 #define RUN "/run"
 
+#define PWM_MODULE_1_ID 1	// motors 1 & 2
+#define PWM_MODULE_2_ID 2	// motors 3 & 4
+#define PWM_MODULE_3_ID 3	// motors 5 & 6
+
 #define P8_13 "pwm_test_P8_13.12"
 #define P8_19 "pwm_test_P8_19.13"
 #define P9_14 "pwm_test_P9_14.14"
@@ -36,6 +40,7 @@ using namespace std;
 
 /** Default period value: 500Hz */
 #define DEFAULT_PERIOD_HZ 500
+#define BASE_PERIOD 500	// Hz
 
 
 /**

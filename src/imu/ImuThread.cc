@@ -17,7 +17,7 @@
 	{
 		printf("Constructing ImuThread ...\n");
 
-		setThreadId(1);
+		setThreadId(4);
 		timer = new FdTimer(getThreadId(), IMU_INTERVAL);
 		imu = new IMU(IMU_INTERVAL);
 		sensorData = sensorData_p;
@@ -39,7 +39,6 @@
 	void* ImuThread::run()
 	{
 		timer->start();
-		printf("Timer %d started.\n", timer->getTimerId());
 
 		imu->initialize();
 

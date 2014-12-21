@@ -1,16 +1,16 @@
 /*
- *	CamData.h
+ *	CameraData.h
  *  Created on: 13.12.2014
  *	Author: zollder
  */
 
-#ifndef camdata_h
-#define camdata_h
+#ifndef cameradata_h
+#define cameradata_h
 
 //-----------------------------------------------------------------------------------------
-// CamData holder definition.
+// CameraData holder definition.
 //-----------------------------------------------------------------------------------------
-class CamData
+class CameraData
 {
 
 	//-----------------------------------------------------------------------------------------
@@ -19,10 +19,10 @@ class CamData
 	public:
 
 		// constructor
-		CamData();
+		CameraData();
 
 		// destructor
-		~CamData();
+		~CameraData();
 
 		int x = 0;
 		int y = 0;

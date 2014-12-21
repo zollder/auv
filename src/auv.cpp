@@ -7,6 +7,7 @@
 
 #include "imu/ImuThread.h"
 #include "controller/VerticalMotion.h"
+#include "controller/HeadingMotion.h"
 
 int main()
 {
@@ -17,13 +18,17 @@ int main()
 
 	ImuThread* imuThread = new ImuThread(sensorData);
 	VerticalMotion* vMotionThread = new VerticalMotion(sensorData, targetData);
+	HeadingMotion* hMotionThread = new HeadingMotion(sensorData, targetData);
 
 	imuThread->start();
 	vMotionThread->start();
+	hMotionThread->start();
 
 	imuThread->join();
 	vMotionThread->join();
+	hMotionThread->join();
 
+	delete hMotionThread;
 	delete vMotionThread;
 	delete imuThread;
 	delete targetData;

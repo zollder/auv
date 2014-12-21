@@ -68,17 +68,24 @@
 		if (value != 0)
 			convertedValue = CONVERSION_CONST/value;
 
+		// stop channel first and set period after
 		switch (moduleId)
 		{
 			case 1:
+				writeRawValue(P9_29, RUN, 0);
+				writeRawValue(P9_31, RUN, 0);
 				writeRawValue(P9_29, PERIOD, convertedValue);
 				writeRawValue(P9_31, PERIOD, convertedValue);
 				break;
 			case 2:
+				writeRawValue(P9_14, RUN, 0);
+				writeRawValue(P9_16, RUN, 0);
 				writeRawValue(P9_14, PERIOD, convertedValue);
 				writeRawValue(P9_16, PERIOD, convertedValue);
 				break;
 			case 3:
+				writeRawValue(P8_13, RUN, 0);
+				writeRawValue(P8_19, RUN, 0);
 				writeRawValue(P8_13, PERIOD, convertedValue);
 				writeRawValue(P8_19, PERIOD, convertedValue);
 				break;
@@ -326,11 +333,11 @@
 			case 21:
 				return P9_14;
 			case 22:
-				return P9_14;
+				return P9_16;
 			case 31:
-				return P9_14;
+				return P8_13;
 			case 32:
-				return P9_14;
+				return P8_19;
 			default:
 				printf("Unsupported channel id: %d.\n", channelId);
 		}
