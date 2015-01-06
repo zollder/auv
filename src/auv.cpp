@@ -9,36 +9,39 @@
 #include "controller/VerticalMotion.h"
 #include "controller/HeadingMotion.h"
 #include "controller/HorizontalMotion.h"
+#include "devices/MS5803.h"
 
 int main()
 {
-	printf("Main thread started!\n");
+//	printf("Main thread started!\n");
+//
+//	SensorData* sensorData = new SensorData();
+//	DesiredData* targetData = new DesiredData();
+//
+//	ImuThread* imuThread = new ImuThread(sensorData);
+//	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);
+//	HeadingMotion* headingMotionThread = new HeadingMotion(sensorData, targetData);
+//	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
+//
+//	imuThread->start();
+//	verticalMotionThread->start();
+//	headingMotionThread->start();
+//	horizontalMotionThread->start();
+//
+//	imuThread->join();
+//	verticalMotionThread->join();
+//	headingMotionThread->join();
+//	horizontalMotionThread->join();
+//
+//	delete horizontalMotionThread;
+//	delete headingMotionThread;
+//	delete verticalMotionThread;
+//	delete imuThread;
+//	delete targetData;
+//	delete sensorData;
 
-	SensorData* sensorData = new SensorData();
-	DesiredData* targetData = new DesiredData();
-
-	ImuThread* imuThread = new ImuThread(sensorData);
-	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);
-	HeadingMotion* headingMotionThread = new HeadingMotion(sensorData, targetData);
-	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
-
-	imuThread->start();
-	verticalMotionThread->start();
-	headingMotionThread->start();
-	horizontalMotionThread->start();
-
-	imuThread->join();
-	verticalMotionThread->join();
-	headingMotionThread->join();
-	horizontalMotionThread->join();
-
-	delete horizontalMotionThread;
-	delete headingMotionThread;
-	delete verticalMotionThread;
-	delete imuThread;
-	delete targetData;
-	delete sensorData;
-
+	MS5803 sensor;
+	sensor.initialize();
 
 //	IMU imu;
 //	imu.execute(1);

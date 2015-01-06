@@ -18,6 +18,19 @@
 
 #define BUS_SIZE 64
 
+#define msg_error(M, ...) printf("[ERROR]:"M"\n",##__VA_ARGS__);
+#define msg_warning(M, ...) printf("[WARNING]:"M"\n",##__VA_ARGS__);
+
+#define BSWAP16(v) (v << 8) & 0xFF00 | (v >> 8) & 0xFF
+
+static int i2c_fd;
+
+/* MS5803 calibration data */
+static uint16_t calib_coeff[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+#define MS5803_DEV "/dev/i2c-2"
+#define MS5803_I2C_ADDRESS 0x76
+
 class I2C
 {
 	public:
@@ -31,14 +44,18 @@ class I2C
 		/** Writes a register value to specified register address. */
 		int writeI2CDeviceByte(char address, char value);
 
-		/**
-		 * Reads one byte from specified register address.
-		 * TODO: revise and re-implement.
-		 */
-		char readI2CDeviceByte(char address);	// not implemented
+		/** Writes a value to a device address. */
+		int writeI2CDeviceByte(char value);
+
+		/** Reads one byte from specified register address. */
+		int readI2CDeviceByte(char address);
 
 		/** Reads specified number of bytes starting from specified register address. */
 		int readI2CDeviceMultipleByte(char address, int quantity);
+
+		uint8_t readByte(uint8_t address);
+
+		int ms5803_init();
 
 	private:
 
@@ -50,6 +67,8 @@ class I2C
 
 		/** Initiates communication for specified bus (requires a file descriptor). */
 		void initiateCommunication(int fileDescriptor);
+
+		int openConnection();
 };
 
 
