@@ -6,6 +6,7 @@
 
 #include <pthread.h>
 #include <sstream>
+#include <stdio.h>
 
 #include "../data/Mutex.h"
 

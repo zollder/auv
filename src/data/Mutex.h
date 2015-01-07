@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <stdio.h>
 
 #ifndef mutex_h
 #define mutex_h
