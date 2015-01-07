@@ -2,6 +2,7 @@
  *	LSM303.h
  *	Created on: 04.01.2015
  *	Author: zollder
+ *	https://github.com/vic320/Arduino-MS5803-14BA/blob/master/MS5803.cpp
  */
 
 #include "../sys/I2C.h"
@@ -35,22 +36,26 @@ using namespace std;
 #define PROM_C6   	0xAC
 #define PROM_CRC  	0xAE
 
+/** conversion precision constants (pressure & temperature respectively) */
+#define ADC_PRESSURE	0x48
+#define ADC_TEMPRATURE	0x58
+
 /** MS5803 pressure & temperature sensor (PTS) I2C wrapper interface. */
 class MS5803
 {
 	struct PTSRawData
 	{
 	    // pressure and temperature data
-	    long pressure;    // AdcPressure
-	    long temperature; // AdcTemperature
+		uint32_t pressure;		// AdcPressure
+		uint32_t temperature;	// AdcTemperature
 
-	    // calibration constants
-	    int32_t pSensitivity;	// C1: pressure sensitivity
-	    int32_t pOffset;		// C2: pressure Offset
-	    int32_t tSensitivity;	// C3: temperature coefficient of pressure sensitivity
-	    int32_t tOffset;    	// C4: temperature coefficient of pressure offset
-	    int32_t tReference;		// C5: reference temperature
-	    int32_t tTemperature;   // C6: temperature coefficient of the temperature
+	    // calibration coefficients
+	    uint16_t pSensitivity;	// C1: pressure sensitivity
+	    uint16_t pOffset;		// C2: pressure Offset
+	    uint16_t tSensitivity;	// C3: temperature coefficient of pressure sensitivity
+	    uint16_t tOffset;    	// C4: temperature coefficient of pressure offset
+	    uint16_t tReference;	// C5: reference temperature
+	    uint16_t tTemperature;	// C6: temperature coefficient of the temperature
 	};
 
 	//-----------------------------------------------------------------------------------------
@@ -70,15 +75,23 @@ class MS5803
 
 		/**
 		 * Resets the PTS device and reads PROM calibration constants.
-		 * Must be called before the actual sensor read.
+		 * Must be called once, before the actual sensor read.
 		 */
 		void initialize(void);
 
-		/** Reads temperature sensor and stores the data in a local raw data holder. */
-		void readTemperature(void);
+		/** Reads raw sensor data (temperature& pressure)
+		 *  and saves it in a local raw data holder. */
+		void readRawData()
+		{
+			readTemperature();
+			readPressure();
+		}
 
 		/** Reads pressure sensor and stores the data in a local raw data holder. */
 		void readPressure(void);
+
+		/** Reads temperature sensor and stores the data in a local raw data holder. */
+		void readTemperature(void);
 
 		//-----------------------------------------------------------------------------------------
 		// Instance variables
@@ -87,13 +100,8 @@ class MS5803
 		/** Raw PTS data holder. */
 		PTSRawData rawData;
 
-		uint16_t coefficient[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-			/**
-			 * Resets the PTS device to make sure the calibration PROM is loaded
-			 * into the internal register.
-			 */
-			void reset(void);
+		/** MS5803 coefficients CRC4 value holder. */
+		uint16_t sensorCRC4 = 0;
 
 		//-----------------------------------------------------------------------------------------
 		// Private members
@@ -105,7 +113,13 @@ class MS5803
 			//-----------------------------------------------------------------------------------------
 
 			/**
-			 * Reads calibration constants from PTS's PROM.
+			 * Resets the PTS device to make sure the calibration PROM is loaded
+			 * into the internal register.
+			 */
+			void reset(void);
+
+			/**
+			 * Reads calibration coefficients from PTS's PROM.
 			 * Stores read values in the local raw data holder.
 			 */
 			void readCoefficients(void);
@@ -115,12 +129,6 @@ class MS5803
 
 			/** Writes commands to PTS device. */
 			void writeValue(char value);
-
-			/** Reads PTS device. */
-			char readValue(char reg);
-
-			/** Combines high & low bytes. */
-			short convertMsbLsb(char msb, char lsb);
 
 			//-----------------------------------------------------------------------------------------
 			// Instance variables

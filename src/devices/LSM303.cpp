@@ -98,22 +98,6 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Reads an accelerometer register. */
-	//-----------------------------------------------------------------------------------------
-	char LSM303::readAccelerometerRegister(char reg)
-	{
-		return accelerometerWire->readI2CDeviceByte(reg);
-	}
-
-	//-----------------------------------------------------------------------------------------
-	/** Reads a magnetometer register. */
-	//-----------------------------------------------------------------------------------------
-	char LSM303::readMagnetometerRegister(char reg)
-	{
-		return magnetometerWire->readI2CDeviceByte(reg);
-	}
-
-	//-----------------------------------------------------------------------------------------
 	/** Reads accelerometer registers and stores the values in a RawData structure. */
 	//-----------------------------------------------------------------------------------------
 	void LSM303::readAccelerometerData(void)

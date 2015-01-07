@@ -2,6 +2,7 @@
  *	MS5803.cpp
  *  Created on: 05.01.2015
  *	Author: zollder
+ *	inspired by: https://github.com/vic320/Arduino-MS5803-14BA/blob/master/MS5803.cpp
  */
 
 #include "MS5803.h"
@@ -26,14 +27,19 @@
 
 	//-----------------------------------------------------------------------------------------
 	/** Resets the PTS device and reads PROM calibration constants.
+	 *  Validates retrieved coefficients using the sensor CRC4 value.
 	 * 	Must be called before the actual sensor read. */
 	//-----------------------------------------------------------------------------------------
 	void MS5803::initialize()
 	{
-		ptsWire->ms5803_init();
-//		this->reset();
-//		usleep(3000);
-//		this->readCoefficients();
+		this->reset();
+		usleep(3000);
+
+		this->readCoefficients();
+		// this->validateCoefficients();
+
+		this->readPressure();
+		this->readTemperature();
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -46,6 +52,50 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
+	/** Reads and converts raw pressure values with maximum precision. */
+	//-----------------------------------------------------------------------------------------
+	void MS5803::readPressure(void)
+	{
+		printf("reading pressure ...\n");
+
+		// send sensor conversion command
+		writeValue(ADC_PRESSURE);
+		usleep(9000);
+
+		// read converted values (24 bits)
+		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
+		rawData.pressure =  (ptsWire->dataBuffer[0] << 16) |
+							(ptsWire->dataBuffer[1] << 8) |
+							(ptsWire->dataBuffer[2]);
+
+		printf("\n");
+		printf("raw pressure: %d\n", rawData.pressure);
+		printf("\n");
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Reads and converts raw temperature values with maximum precision. */
+	//-----------------------------------------------------------------------------------------
+	void MS5803::readTemperature(void)
+	{
+		printf("reading temperature ...\n");
+
+		// send sensor conversion command
+		writeValue(ADC_TEMPRATURE);
+		usleep(9000);
+
+		// read converted values (24 bits)
+		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
+		rawData.temperature =  (ptsWire->dataBuffer[0] << 16) |
+							(ptsWire->dataBuffer[1] << 8) |
+							(ptsWire->dataBuffer[2]);
+
+		printf("\n");
+		printf("raw temperature: %d\n", rawData.temperature);
+		printf("\n");
+	}
+
+	//-----------------------------------------------------------------------------------------
 	/** Reads calibration constants from PTS's PROM.
 	 *  Stores result in the local raw data holder. */
 	//-----------------------------------------------------------------------------------------
@@ -53,46 +103,56 @@
 	{
 		printf("reading coefficients ...\n");
 
-		printf("writing address %d ...\n", PROM_C1);
-		writeValue(PROM_C1);
-		usleep(3000);
-		printf("reading value %d ...\n", PROM_C1);
-		uint8_t byte = ptsWire->readByte(PROM_C1);
-//		char lsb = ptsWire->dataBuffer[0];
-//		char msb = ptsWire->dataBuffer[1];
-//		coefficient[0] = (uint16_t) convertMsbLsb(msb, lsb);
-		printf("%7d\n", (int)byte);
+		ptsWire->readI2CDeviceWord(PROM_C1);
+		rawData.pSensitivity = ptsWire->wordBuffer[0];
 
-//		for (int i = 0; i <= 7; i++)
-//		{
-//			printf("writing address %d ...\n", i);
-//			writeValue(PROM_BASE + i*2);
-//
-//			printf("reading sensor %d ...\n", i);
-//			ptsWire->readI2CDeviceMultipleByte(PTS_ADDRESS, 2);
-//			char lsb = ptsWire->dataBuffer[0];
-//			char msb = ptsWire->dataBuffer[1];
-//			coefficient[i] = (uint16_t) convertMsbLsb(msb, lsb);
-//
-//			printf("%7d\n", coefficient[i]);
-//		}
+		ptsWire->readI2CDeviceWord(PROM_C2);
+		rawData.pOffset = ptsWire->wordBuffer[0];
 
-//		printf("%7d %7d %7d \n", gyroRawData.x, gyroRawData.y, gyroRawData.z);
+		ptsWire->readI2CDeviceWord(PROM_C3);
+		rawData.tSensitivity = ptsWire->wordBuffer[0];
+
+		ptsWire->readI2CDeviceWord(PROM_C4);
+		rawData.tOffset = ptsWire->wordBuffer[0];
+
+		ptsWire->readI2CDeviceWord(PROM_C5);
+		rawData.tReference = ptsWire->wordBuffer[0];
+
+		ptsWire->readI2CDeviceWord(PROM_C6);
+		rawData.tTemperature = ptsWire->wordBuffer[0];
+
+		printf("\n");
+		printf("pSensitivity: %d\n", rawData.pSensitivity);
+		printf("pOffset: %d\n", rawData.pOffset);
+		printf("tSensitivity: %d\n", rawData.tSensitivity);
+		printf("tOffset: %d\n", rawData.tOffset);
+		printf("tReference: %d\n", rawData.tReference);
+		printf("tTemperature: %d\n", rawData.tTemperature);
+		printf("\n");
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Writes a gyro register. */
+	/** Validates sensor coefficients using the CRC value at index 7 of the sensor PROM.
+	 *  TODO: implement*/
+	//-----------------------------------------------------------------------------------------
+	void MS5803::validateCoefficients()
+	{
+		printf("validating coefficients ...\n");
+
+		ptsWire->readI2CDeviceWord(PROM_CRC);
+		sensorCRC4 = ptsWire->wordBuffer[0];
+
+		int x = 1;
+
+		printf("\n");
+		printf("Coefficients are valid: %s\n", x ? "true" : "false");
+		printf("\n");
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Writes specified value to the sensor global (default) address. */
 	//-----------------------------------------------------------------------------------------
 	void MS5803::writeValue(char value)
 	{
 		ptsWire->writeI2CDeviceByte(value);
-	}
-
-	//-----------------------------------------------------------------------------------------
-	/** Combines high & low bytes. */
-	//-----------------------------------------------------------------------------------------
-	short MS5803::convertMsbLsb(char msb, char lsb)
-	{
-		short temp = (msb << 8 | lsb);
-		return temp;
 	}
