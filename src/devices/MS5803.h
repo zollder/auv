@@ -7,6 +7,7 @@
 
 #include "../sys/I2C.h"
 #include "../commons/Vector.h"
+#include "../sys/FdTimer.h"
 
 #include <stdio.h>
 
@@ -14,6 +15,10 @@ using namespace std;
 
 #ifndef ms5803_h
 #define ms5803_h
+
+/* DMU's single-shot timer ID */
+#define DMU_SH_TIMER 6
+#define DMU_READ_TIMER_DELAY 0.009	//9ms
 
 // read/write bit is set by ioCtr in I2C.cpp
 #define PTS_ADDRESS 0x76
@@ -74,10 +79,19 @@ class MS5803
 		//-----------------------------------------------------------------------------------------
 
 		/**
-		 * Resets the PTS device and reads PROM calibration constants.
-		 * Must be called once, before the actual sensor read.
+		 * Resets the PTS device to make sure the calibration PROM is loaded
+		 * into the internal register.
 		 */
-		void initialize(void);
+		void reset(void);
+
+		/**
+		 * Reads calibration coefficients from PTS's PROM.
+		 * Stores read values in the local raw data holder.
+		 */
+		void readCoefficients(void);
+
+		/** Validates PROM coefficients */
+		void validateCoefficients();
 
 		/** Reads raw sensor data (temperature& pressure)
 		 *  and saves it in a local raw data holder. */
@@ -100,9 +114,6 @@ class MS5803
 		/** Raw PTS data holder. */
 		PTSRawData rawData;
 
-		/** MS5803 coefficients CRC4 value holder. */
-		uint16_t sensorCRC4 = 0;
-
 		//-----------------------------------------------------------------------------------------
 		// Private members
 		//-----------------------------------------------------------------------------------------
@@ -112,21 +123,6 @@ class MS5803
 			// Methods and structures
 			//-----------------------------------------------------------------------------------------
 
-			/**
-			 * Resets the PTS device to make sure the calibration PROM is loaded
-			 * into the internal register.
-			 */
-			void reset(void);
-
-			/**
-			 * Reads calibration coefficients from PTS's PROM.
-			 * Stores read values in the local raw data holder.
-			 */
-			void readCoefficients(void);
-
-			/** Validates PROM coefficients */
-			void validateCoefficients();
-
 			/** Writes commands to PTS device. */
 			void writeValue(char value);
 
@@ -134,6 +130,10 @@ class MS5803
 			// Instance variables
 			//-----------------------------------------------------------------------------------------
 			I2C* ptsWire;
+			FdTimer* delayTimer;
+
+			/** MS5803 coefficients CRC4 value holder. */
+			uint16_t sensorCRC4 = 0;
 };
 
 #endif

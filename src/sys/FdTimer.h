@@ -41,22 +41,17 @@ class FdTimer
 		// destructor
 		~FdTimer();
 
-		// starts timer
+		// starts periodic timer
 		int start();
+
+		// starts periodic timer
+		int startSingle();
 
 		// stops timer
 		int stop();
 
+		// waits for the timer even to fire (non-blocking)
 		void waitTimerEvent();
-
-		// (re)initializes the guts of the timer structure
-		void reset();
-
-		// returns seconds portion of the time interval
-		long getSeconds();
-
-		// returns nanoseconds portion of the time interval
-		long getNanoseconds();
 
 		// returns timer info data holder
 		TimerInfo getTimerInfo();
@@ -78,10 +73,17 @@ class FdTimer
 		long seconds;
 		long nanoseconds;
 
-	//-----------------------------------------------------------------------------------------
-	// Protected members
-	//-----------------------------------------------------------------------------------------
-	protected:
+		// (re)initializes periodic timer structure
+		void reset();
+
+		// (re)initializes single-shot timer structure
+		void resetSingle();
+
+		// returns seconds portion of the time interval
+		long getSeconds();
+
+		// returns nanoseconds portion of the time interval
+		long getNanoseconds();
 
 		// sets seconds and nanoseconds portions of the time interval
 		void setInterval(double interval);

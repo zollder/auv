@@ -10,6 +10,7 @@ RM := rm -rf
 -include sources.mk
 -include src/sys/subdir.mk
 -include src/imu/subdir.mk
+-include src/dmu/subdir.mk
 -include src/devices/subdir.mk
 -include src/controller/subdir.mk
 -include src/subdir.mk

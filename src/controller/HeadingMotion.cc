@@ -17,7 +17,7 @@
 	{
 		printf("Constructing HeadingMotion controller thread...\n");
 
-		setThreadId(2);
+		setThreadId(T2_ID);
 		timer = new FdTimer(getThreadId(), T2_INTERVAL);
 		pwm = new PWM();
 

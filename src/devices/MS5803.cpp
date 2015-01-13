@@ -16,6 +16,7 @@
 	{
 		printf("Constructing MS5803 ...\n");
 		ptsWire = new I2C(PTS_I2C_BUS, PTS_ADDRESS);
+		delayTimer = new FdTimer(DMU_SH_TIMER, DMU_READ_TIMER_DELAY);
 	}
 
 	/** Destructor. */
@@ -26,73 +27,13 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Resets the PTS device and reads PROM calibration constants.
-	 *  Validates retrieved coefficients using the sensor CRC4 value.
-	 * 	Must be called before the actual sensor read. */
-	//-----------------------------------------------------------------------------------------
-	void MS5803::initialize()
-	{
-		this->reset();
-		usleep(3000);
-
-		this->readCoefficients();
-		// this->validateCoefficients();
-
-		this->readPressure();
-		this->readTemperature();
-	}
-
-	//-----------------------------------------------------------------------------------------
 	/** Resets PTS device. */
 	//-----------------------------------------------------------------------------------------
 	void MS5803::reset(void)
 	{
 		printf("resetting ...\n");
 		writeValue(PTS_RESET);
-	}
-
-	//-----------------------------------------------------------------------------------------
-	/** Reads and converts raw pressure values with maximum precision. */
-	//-----------------------------------------------------------------------------------------
-	void MS5803::readPressure(void)
-	{
-		printf("reading pressure ...\n");
-
-		// send sensor conversion command
-		writeValue(ADC_PRESSURE);
-		usleep(9000);
-
-		// read converted values (24 bits)
-		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
-		rawData.pressure =  (ptsWire->dataBuffer[0] << 16) |
-							(ptsWire->dataBuffer[1] << 8) |
-							(ptsWire->dataBuffer[2]);
-
-		printf("\n");
-		printf("raw pressure: %d\n", rawData.pressure);
-		printf("\n");
-	}
-
-	//-----------------------------------------------------------------------------------------
-	/** Reads and converts raw temperature values with maximum precision. */
-	//-----------------------------------------------------------------------------------------
-	void MS5803::readTemperature(void)
-	{
-		printf("reading temperature ...\n");
-
-		// send sensor conversion command
-		writeValue(ADC_TEMPRATURE);
-		usleep(9000);
-
-		// read converted values (24 bits)
-		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
-		rawData.temperature =  (ptsWire->dataBuffer[0] << 16) |
-							(ptsWire->dataBuffer[1] << 8) |
-							(ptsWire->dataBuffer[2]);
-
-		printf("\n");
-		printf("raw temperature: %d\n", rawData.temperature);
-		printf("\n");
+		usleep(3000);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -146,6 +87,56 @@
 
 		printf("\n");
 		printf("Coefficients are valid: %s\n", x ? "true" : "false");
+		printf("\n");
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Reads and converts raw pressure values with maximum precision. */
+	//-----------------------------------------------------------------------------------------
+	void MS5803::readPressure(void)
+	{
+		printf("reading pressure ...\n");
+
+		// send sensor conversion command
+		writeValue(ADC_PRESSURE);
+
+		// start single-shot timer and wait until it expires
+		delayTimer->startSingle();
+		delayTimer->waitTimerEvent();
+
+		// read converted values (24 bits)
+		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
+		rawData.pressure =  (ptsWire->dataBuffer[0] << 16) |
+							(ptsWire->dataBuffer[1] << 8) |
+							(ptsWire->dataBuffer[2]);
+
+		printf("\n");
+		printf("raw pressure: %d\n", rawData.pressure);
+		printf("\n");
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Reads and converts raw temperature values with maximum precision. */
+	//-----------------------------------------------------------------------------------------
+	void MS5803::readTemperature(void)
+	{
+		printf("reading temperature ...\n");
+
+		// send sensor conversion command
+		writeValue(ADC_TEMPRATURE);
+
+		// start single-shot timer and wait until it expires
+		delayTimer->startSingle();
+		delayTimer->waitTimerEvent();
+
+		// read converted values (24 bits)
+		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
+		rawData.temperature =  (ptsWire->dataBuffer[0] << 16) |
+							(ptsWire->dataBuffer[1] << 8) |
+							(ptsWire->dataBuffer[2]);
+
+		printf("\n");
+		printf("raw temperature: %d\n", rawData.temperature);
 		printf("\n");
 	}
 

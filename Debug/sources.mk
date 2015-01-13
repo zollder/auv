@@ -25,6 +25,7 @@ C_UPPER_DEPS :=
 SUBDIRS := \
 src/sys \
 src/imu \
+src/dmu \
 src/devices \
 src/controller \
 src \

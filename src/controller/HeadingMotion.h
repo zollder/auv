@@ -13,6 +13,7 @@
 #ifndef headingmotion_h
 #define headingmotion_h
 
+#define T2_ID 2
 #define T2_INTERVAL 0.03	// 30 ms
 
 //-----------------------------------------------------------------------------------------

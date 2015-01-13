@@ -24,11 +24,12 @@ class SensorData
 		// destructor
 		~SensorData() {}
 
-		double roll = 0;
-		double pitch = 0;
-		double yaw = 0;
+		float roll = 0;
+		float pitch = 0;
+		float yaw = 0;
 
 		int depth = 0;
+		float temperature = 0;
 
 		// read/write protection mechanism
 		Mutex mutex;

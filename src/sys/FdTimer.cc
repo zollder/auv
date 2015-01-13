@@ -67,12 +67,33 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Starts timer and updates its running status. */
+	/** Starts periodic timer. */
 	//-----------------------------------------------------------------------------------------
 	int FdTimer::start()
 	{
 		// (re)initializes timer structure
 		reset();
+
+		// start the timer and running status accordingly
+		int result = timerfd_settime (timerRef, 0, &timer, NULL);
+		if (result != 0)
+		{
+			printf("Error creating timer %d.\n", timerId);
+			exit(EXIT_FAILURE);
+		}
+		else
+			printf("Timer %d started.\n", timerId);
+
+		return result;
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Starts single-shot timer. */
+	//-----------------------------------------------------------------------------------------
+	int FdTimer::startSingle()
+	{
+		// (re)initializes timer structure
+		resetSingle();
 
 		// start the timer and running status accordingly
 		int result = timerfd_settime (timerRef, 0, &timer, NULL);
@@ -124,7 +145,7 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** (Re)Initializes the guts of the timer structure.*/
+	/** (Re)Initializes periodic timer structure.*/
 	//-----------------------------------------------------------------------------------------
 	void FdTimer::reset()
 	{
@@ -133,6 +154,18 @@
 		timer.it_value.tv_nsec = 0;
 		timer.it_interval.tv_sec = getSeconds();
 		timer.it_interval.tv_nsec = getNanoseconds();
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** (Re)Initializes one-shot timer structure.*/
+	//-----------------------------------------------------------------------------------------
+	void FdTimer::resetSingle()
+	{
+		// one-shot timer: will go off only once in sec+nanosec
+		timer.it_value.tv_sec = getSeconds();
+		timer.it_value.tv_nsec = getNanoseconds();
+		timer.it_interval.tv_sec = 0;
+		timer.it_interval.tv_nsec = 0;
 	}
 
 	//-----------------------------------------------------------------------------------------

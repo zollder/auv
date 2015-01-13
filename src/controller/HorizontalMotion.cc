@@ -17,7 +17,7 @@
 	{
 		printf("Constructing HorizontalMotion controller thread...\n");
 
-		setThreadId(3);
+		setThreadId(T3_ID);
 		timer = new FdTimer(getThreadId(), T3_INTERVAL);
 		pwm = new PWM();
 

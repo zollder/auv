@@ -9,7 +9,7 @@
 #include "controller/VerticalMotion.h"
 #include "controller/HeadingMotion.h"
 #include "controller/HorizontalMotion.h"
-#include "devices/MS5803.h"
+#include "dmu/DMU.h"
 
 int main()
 {
@@ -40,8 +40,12 @@ int main()
 //	delete targetData;
 //	delete sensorData;
 
-	MS5803 sensor;
-	sensor.initialize();
+	DMU dmu;
+	dmu.enable();
+	for (int i = 0; i < 20; i++)
+	{
+		dmu.readSensor();
+	}
 
 //	IMU imu;
 //	imu.execute(1);

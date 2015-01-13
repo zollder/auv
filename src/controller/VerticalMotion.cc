@@ -17,7 +17,7 @@
 	{
 		printf("Constructing VerticalMotion controller thread...\n");
 
-		setThreadId(1);
+		setThreadId(T1_ID);
 		timer = new FdTimer(getThreadId(), T1_INTERVAL);
 		pwm = new PWM();
 

@@ -13,6 +13,7 @@
 #ifndef verticalmotion_h
 #define verticalmotion_h
 
+#define T1_ID 1
 #define T1_INTERVAL 0.05	// 20 ms
 
 //-----------------------------------------------------------------------------------------
