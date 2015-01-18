@@ -12,6 +12,7 @@
 #ifndef dmuthread_h
 #define dmuthread_h
 
+#define T5_ID 5
 #define DMU_READ_INTERVAL 0.09	// 9ms
 #define DMU_CONVERT_INTERVAL 0.50	// 9ms
 
@@ -26,7 +27,7 @@ class DmuThread : public BaseThread
 	public:
 
 		// constructor
-		DmuThread(SensorData* data);
+		DmuThread(SensorData* sensorData);
 
 		// destructor
 		~DmuThread();
@@ -38,9 +39,6 @@ class DmuThread : public BaseThread
 	// Private members
 	//-----------------------------------------------------------------------------------------
 	private:
-		float temperature = 0;
-		float pressure = 0;
-		int depth = 0;
 
 		FdTimer* timer;
 		DMU* dmu;

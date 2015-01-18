@@ -95,7 +95,7 @@
 	//-----------------------------------------------------------------------------------------
 	void MS5803::readTemperature(void)
 	{
-		printf("reading temperature ...\n");
+//		printf("reading temperature ...\n");
 
 		// send sensor conversion command
 		writeValue(ADC_TEMPRATURE);
@@ -110,9 +110,9 @@
 							(ptsWire->dataBuffer[1] << 8) |
 							(ptsWire->dataBuffer[2]);
 
-		printf("\n");
-		printf("raw temperature: %d\n", rawData.temperature);
-		printf("\n");
+//		printf("\n");
+//		printf("raw temperature: %d\n", rawData.temperature);
+//		printf("\n");
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -120,7 +120,7 @@
 	//-----------------------------------------------------------------------------------------
 	void MS5803::readPressure(void)
 	{
-		printf("reading pressure ...\n");
+//		printf("reading pressure ...\n");
 
 		// send sensor conversion command
 		writeValue(ADC_PRESSURE);
@@ -135,9 +135,9 @@
 							(ptsWire->dataBuffer[1] << 8) |
 							(ptsWire->dataBuffer[2]);
 
-		printf("\n");
-		printf("raw pressure: %d\n", rawData.pressure);
-		printf("\n");
+//		printf("\n");
+//		printf("raw pressure: %d\n", rawData.pressure);
+//		printf("\n");
 	}
 
 	//-----------------------------------------------------------------------------------------

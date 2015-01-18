@@ -109,3 +109,17 @@
 		this->pressure = calculatedPressure / 10;
 
 	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Converts calculated pressure (mBARs) into the units of distance (cm) in fresh water.
+	 *  It is assumed that temperature-compensated pressure is calculated and available.
+	 *  Note: depth = pressure / (fluid density x gravity). */
+	//-----------------------------------------------------------------------------------------
+	void DMU::calculateDepth()
+	{
+		/* P(pascal) = P(mBar) x 100
+		 * P actual = P measured - P sea-level
+		 * depth (centimeters) = depth (meters) x 100 */
+
+		depth = (int) ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
+	}

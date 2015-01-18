@@ -6,6 +6,7 @@
 //============================================================================
 
 #include "imu/ImuThread.h"
+#include "dmu/DmuThread.h"
 #include "controller/VerticalMotion.h"
 #include "controller/HeadingMotion.h"
 #include "controller/HorizontalMotion.h"
@@ -13,22 +14,25 @@
 
 int main()
 {
-//	printf("Main thread started!\n");
-//
-//	SensorData* sensorData = new SensorData();
+	printf("Main thread started!\n");
+
+	SensorData* sensorData = new SensorData();
 //	DesiredData* targetData = new DesiredData();
 //
 //	ImuThread* imuThread = new ImuThread(sensorData);
+	DmuThread* dmuThread = new DmuThread(sensorData);
 //	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);
 //	HeadingMotion* headingMotionThread = new HeadingMotion(sensorData, targetData);
 //	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
 //
 //	imuThread->start();
+	dmuThread->start();
 //	verticalMotionThread->start();
 //	headingMotionThread->start();
 //	horizontalMotionThread->start();
 //
 //	imuThread->join();
+	dmuThread->join();
 //	verticalMotionThread->join();
 //	headingMotionThread->join();
 //	horizontalMotionThread->join();
@@ -36,19 +40,20 @@ int main()
 //	delete horizontalMotionThread;
 //	delete headingMotionThread;
 //	delete verticalMotionThread;
+	delete dmuThread;
 //	delete imuThread;
 //	delete targetData;
 //	delete sensorData;
 
-	DMU dmu;
-	dmu.enable();
+//	DMU dmu;
+//	dmu.enable();
 //	for (int i = 0; i < 20; i++)
 //	{
-		dmu.readSensor();
-		dmu.calculateTemperature();
-		dmu.calculatePressure();
-		printf("Actual temperature: %0.2f\n", dmu.temperature);
-		printf("Actual pressure: %0.2f\n", dmu.pressure);
+//		dmu.readSensor();
+//		dmu.calculateTemperature();
+//		dmu.calculatePressure();
+//		printf("Actual temperature: %0.2f\n", dmu.temperature);
+//		printf("Actual pressure: %0.2f\n", dmu.pressure);
 //	}
 
 //	IMU imu;
