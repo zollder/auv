@@ -42,10 +42,14 @@ int main()
 
 	DMU dmu;
 	dmu.enable();
-	for (int i = 0; i < 20; i++)
-	{
+//	for (int i = 0; i < 20; i++)
+//	{
 		dmu.readSensor();
-	}
+		dmu.calculateTemperature();
+		dmu.calculatePressure();
+		printf("Actual temperature: %0.2f\n", dmu.temperature);
+		printf("Actual pressure: %0.2f\n", dmu.pressure);
+//	}
 
 //	IMU imu;
 //	imu.execute(1);

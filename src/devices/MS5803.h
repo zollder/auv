@@ -55,12 +55,12 @@ class MS5803
 		uint32_t temperature;	// AdcTemperature
 
 	    // calibration coefficients
-	    uint16_t pSensitivity;	// C1: pressure sensitivity
-	    uint16_t pOffset;		// C2: pressure Offset
-	    uint16_t tSensitivity;	// C3: temperature coefficient of pressure sensitivity
-	    uint16_t tOffset;    	// C4: temperature coefficient of pressure offset
-	    uint16_t tReference;	// C5: reference temperature
-	    uint16_t tTemperature;	// C6: temperature coefficient of the temperature
+	    uint16_t pSensitivity;	// C1: pressure sensitivity (SENS)
+	    uint16_t pOffset;		// C2: pressure Offset (OFF)
+	    uint16_t tSensitivity;	// C3: temperature coefficient of pressure sensitivity (TCS)
+	    uint16_t tOffset;    	// C4: temperature coefficient of pressure offset (TCO)
+	    uint16_t tReference;	// C5: reference temperature (Tref)
+	    uint16_t tTemperature;	// C6: temperature coefficient of the temperature (TEMPSENS)
 	};
 
 	//-----------------------------------------------------------------------------------------
@@ -101,11 +101,11 @@ class MS5803
 			readPressure();
 		}
 
-		/** Reads pressure sensor and stores the data in a local raw data holder. */
-		void readPressure(void);
-
 		/** Reads temperature sensor and stores the data in a local raw data holder. */
 		void readTemperature(void);
+
+		/** Reads pressure sensor and stores the data in a local raw data holder. */
+		void readPressure(void);
 
 		//-----------------------------------------------------------------------------------------
 		// Instance variables

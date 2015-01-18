@@ -91,31 +91,6 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Reads and converts raw pressure values with maximum precision. */
-	//-----------------------------------------------------------------------------------------
-	void MS5803::readPressure(void)
-	{
-		printf("reading pressure ...\n");
-
-		// send sensor conversion command
-		writeValue(ADC_PRESSURE);
-
-		// start single-shot timer and wait until it expires
-		delayTimer->startSingle();
-		delayTimer->waitTimerEvent();
-
-		// read converted values (24 bits)
-		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
-		rawData.pressure =  (ptsWire->dataBuffer[0] << 16) |
-							(ptsWire->dataBuffer[1] << 8) |
-							(ptsWire->dataBuffer[2]);
-
-		printf("\n");
-		printf("raw pressure: %d\n", rawData.pressure);
-		printf("\n");
-	}
-
-	//-----------------------------------------------------------------------------------------
 	/** Reads and converts raw temperature values with maximum precision. */
 	//-----------------------------------------------------------------------------------------
 	void MS5803::readTemperature(void)
@@ -137,6 +112,31 @@
 
 		printf("\n");
 		printf("raw temperature: %d\n", rawData.temperature);
+		printf("\n");
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Reads and converts raw pressure values with maximum precision. */
+	//-----------------------------------------------------------------------------------------
+	void MS5803::readPressure(void)
+	{
+		printf("reading pressure ...\n");
+
+		// send sensor conversion command
+		writeValue(ADC_PRESSURE);
+
+		// start single-shot timer and wait until it expires
+		delayTimer->startSingle();
+		delayTimer->waitTimerEvent();
+
+		// read converted values (24 bits)
+		ptsWire->readI2CDeviceMultipleByte(PTS_READ, 3);
+		rawData.pressure =  (ptsWire->dataBuffer[0] << 16) |
+							(ptsWire->dataBuffer[1] << 8) |
+							(ptsWire->dataBuffer[2]);
+
+		printf("\n");
+		printf("raw pressure: %d\n", rawData.pressure);
 		printf("\n");
 	}
 

@@ -12,10 +12,6 @@ using namespace std;
 #ifndef amu_h
 #define amu_h
 
-// read/write bit is set by ioCtr in I2C.cpp
-#define GYRO_ADDRESS 0x6B
-#define I2C_BUS	1
-
 /**
  * DMU (Depth Measurement Unit) class implementation.
  * Interprets raw data measured by the depth sensor.
@@ -44,8 +40,18 @@ class DMU
 		/** Reads temperature and pressure data. */
 		void readSensor(void);
 
+		/** Calculates temperature with 2nd order temperature compensation
+		 *  Refer to MS5803 data sheet for algorithm details.
+		 *  It is assumed that raw sensor data is available. */
+		void calculateTemperature(void);
+
 		/** Calculates temperature-compensated pressure.
-		 *  Converts calculated pressure into the units of distance. */
+		 *  It is assumed that raw sensor and temperature data is available. */
+		void calculatePressure(void);
+
+		/** Converts temperature-compensated into the units of distance.
+		 *  Refer to MS5803 data sheet for algorithm details.
+		 *  It is assumed that temperature-compensated pressure is available. */
 		void calculateDepth(void);
 
 		//-----------------------------------------------------------------------------------------
@@ -64,13 +70,9 @@ class DMU
 			// Methods and structures
 			//-----------------------------------------------------------------------------------------
 
-			float previousTemperature = 0;
-			float currentTemperature = 0;
-			float previousPressure = 0;
-			float currentPressure = 0;
-
-			/**  */
-			void doSomething(void);
+			// offset and sensivity at actual temperature
+			int64_t offset = 0;
+			int64_t sensivity = 0;
 
 			//-----------------------------------------------------------------------------------------
 			// Instance variables
