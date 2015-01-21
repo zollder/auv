@@ -25,7 +25,7 @@ class I2C
 	public:
 
 		char dataBuffer[BUS_SIZE];
-		uint16_t wordBuffer[1] = {0x00};
+		uint16_t wordBuffer[1];
 
 		/** Constructor. */
 		I2C(int bus, int address);

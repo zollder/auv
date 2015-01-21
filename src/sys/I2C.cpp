@@ -13,6 +13,7 @@ using namespace std;
 	I2C::I2C(int bus, int address)
 	{
 		printf("Constructing I2C ...\n");
+		wordBuffer[0] = {0x00};
 		I2CBus = bus;
 		I2CAddress = address;
 	}
