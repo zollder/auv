@@ -1,5 +1,5 @@
 /*
- *	VerticalMotion.h
+ *	MasterController.h
  *	Created on: 17.12.2014
  *	Author: zollder
  */
@@ -8,18 +8,17 @@
 #include "../sys/FdTimer.h"
 #include "../data/SensorData.h"
 #include "../data/DesiredData.h"
-#include "../sys/PWM.h"
 
-#ifndef verticalmotion_h
-#define verticalmotion_h
+#ifndef mastercontroller_h
+#define mastercontroller_h
 
-#define T1_ID 1
-#define T1_INTERVAL 0.05	// 20 ms
+#define MC_THREAD_ID 7
+#define MC_INTERVAL 0.1	// 100 ms
 
 //-----------------------------------------------------------------------------------------
-// VerticalMotion interface.
+// MasterController interface.
 //-----------------------------------------------------------------------------------------
-class VerticalMotion : public BaseThread
+class MasterController : public BaseThread
 {
 	//-----------------------------------------------------------------------------------------
 	// Public members
@@ -27,10 +26,10 @@ class VerticalMotion : public BaseThread
 	public:
 
 		// constructor
-		VerticalMotion(SensorData* sData, DesiredData* dData);
+		MasterController(SensorData* sData, DesiredData* dData);
 
 		// destructor
-		~VerticalMotion();
+		~MasterController();
 
 		// overrides BaseThread's run() method
 		void* run();
@@ -41,14 +40,14 @@ class VerticalMotion : public BaseThread
 	private:
 
 		FdTimer* timer;
-		PWM* pwm;
 
 		/* data source definitions */
 		DesiredData* desiredData;
 		SensorData* sensorData;
 
-		/* position-related data holders */
-		float currentPitch = 0;
+		/* position-related local data holders */
+		int actualDepth = 0;
+		float actualPitch = 0;
 		int normalizedPitch = 0;
 		int currentDepth = 0;
 		int desiredDepth = 0;
@@ -63,10 +62,12 @@ class VerticalMotion : public BaseThread
 		int correctiveDuty2 = 0;
 
 		/* private helper methods */
-		void getherData(void);
-		void calculateBaseDuty(void);
-		void calculateCorrectiveDuties(void);
-		void adjustDutyCycle(void);
+		void detectMission(void);
+		void executeDefault(void);
+		void executeLine(void);
+		void executeGate(void);
+		void executeControlPanel(void);
+		void executeManeuver(void);
 };
 
 #endif

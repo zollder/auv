@@ -16,7 +16,7 @@
 	{
 		printf("Constructing MS5803 ...\n");
 		ptsWire = new I2C(PTS_I2C_BUS, PTS_ADDRESS);
-		delayTimer = new FdTimer(DMU_SH_TIMER, DMU_READ_TIMER_DELAY);
+		delayTimer = new FdTimer(DMU_SH_TIMER, DMU_SH_TIMER_DELAY);
 	}
 
 	/** Destructor. */

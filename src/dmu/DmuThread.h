@@ -12,8 +12,8 @@
 #ifndef dmuthread_h
 #define dmuthread_h
 
-#define T5_ID 5
-#define DMU_READ_INTERVAL 0.09	// 9ms
+#define DMU_THREAD_ID 2
+//#define DMU_READ_INTERVAL 0.09	// 9ms
 #define DMU_CONVERT_INTERVAL 0.50	// 9ms
 
 //-----------------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /*
- *	HeadingMotion.h
+ *	HeadingController.h
  *	Created on: 20.12.2014
  *	Author: zollder
  */
@@ -10,16 +10,16 @@
 #include "../data/DesiredData.h"
 #include "../sys/PWM.h"
 
-#ifndef headingmotion_h
-#define headingmotion_h
+#ifndef headingcontroller_h
+#define headingcontroller_h
 
-#define T2_ID 2
-#define T2_INTERVAL 0.03	// 30 ms
+#define HC_THREAD_ID 4
+#define HC_INTERVAL 0.03	// 30 ms
 
 //-----------------------------------------------------------------------------------------
-// HeadingMotion interface.
+// HeadingController interface.
 //-----------------------------------------------------------------------------------------
-class HeadingMotion : public BaseThread
+class HeadingController : public BaseThread
 {
 	//-----------------------------------------------------------------------------------------
 	// Public members
@@ -27,10 +27,10 @@ class HeadingMotion : public BaseThread
 	public:
 
 		// constructor
-		HeadingMotion(SensorData* sData, DesiredData* dData);
+		HeadingController(SensorData* sData, DesiredData* dData);
 
 		// destructor
-		~HeadingMotion();
+		~HeadingController();
 
 		// overrides BaseThread's run() method
 		void* run();
