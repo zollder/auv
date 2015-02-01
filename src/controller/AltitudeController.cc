@@ -1,25 +1,28 @@
 /*
- *	VerticalMotion.cpp
+ *	AltitudeController.cpp
  *  Created on: 17.12.2014
  *	Author: zollder
  */
 
-#include "VerticalMotion.h"
+#include "AltitudeController.h"
 
 //---------------------------------------------------------------------------------------------
-// VerticalMotion controller thread implementation.
+// AltitudeController controller thread implementation.
 //---------------------------------------------------------------------------------------------
 
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	VerticalMotion::VerticalMotion(SensorData* sensorData_p, DesiredData* desiredData_p)
+	AltitudeController::AltitudeController(SensorData* sensorData_p, DesiredData* desiredData_p)
 	{
-		printf("Constructing VerticalMotion controller thread...\n");
+		printf("Constructing AltitudeController controller thread...\n");
 
-		setThreadId(T1_ID);
-		timer = new FdTimer(getThreadId(), T1_INTERVAL);
+		setThreadId(AC_THREAD_ID);
+		timer = new FdTimer(getThreadId(), AC_INTERVAL);
+
 		pwm = new PWM();
+		altitudePid = new PID(altKp, altKi, altKd);
+		pitchPid = new PID(pitchKp, pitchKi, pitchKd);
 
 		sensorData = sensorData_p;
 		desiredData = desiredData_p;
@@ -28,19 +31,22 @@
 	//-----------------------------------------------------------------------------------------
 	// Destructor
 	//-----------------------------------------------------------------------------------------
-	VerticalMotion::~VerticalMotion()
+	AltitudeController::~AltitudeController()
 	{
-		printf("Destroying VerticalMotion controller thread ...\n");
+		printf("Destroying AltitudeController controller thread ...\n");
 		delete pwm;
 		delete timer;
+		delete altitudePid;
+		delete pitchPid;
 	}
 
 	//-----------------------------------------------------------------------------------------
 	// Overrides BaseThread's run() method
 	//-----------------------------------------------------------------------------------------
-	void* VerticalMotion::run()
+	void* AltitudeController::run()
 	{
-		timer->start();
+		altitudePid->reset();
+		pitchPid->reset();
 
 		pwm->setPeriod(PWM_MODULE_1_ID, BASE_PERIOD);
 
@@ -53,7 +59,8 @@
 		pwm->start(11);
 		pwm->start(12);
 
-		int counter = 0;
+		timer->start();
+
 		while(1)
 		{
 			timer->waitTimerEvent();
@@ -62,26 +69,40 @@
 			this->getherData();
 
 			// calculate base duty cycle
-			this->calculateBaseDuty();
+			this->calculateAltitudeDuty();
 
 			// calculate corrective duty cycle for each motor
-			this->calculateCorrectiveDuties();
+			this->calculatePitchDuty();
 
 			// write calculated duty cycle values
 			this->adjustDutyCycle();
 
-			printf("----------------------------------1:%d 2:%d\n", currentDuty1, currentDuty2);
-
-			counter++;
+			printf("----------------------------------1:%d 2:%d\n", lastFrontDuty, lastRearDuty);
 		}
 
 		return NULL;
 	}
 
 	//-----------------------------------------------------------------------------------------
+	/** Sets altitude controller PID coefficients. */
+	//-----------------------------------------------------------------------------------------
+	void AltitudeController::setAltitudePidValues(float p, float i, float d)
+	{
+		this->altitudePid->setPidCoefficients(p, i, d);
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Sets pitch controller PID coefficients. */
+	//-----------------------------------------------------------------------------------------
+	void AltitudeController::setPitchPidValues(float p, float i, float d)
+	{
+		this->pitchPid->setPidCoefficients(p, i, d);
+	}
+
+	//-----------------------------------------------------------------------------------------
 	/** Copies measured and desired values from shared data holders for processing. */
 	//-----------------------------------------------------------------------------------------
-	void VerticalMotion::getherData()
+	void AltitudeController::getherData()
 	{
 //		printf("Calculating corrective duty values ...\n");
 		desiredData->mutex.lock();
@@ -89,68 +110,59 @@
 		desiredData->mutex.unlock();
 
 		sensorData->mutex.lock();
-			currentPitch = sensorData->pitch;
-			currentDepth = sensorData->depth;
+			actualPitch = sensorData->pitch;
+			actualDepth = sensorData->depth;
 		sensorData->mutex.unlock();
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Calculates base duty cycle for both motors based on the desired depth.
-	 *  Stores calculated values in the corresponding instance variables. */
+	/** Calculates duty cycle for both motors based on the desired depth. */
 	//-----------------------------------------------------------------------------------------
-	void VerticalMotion::calculateBaseDuty()
+	void AltitudeController::calculateAltitudeDuty()
 	{
-		// TODO: needs control algorithm
 //		printf("Calculating base duty value ...\n");
-
-		// for testing purposes only
-		baseDuty = 40;
+		baseDuty = altitudePid->calculate(desiredDepth, actualDepth, AC_INTERVAL);
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Calculates corrective duty values for each motor based on the IMU pitch readings..
-	 *  Stores calculated values in the corresponding instance variables. */
+	/** Calculates corrective pitch duty value for each motor. */
 	//-----------------------------------------------------------------------------------------
-	void VerticalMotion::calculateCorrectiveDuties()
+	void AltitudeController::calculatePitchDuty()
 	{
-		// TODO: needs control algorithm
 //		printf("Calculating corrective duty values ...\n");
-
-		// for testing purposes only
-		normalizedPitch = currentPitch/2;
-		if (currentPitch < 0)
-		{
-			correctiveDuty1 = normalizedPitch;
-			correctiveDuty2 = -normalizedPitch;
-		}
-		else
-		{
-			correctiveDuty1 = normalizedPitch;
-			correctiveDuty2 = -normalizedPitch;
-		}
+		pitchDuty = pitchPid->calculate(0, actualPitch, AC_INTERVAL)/2;
 	}
 
 	//-----------------------------------------------------------------------------------------
 	/** Adjusts duty cycle of each motor based on processed measured and desired data. */
 	//-----------------------------------------------------------------------------------------
-	void VerticalMotion::adjustDutyCycle()
+	void AltitudeController::adjustDutyCycle()
 	{
 //		printf("Adjusting duty cycle for motors 1 & 2 ...\n");
 
-		// verify if the difference is large enough to apply the changes, if necessary
-		int newDuty1 = baseDuty + correctiveDuty1;
-		int newDuty2 = baseDuty + correctiveDuty2;
-
-		if (abs(newDuty1 - currentDuty1) > 1)
+		// find front/rear motor duties
+		if (actualPitch < 0)
 		{
-			pwm->setDuty(11, newDuty1);
-			currentDuty1 = newDuty1;
+			frontDuty = baseDuty + pitchDuty;
+			rearDuty = baseDuty - pitchDuty;
+		}
+		else
+		{
+			frontDuty = baseDuty - pitchDuty;
+			rearDuty = baseDuty + pitchDuty;
 		}
 
-		if (abs(newDuty2 - currentDuty2) > 1)
+		// verify if the difference is large enough to apply the changes, if necessary
+		if (abs(frontDuty - lastFrontDuty) > 1)
 		{
-			pwm->setDuty(12, newDuty2);
-			currentDuty2 = newDuty2;
+			pwm->setDuty(11, frontDuty);
+			lastFrontDuty = frontDuty;
+		}
+
+		if (abs(rearDuty - lastRearDuty) > 1)
+		{
+			pwm->setDuty(12, rearDuty);
+			lastRearDuty = rearDuty;
 		}
 	}
 

@@ -14,8 +14,6 @@
 #include "../commons/Vector.h"
 #include "../commons/Utils.h"
 
-
-
 using namespace std;
 
 #ifndef IMU_h

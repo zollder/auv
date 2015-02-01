@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../src/sys/I2C.cpp \
+../src/sys/PID.cpp \
 ../src/sys/PWM.cpp \
 ../src/sys/Timer.cpp 
 
@@ -16,6 +17,7 @@ OBJS += \
 ./src/sys/BaseThread.o \
 ./src/sys/FdTimer.o \
 ./src/sys/I2C.o \
+./src/sys/PID.o \
 ./src/sys/PWM.o \
 ./src/sys/Timer.o 
 
@@ -25,6 +27,7 @@ CC_DEPS += \
 
 CPP_DEPS += \
 ./src/sys/I2C.d \
+./src/sys/PID.d \
 ./src/sys/PWM.d \
 ./src/sys/Timer.d 
 

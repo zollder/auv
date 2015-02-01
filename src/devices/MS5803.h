@@ -8,7 +8,6 @@
 #include "../sys/I2C.h"
 #include "../commons/Vector.h"
 #include "../sys/FdTimer.h"
-
 #include <stdio.h>
 
 using namespace std;
@@ -17,8 +16,8 @@ using namespace std;
 #define ms5803_h
 
 /* DMU's single-shot timer ID */
-#define DMU_SH_TIMER 6
-#define DMU_READ_TIMER_DELAY 0.009	//9ms
+#define DMU_SH_TIMER 3
+#define DMU_SH_TIMER_DELAY 0.01	// 10ms
 
 // read/write bit is set by ioCtr in I2C.cpp
 #define PTS_ADDRESS 0x76

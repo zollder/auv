@@ -4,19 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CC_SRCS += \
-../src/controller/HeadingMotion.cc \
-../src/controller/HorizontalMotion.cc \
-../src/controller/VerticalMotion.cc 
+../src/controller/AltitudeController.cc \
+../src/controller/HeadingController.cc \
+../src/controller/HorizontalMotion.cc 
 
 OBJS += \
-./src/controller/HeadingMotion.o \
-./src/controller/HorizontalMotion.o \
-./src/controller/VerticalMotion.o 
+./src/controller/AltitudeController.o \
+./src/controller/HeadingController.o \
+./src/controller/HorizontalMotion.o 
 
 CC_DEPS += \
-./src/controller/HeadingMotion.d \
-./src/controller/HorizontalMotion.d \
-./src/controller/VerticalMotion.d 
+./src/controller/AltitudeController.d \
+./src/controller/HeadingController.d \
+./src/controller/HorizontalMotion.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -1,24 +1,24 @@
 /*
- *	HeadingMotion.cpp
+ *	HeadingController.cpp
  *  Created on: 20.12.2014
  *	Author: zollder
  */
 
-#include "HeadingMotion.h"
+#include "HeadingController.h"
 
 //---------------------------------------------------------------------------------------------
-// HeadingMotion controller thread implementation.
+// HeadingController controller thread implementation.
 //---------------------------------------------------------------------------------------------
 
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	HeadingMotion::HeadingMotion(SensorData* sensorData_p, DesiredData* desiredData_p)
+	HeadingController::HeadingController(SensorData* sensorData_p, DesiredData* desiredData_p)
 	{
-		printf("Constructing HeadingMotion controller thread...\n");
+		printf("Constructing HeadingController controller thread...\n");
 
-		setThreadId(T2_ID);
-		timer = new FdTimer(getThreadId(), T2_INTERVAL);
+		setThreadId(HC_THREAD_ID);
+		timer = new FdTimer(getThreadId(), HC_INTERVAL);
 		pwm = new PWM();
 
 		sensorData = sensorData_p;
@@ -28,9 +28,9 @@
 	//-----------------------------------------------------------------------------------------
 	// Destructor
 	//-----------------------------------------------------------------------------------------
-	HeadingMotion::~HeadingMotion()
+	HeadingController::~HeadingController()
 	{
-		printf("Destroying HeadingMotion controller thread ...\n");
+		printf("Destroying HeadingController controller thread ...\n");
 		delete pwm;
 		delete timer;
 	}
@@ -38,7 +38,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Overrides BaseThread's run() method
 	//-----------------------------------------------------------------------------------------
-	void* HeadingMotion::run()
+	void* HeadingController::run()
 	{
 		timer->start();
 
@@ -81,7 +81,7 @@
 	//-----------------------------------------------------------------------------------------
 	/** Copies measured and desired values from shared data holders for processing. */
 	//-----------------------------------------------------------------------------------------
-	void HeadingMotion::getherData()
+	void HeadingController::getherData()
 	{
 		desiredData->mutex.lock();
 			desiredHeading = desiredData->heading;
@@ -99,7 +99,7 @@
 	/** Calculates corrective duty for each motor based on the IMU yaw readings.
 	 *  Stores calculated values in the corresponding instance variables. */
 	//-----------------------------------------------------------------------------------------
-	void HeadingMotion::calculateCorrectiveDuty()
+	void HeadingController::calculateCorrectiveDuty()
 	{
 		// TODO: needs control algorithm
 
@@ -121,7 +121,7 @@
 	/** Calculates drift duty for each motor based on the yaw and desired heading readings.
 	 *  Stores calculated values in the corresponding instance variables. */
 	//-----------------------------------------------------------------------------------------
-	void HeadingMotion::calculateDriftDuty()
+	void HeadingController::calculateDriftDuty()
 	{
 		// TODO: implement drift algorithm
 	}
@@ -129,7 +129,7 @@
 	//-----------------------------------------------------------------------------------------
 	/** Adjusts duty cycle of each motor based on processed measured and desired data. */
 	//-----------------------------------------------------------------------------------------
-	void HeadingMotion::adjustDutyCycle()
+	void HeadingController::adjustDutyCycle()
 	{
 		// verify if the difference is large enough to apply the changes, if necessary
 		if (abs(newDuty3 - currentDuty3) > 0)

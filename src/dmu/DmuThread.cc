@@ -17,7 +17,7 @@
 	{
 		printf("Constructing DmuThread thread...\n");
 
-		setThreadId(T5_ID);
+		setThreadId(DMU_THREAD_ID);
 		timer = new FdTimer(getThreadId(), DMU_CONVERT_INTERVAL);
 		dmu = new DMU();
 

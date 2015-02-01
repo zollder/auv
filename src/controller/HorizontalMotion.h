@@ -13,8 +13,8 @@
 #ifndef horizontalmotion_h
 #define horizontalmotion_h
 
-#define T3_ID 3
-#define T3_INTERVAL 0.05	// 50 ms
+#define HM_THREAD_ID 5
+#define HM_INTERVAL 0.05	// 50 ms
 
 //-----------------------------------------------------------------------------------------
 // HorizontalMotion interface.

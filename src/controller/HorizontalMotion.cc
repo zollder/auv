@@ -17,8 +17,8 @@
 	{
 		printf("Constructing HorizontalMotion controller thread...\n");
 
-		setThreadId(T3_ID);
-		timer = new FdTimer(getThreadId(), T3_INTERVAL);
+		setThreadId(HM_THREAD_ID);
+		timer = new FdTimer(getThreadId(), HM_INTERVAL);
 		pwm = new PWM();
 
 		sensorData = sensorData_p;

@@ -18,7 +18,7 @@
 
 #define BUS_SIZE 64
 
-#define BSWAP16(v) (v << 8) & 0xFF00 | (v >> 8) & 0xFF
+#define BSWAP16(v) ((v << 8) & 0xFF00 | (v >> 8) & 0xFF)
 
 class I2C
 {
