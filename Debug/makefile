@@ -61,7 +61,7 @@ clean:
 
 post-build:
 	-@echo 'copy binary over to BBB'
-	-scp /home/oleg/workspace/git-hub/auv/Debug/auv bbb:/root/workspace/auv/Debug/
+	-scp auv bbb:/root/workspace/auv/
 	-@echo ' '
 
 .PHONY: all clean dependents
