@@ -13,6 +13,7 @@ RM := rm -rf
 -include src/dmu/subdir.mk
 -include src/devices/subdir.mk
 -include src/controller/subdir.mk
+-include src/communication/subdir.mk
 -include src/subdir.mk
 -include subdir.mk
 -include objects.mk
@@ -43,7 +44,10 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: auv
+all: pre-build main-build
+
+# Main-build Target
+main-build: auv
 
 # Tool invocations
 auv: $(OBJS) $(USER_OBJS)
@@ -59,12 +63,17 @@ clean:
 	-$(RM) $(CC_DEPS)$(C++_DEPS)$(EXECUTABLES)$(OBJS)$(C_UPPER_DEPS)$(CXX_DEPS)$(C_DEPS)$(CPP_DEPS) auv
 	-@echo ' '
 
+pre-build:
+	-@echo 'delete previous binary file'
+	-ssh -t bbb 'rm -f /root/workspace/auv/auv' >/dev/null  2>&1
+	-@echo ' '
+
 post-build:
 	-@echo 'copy binary over to BBB'
-	-scp auv bbb:/root/workspace/auv/
+	-scp /home/oleg/workspace/git-hub/auv/Debug/auv bbb:/root/workspace/auv/ > /dev/null 2>&1
 	-@echo ' '
 
 .PHONY: all clean dependents
-.SECONDARY: post-build
+.SECONDARY: main-build pre-build post-build
 
 -include ../makefile.targets

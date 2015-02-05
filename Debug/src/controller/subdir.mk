@@ -8,23 +8,15 @@ CC_SRCS += \
 ../src/controller/HeadingController.cc \
 ../src/controller/HorizontalMotion.cc 
 
-<<<<<<< HEAD
-=======
-OBJS += \
-./src/controller/AltitudeController.o \
-./src/controller/HeadingController.o \
-./src/controller/HorizontalMotion.o 
-
->>>>>>> master
 CC_DEPS += \
 ./src/controller/AltitudeController.d \
 ./src/controller/HeadingController.d \
 ./src/controller/HorizontalMotion.d 
 
 OBJS += \
-./src/controller/HeadingMotion.o \
-./src/controller/HorizontalMotion.o \
-./src/controller/VerticalMotion.o 
+./src/controller/AltitudeController.o \
+./src/controller/HeadingController.o \
+./src/controller/HorizontalMotion.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

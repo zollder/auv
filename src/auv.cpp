@@ -3,31 +3,21 @@
 // Author      : zollder
 //============================================================================
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <iostream>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <time.h>
-
-#include "SocketServer.h"
 
 
-#define ESC 27
-bool flag=true;
+#include "communication/ServerThread.h"
 
 using namespace std;
+
+#define ESC 27
 
 
 int main(int argc, char *argv[])
 {
 	printf("[KPI::MAIN] START\n");
+	ServerThread* serverThread = new ServerThread( 5000, 2);
+
+	serverThread->start();
 
     char key;
     do
@@ -36,11 +26,19 @@ int main(int argc, char *argv[])
         key = getchar();
 
     }while(key != ESC);
+
     printf("[KPI::SERVER]::Escape Character Triggered\n");
 
+    if( serverThread->stop() != 0 )
+    {
+    	printf("[KPI::MAIN] failed stop\n");
 
+    	serverThread->kill();
+    }
+    //serverThread->join();
+
+    delete serverThread;
     printf("[KPI::MAIN] END\n");
 
     return EXIT_SUCCESS;
 }
-

@@ -11,6 +11,7 @@ CPP_SRCS += \
 ../src/sys/I2C.cpp \
 ../src/sys/PID.cpp \
 ../src/sys/PWM.cpp \
+../src/sys/SocketServer.cpp \
 ../src/sys/Timer.cpp 
 
 CC_DEPS += \
@@ -23,12 +24,14 @@ OBJS += \
 ./src/sys/I2C.o \
 ./src/sys/PID.o \
 ./src/sys/PWM.o \
+./src/sys/SocketServer.o \
 ./src/sys/Timer.o 
 
 CPP_DEPS += \
 ./src/sys/I2C.d \
 ./src/sys/PID.d \
 ./src/sys/PWM.d \
+./src/sys/SocketServer.d \
 ./src/sys/Timer.d 
 
 

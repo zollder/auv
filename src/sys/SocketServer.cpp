@@ -5,12 +5,13 @@
  */
 #include "SocketServer.h"
 
+#include <time.h> 		//@TEST, can remove after
+
 SocketServer::SocketServer()
 {
 	portNumber = 5000;
 	maxUser = 2;
 
-	start();
 }
 
 SocketServer::SocketServer( int port, int max )
@@ -18,8 +19,8 @@ SocketServer::SocketServer( int port, int max )
 	portNumber = port;
 	maxUser = max;
 
-	start();
 }
+
 SocketServer::~SocketServer()
 {
 	stop();

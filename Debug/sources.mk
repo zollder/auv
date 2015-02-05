@@ -28,5 +28,6 @@ src/imu \
 src/dmu \
 src/devices \
 src/controller \
+src/communication \
 src \
 

@@ -1,11 +1,19 @@
-#ifndef SOCKETSERVER_H_
-#define SOCKETSERVER_H_
+#ifndef SRC_SYS_SOCKETSERVER_H_
+#define SRC_SYS_SOCKETSERVER_H_
 
 #include <stdio.h>
+#include <stdlib.h>		//EXIT FUNCTION
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <syslog.h>
+#include <string.h>		//memset, strlen
+#include <unistd.h>		//close
+
+
+//#include <arpa/inet.h>
+//
+//#include <errno.h>
 
 
 /**
@@ -23,6 +31,8 @@ public:
 	~SocketServer();
 
 	void run();						//start listening to port
+	void start();					//initializes the server
+	void stop();					//close Socket Server Process
 
 private:
 
@@ -36,10 +46,6 @@ private:
 	struct sockaddr_in client_addr;	//client address
 
 	char sendBuff[256];
-
-	void start();					//initializes the server
-	void stop();					//close Socket Server Process
-
 
 	const char *node = "Socket Server [KPI]";	//syslog tag for writer
 	void logInit();					//syslog start
@@ -59,4 +65,4 @@ syslog Log Levels
  * #define LOG_DEBUG
 */
 
-#endif /* SocketServer_H_ */
+#endif /* SRC_SYS_SocketServer_H_ */
