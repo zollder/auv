@@ -6,15 +6,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <syslog.h>
 #include <string.h>		//memset, strlen
 #include <unistd.h>		//close
 
-
-//#include <arpa/inet.h>
-//
-//#include <errno.h>
-
+#include "Logger.h"
 
 /**
  * The server program
@@ -47,10 +42,7 @@ private:
 
 	char sendBuff[256];
 
-	const char *node = "Socket Server [KPI]";	//syslog tag for writer
-	void logInit();					//syslog start
-	void logClose();				//syslog stop
-
+	Logger* log;
 };
 
 /*

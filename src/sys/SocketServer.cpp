@@ -24,13 +24,12 @@ SocketServer::SocketServer( int port, int max )
 SocketServer::~SocketServer()
 {
 	stop();
-	logClose();
 }
 
 void SocketServer::start()
 {
 	// Initialize System Log
-	logInit();
+	log = new Logger("Socket Server [KPI]");
 
 	connfd = -1;
 	sockfd = -1;
@@ -40,7 +39,7 @@ void SocketServer::start()
 
 	if (sockfd < 0)
 	{
-		syslog(LOG_ERR, "[ERROR] Failed to Open Socket");
+		log->error("[ERROR] Failed to Open Socket");
 		exit(EXIT_FAILURE);
 	}
 
@@ -61,11 +60,11 @@ void SocketServer::start()
 	//bind host address
 	if ( bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0)
 	{
-		syslog(LOG_ERR, "[ERROR] Failed to Bind Socket");
+		log->error("[ERROR] Failed to Bind Socket");
 		exit(EXIT_FAILURE);
 	}
 
-	syslog(LOG_INFO, "[INFO] Socket Server initialized");
+	log->info("[INFO] Socket Server initialized");
 }
 
 void SocketServer::stop()
@@ -73,14 +72,14 @@ void SocketServer::stop()
 	// Closing Active Session
 	if (connfd < 0)
 	{
-		syslog(LOG_NOTICE, "[NOTICE] Session already Closed");
+		log->notice("[NOTICE] Session already Closed");
 	}
 	else
 	{
 		if ( shutdown(connfd, SHUT_RDWR) < 0)
-			syslog(LOG_ERR, "[ERROR] Invalid session descriptor");
+			log->error("[ERROR] Invalid session descriptor");
 		else
-			syslog(LOG_INFO, "[INFO] Socket Session Closed");
+			log->info("[INFO] Socket Session Closed");
 
 		connfd = -1;
 	}
@@ -88,23 +87,25 @@ void SocketServer::stop()
 	// Closing Server Socket
 	if (sockfd < 0)
 	{
-		syslog(LOG_NOTICE, "[NOTICE] Socket Server already closed");
+		log->notice("[NOTICE] Socket Server already closed");
 	}
 	else
 	{
 		if ( close(sockfd) < 0)
-			syslog(LOG_ERR, "[ERROR] Failed to Close Socket Server");
+			log->error("[ERROR] Failed to Close Socket Server");
 		else
-			syslog(LOG_INFO, "[INFO] Socket Server Closed");
+			log->info("[INFO] Socket Server Closed");
 
 		sockfd = -1;
 	}
+
+	delete log;
 }
 void SocketServer::run()
 {
 	// Start Listening for clients
 	listen( sockfd, maxUser );
-	syslog(LOG_INFO, "[INFO] Listening");
+	log->info("[INFO] Listening");
 
 	while( sockfd > 1)
 	{
@@ -114,35 +115,23 @@ void SocketServer::run()
 
 		if( connfd < 1)
 		{
-			syslog(LOG_ERR, "[ERROR] Failed to Accept Connection");
+			log->error( "[ERROR] Failed to Accept Connection");
 			close( connfd);
 		}
 		else
 		{
 			time_t ticks = time(NULL);
 			snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-			write(connfd, sendBuff, strlen(sendBuff));
+
+			if( (send(connfd, sendBuff, strlen(sendBuff),0 ) ) < 0 )
+				log->error( "[ERROR] Failed to Send Buffer to Socket");
 
 			close( connfd);
 		}
 
-		syslog(LOG_DEBUG, "[DEBUG] End Send");
+		log->info( "[DEBUG] End Send");
 	}
 
 
-	syslog(LOG_INFO, "[INFO] End Run");
+	log->info( "[INFO] End Run");
 }
-
-void SocketServer::logInit()
-{
-	openlog( node, 0, LOG_USER | LOG_NOWAIT | LOG_NDELAY);
-	syslog(LOG_INFO, "[INFO] Socket Server Start");
-}
-
-void SocketServer::logClose()
-{
-	syslog(LOG_INFO, "[INFO] Socket Server End");
-	closelog();
-}
-
-

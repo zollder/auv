@@ -11,7 +11,6 @@ using namespace std;
 
 #define ESC 27
 
-
 int main(int argc, char *argv[])
 {
 	printf("[KPI::MAIN] START\n");
