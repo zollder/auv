@@ -16,6 +16,7 @@
 #include <syslog.h>
 #include <string.h>		//memset, strlen
 #include <unistd.h>		//close
+#include <arpa/inet.h>	//inet_pton functions
 
 #include "Logger.h"
 
@@ -34,7 +35,7 @@ public:
 	~SocketClient();
 
 	void recvMsg();					//Receive Data from Server
-	void start();			//initializes the client
+	void start();					//initializes the client
 
 
 private:

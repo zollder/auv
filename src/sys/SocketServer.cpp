@@ -77,7 +77,7 @@ void SocketServer::stop()
 	else
 	{
 		if ( shutdown(connfd, SHUT_RDWR) < 0)
-			log->error("[ERROR] Invalid session descriptor");
+			log->error("[DEBUG] Invalid session descriptor");
 		else
 			log->info("[INFO] Socket Session Closed");
 

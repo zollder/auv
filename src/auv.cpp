@@ -15,14 +15,25 @@ int main(int argc, char *argv[])
 {
 	printf("[KPI::MAIN] START\n");
 	ServerThread* serverThread = new ServerThread( 5000, 2);
+	ClientThread* clientThread = new ClientThread();
+
+	FdTimer *delayTimer;
+	delayTimer = new FdTimer(10, 3);
+
 
 	serverThread->start();
+
+	delayTimer->startSingle();
+	delayTimer->waitTimerEvent();
+
+	clientThread->start();
 
     char key;
     do
     {
 
         key = getchar();
+        //clientThread->recv();
 
     }while(key != ESC);
 
@@ -37,7 +48,12 @@ int main(int argc, char *argv[])
     //serverThread->join();
 
     delete serverThread;
+    delete clientThread;
+    delete delayTimer;
+
     printf("[KPI::MAIN] END\n");
+
+
 
     return EXIT_SUCCESS;
 }

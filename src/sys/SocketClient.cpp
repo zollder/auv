@@ -51,7 +51,7 @@ void SocketClient::start()
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(portNumber);
 
-	if( inet_pton(AF_INET, ipServer , &server_addr.sin_addr)<=0)
+	if( inet_pton(AF_INET, ipServer , &server_addr.sin_addr) <=0 )
 	{
 		log->error("[ERROR] inet_pton to Open");
 		exit(EXIT_FAILURE);
@@ -74,11 +74,13 @@ void SocketClient::recvMsg()
 		recvBuff[numBytes] = 0;
 		if(fputs(recvBuff, stdout) == EOF)
 			log->error("[ERROR] Fputs Failed");
+		else if(numBytes < 0)
+			    	log->error("[ERROR] Read Error");
+		else
+		{
+			printf("Here is the message: %s\n",recvBuff );
+			printf("Amount of Bytes received %d\n",numBytes );
+		}
 
-		printf("Here is the message: %s\n",recvBuff );
 	}
-
-	    if(numBytes < 0)
-	    	log->error("[ERROR] Read Error");
-
 }

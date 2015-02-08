@@ -11,14 +11,14 @@
 //-----------------------------------------------------------------------------------------
 ClientThread::ClientThread()
 {
-	setThreadId( SERVER_THREAD_ID );
+	setThreadId( CLIENT_THREAD_ID );
 	client = new SocketClient();
 
 }
 
 ClientThread::ClientThread( int port , char *ip)
 {
-	setThreadId( SERVER_THREAD_ID );
+	setThreadId( CLIENT_THREAD_ID );
 	client = new SocketClient( port, ip );
 
 }
@@ -40,6 +40,11 @@ void* ClientThread::run()
 	client->recvMsg();
 
 	return NULL;
+}
+
+void ClientThread::recv()
+{
+	client->recvMsg();
 }
 
 int ClientThread::stop()
