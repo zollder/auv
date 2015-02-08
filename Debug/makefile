@@ -52,18 +52,13 @@ auv: $(OBJS) $(USER_OBJS)
 	arm-linux-gnueabihf-g++ -std=c++0x -L/usr/arm-linux-gnueabihf/lib -o "auv" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
-	$(MAKE) --no-print-directory post-build
 
 # Other Targets
 clean:
 	-$(RM) $(C++_DEPS)$(OBJS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) auv
 	-@echo ' '
 
-post-build:
-	-sshpass -p "root" scp -r /home/zollder/beagle/workspace-beagle/auv/Debug/auv root@192.168.0.10:/root/auv
-	-@echo ' '
-
 .PHONY: all clean dependents
-.SECONDARY: post-build
+.SECONDARY:
 
 -include ../makefile.targets
