@@ -4,6 +4,8 @@
  *	Author: zollder
  */
 
+#include "Mutex.h"
+
 #ifndef cameradata_h
 #define cameradata_h
 
@@ -27,6 +29,9 @@ class CameraData
 		int x = 0;
 		int y = 0;
 		int color = 0;
+
+		// read/write protection mechanism
+		Mutex mutex;
 };
 
 #endif
