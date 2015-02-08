@@ -13,12 +13,13 @@
 
 #define SERVER_THREAD_ID 8
 
-class ServerThread : public BaseThread
+class ServerThread: public BaseThread
 {
 
 public:
 	ServerThread();
 	ServerThread(int,int);
+	ServerThread(int,int, DataService* );
 
 	~ServerThread();
 

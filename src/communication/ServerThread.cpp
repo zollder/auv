@@ -23,6 +23,12 @@ ServerThread::ServerThread(int port, int max)
 	server = new SocketServer(port , max);
 
 }
+ServerThread::ServerThread(int port, int max, DataService* dataService)
+{
+	setThreadId( SERVER_THREAD_ID );
+	server = new SocketServer(port , max , dataService);
+
+}
 //-----------------------------------------------------------------------------------------
 // Destructor
 //-----------------------------------------------------------------------------------------

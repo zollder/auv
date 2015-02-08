@@ -3,9 +3,15 @@
 // Author      : zollder
 //============================================================================
 
-
-
 #include "communication/ServerThread.h"
+
+#include "imu/ImuThread.h"
+#include "dmu/DmuThread.h"
+#include "controller/AltitudeController.h"
+#include "controller/HeadingController.h"
+#include "controller/HorizontalMotion.h"
+#include "dmu/DMU.h"
+#include "data/DataService.h"
 
 using namespace std;
 
@@ -14,9 +20,22 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	printf("[KPI::MAIN] START\n");
-	ServerThread* serverThread = new ServerThread( 5000, 2);
+
+	SensorData* sensorData = new SensorData();
+	DesiredData* targetData = new DesiredData();
+	CameraData* camData = new CameraData();
+
+	ImuThread* imuThread = new ImuThread(sensorData);
+	//DmuThread* dmuThread = new DmuThread(sensorData);
+
+	DataService* dataService = new DataService(sensorData, targetData, camData);
+
+	ServerThread* serverThread = new ServerThread( 5000, 2 , dataService);
 
 	serverThread->start();
+
+	imuThread->start();
+	//dmuThread->start();
 
     char key;
     do
@@ -34,6 +53,13 @@ int main(int argc, char *argv[])
     }
 
     delete serverThread;
+    delete sensorData;
+    delete targetData;
+    delete camData;
+    delete dataService;
+    //delete dmuThread;
+    delete imuThread;
+
     printf("[KPI::MAIN] END\n");
 
     return EXIT_SUCCESS;

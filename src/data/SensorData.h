@@ -4,6 +4,8 @@
  *	Author: zollder
  */
 
+#include "Mutex.h"
+
 #ifndef sensdata_h
 #define sensdata_h
 

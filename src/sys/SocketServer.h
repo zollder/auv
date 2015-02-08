@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <string.h>		//memset, strlen
 #include <unistd.h>		//close
+#include "../data/DataService.h"
 
 #include "Logger.h"
 
@@ -22,6 +23,7 @@ public:
 
 	SocketServer();					//Default Server config
 	SocketServer(int, int);			//Standard Server config( portNumber, maxConnection )
+	SocketServer(int, int, DataService *);			//Standard Server config( portNumber, maxConnection )
 
 	~SocketServer();
 
@@ -43,6 +45,7 @@ private:
 	char sendBuff[256];
 
 	Logger* log;
+	DataService* dataService;
 };
 
 /*

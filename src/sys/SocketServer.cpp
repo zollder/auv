@@ -21,6 +21,14 @@ SocketServer::SocketServer( int port, int max )
 
 }
 
+SocketServer::SocketServer( int port, int max , DataService *data)
+{
+	portNumber = port;
+	maxUser = max;
+	dataService = data;
+
+}
+
 SocketServer::~SocketServer()
 {
 	stop();
@@ -120,10 +128,14 @@ void SocketServer::run()
 		}
 		else
 		{
-			time_t ticks = time(NULL);
-			snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
+			//time_t ticks = time(NULL);
+			//snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
 
-			if( (send(connfd, sendBuff, strlen(sendBuff),0 ) ) < 0 )
+
+			//(send(connfd, dataService->getData(), strlen(sendBuff),0 ) )
+			//sizeof( dataService->getData() )
+
+			if( (send(connfd, dataService->getData(), sizeof( dataService->getData() ) ,0 ) ) < 0 )
 				log->error( "[ERROR] Failed to Send Buffer to Socket");
 
 			close( connfd);

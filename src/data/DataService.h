@@ -39,7 +39,7 @@ class DataService
 			copyDesiredData();
 			copyCameraData();
 
-			return sensorData;
+			return dataHolder;
 		}
 
 	private:

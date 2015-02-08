@@ -21,10 +21,10 @@ class CameraData
 	public:
 
 		// constructor
-		CameraData();
+		CameraData(){};
 
 		// destructor
-		~CameraData();
+		~CameraData(){};
 
 		int x = 0;
 		int y = 0;
