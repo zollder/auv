@@ -35,23 +35,6 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Initializes selected module. */
-	//-----------------------------------------------------------------------------------------
-	void PWM::initialize(int moduleId)
-	{
-		this->setPeriod(moduleId, DEFAULT_PERIOD_HZ);
-	}
-
-	//-----------------------------------------------------------------------------------------
-	/** Initializes selected modules. Use initialize() to initialize all 3 modules. */
-	//-----------------------------------------------------------------------------------------
-	void PWM::initialize(int id1, int id2)
-	{
-		this->setPeriod(id1, DEFAULT_PERIOD_HZ);
-		this->setPeriod(id2, DEFAULT_PERIOD_HZ);
-	}
-
-	//-----------------------------------------------------------------------------------------
 	/** Sets period (frequency) value in Hz.
 	 *  Converts (Hz) to (ns) and writes the value to the corresponding file. */
 	//-----------------------------------------------------------------------------------------
@@ -123,30 +106,41 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Sets duty cycle value in %.
+	/** Sets duty cycle value in % depending on the working range limits.
 	 *  Converts (%) to (ns) and writes the value to the corresponding file. */
 	//-----------------------------------------------------------------------------------------
 	void PWM::setDuty(int channelId, int value)
 	{
 		// convert from percents to nanoseconds, if not zero
 		int dutyValue = 0;
-		if (value >= 0 and value <= 100)
-			dutyValue = (getPeriodNs(channelId)/100) * value;
+		if (value >= -100 and value < 0)
+			dutyValue = REVERSE_MIN + getReverseRange() * value/100;
+		else if (value > 0 and value <= 100)
+			dutyValue = FORWARD_MIN + getForwardRange() * value/100;
+		else if (value == 0)
+			dutyValue = NEUTRAL;
 		else
+		{
 			printf("Invalid duty value: %d.\n", value);
+			exit(1);
+		}
 
 		writeRawValue(getPinByChannelId(channelId), DUTY, dutyValue);
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Returns a duty cycle value in % for specified channel ID. */
+	/** Returns a duty cycle value in % for specified channel ID within working range limits. */
 	//-----------------------------------------------------------------------------------------
 	int PWM::getDuty(int channelId)
 	{
 		int dutyValue = readRawValue(getPinByChannelId(channelId), DUTY);
-		int periodValue = getPeriodNs(channelId);
 
-		return (dutyValue/periodValue) * 100;
+		if (dutyValue >= REVERSE_MAX and dutyValue <= REVERSE_MIN)
+			return (dutyValue/getReverseRange()) * 100;
+		else if (dutyValue >= FORWARD_MIN and dutyValue <= FORWARD_MAX)
+			return (dutyValue/getForwardRange()) * 100;
+
+		return 0;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -192,17 +186,18 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
-	/** Returns a duty cycle value in % for specified channel ID. */
+	/** Resets polarity by setting its value to 0 (default is 1).
+	 *  Makes pulse width to be proportional to duty cycle values. */
 	//-----------------------------------------------------------------------------------------
 	void PWM::resetPolarity()
 	{
 		int status[6];
-		status[0] = writeRawValue(P9_29, POLARITY, 1);
-		status[1] = writeRawValue(P9_31, POLARITY, 1);
-		status[2] = writeRawValue(P9_14, POLARITY, 1);
-		status[3] = writeRawValue(P9_16, POLARITY, 1);
-		status[4] = writeRawValue(P8_13, POLARITY, 1);
-		status[5] = writeRawValue(P8_19, POLARITY, 1);
+		status[0] = writeRawValue(P9_29, POLARITY, 0);
+		status[1] = writeRawValue(P9_31, POLARITY, 0);
+		status[2] = writeRawValue(P9_14, POLARITY, 0);
+		status[3] = writeRawValue(P9_16, POLARITY, 0);
+		status[4] = writeRawValue(P8_13, POLARITY, 0);
+		status[5] = writeRawValue(P8_19, POLARITY, 0);
 
 		for (int i = 0; i < 6; i++)
 		{
@@ -345,3 +340,36 @@
 		return "unsupported";
 	}
 
+	//-----------------------------------------------------------------------------------------
+	/** Sets forward motion duty cycle range.
+	 *  Overrides default values (see Config.h) */
+	//-----------------------------------------------------------------------------------------
+	void PWM::setForwardRange(int min, int max)
+	{
+		forwardRange = abs(min - max);
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Sets reverse motion duty cycle range.
+	 *  Overrides default values (see Config.h) */
+	//-----------------------------------------------------------------------------------------
+	void PWM::setReverseRange(int min, int max)
+	{
+		reverseRange = abs(max - min);
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Returns forward motion duty cycle range. */
+	//-----------------------------------------------------------------------------------------
+	int PWM::getForwardRange()
+	{
+		return forwardRange;
+	}
+
+	//-----------------------------------------------------------------------------------------
+	/** Returns reverse motion duty cycle range. */
+	//-----------------------------------------------------------------------------------------
+	int PWM::getReverseRange()
+	{
+		return reverseRange;
+	}
