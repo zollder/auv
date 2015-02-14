@@ -27,6 +27,8 @@ class DataService
 			sensorData = sData;
 			desiredData = dData;
 			cameraData = cData;
+
+			memset(dataHolder, 0, sizeof(dataHolder));	//TODO maybe remove not necessary
 		}
 
 		// destructor
@@ -35,11 +37,22 @@ class DataService
 		float* getData()
 		{
 			// copy sensor data into array
-			copySensorData();
-			copyDesiredData();
-			copyCameraData();
+
+			//copySensorData();
+			//copyDesiredData();
+			//copyCameraData();
+
+			//TODO DEBUG
+			copyFakeSensorData();
+			copyFakeDesiredData();
+			copyFakeCameraData();
 
 			return dataHolder;
+		}
+
+		int getSize()
+		{
+			return sizeof(dataHolder);
 		}
 
 	private:
@@ -48,7 +61,50 @@ class DataService
 		DesiredData* desiredData;
 		CameraData* cameraData;
 
+		float a=25.0;
+		float b=1;
+		float c=2;
+		float d=3;
+		float e=4;
+		float f=5;
+		float g=6;
+		float h=7;
+		float i=8;
+		float j=9;
+		float k=10;
+		float l=11;
+
+
 		float dataHolder[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+		void copyFakeSensorData()
+		{
+			sensorData->mutex.lock();
+				dataHolder[0] = a;
+				dataHolder[1] += b;
+				dataHolder[2] += c;
+				dataHolder[3] += d;
+				dataHolder[4] += e;
+			sensorData->mutex.unlock();
+		}
+		void copyFakeDesiredData()
+		{
+			desiredData->mutex.lock();
+				dataHolder[5] += f;
+				dataHolder[6] += g;
+				dataHolder[7] += h;
+				dataHolder[8] += i;
+			desiredData->mutex.unlock();
+		}
+
+		void copyFakeCameraData()
+		{
+			cameraData->mutex.lock();
+				dataHolder[9] += j;
+				dataHolder[10] += k;
+				dataHolder[11] += l;
+			cameraData->mutex.unlock();
+		}
 
 		void copySensorData()
 		{

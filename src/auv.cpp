@@ -19,13 +19,13 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	printf("[KPI::MAIN] START\n");
+	syslog(LOG_NOTICE,"[KPI::MAIN] START");
 
 	SensorData* sensorData = new SensorData();
 	DesiredData* targetData = new DesiredData();
 	CameraData* camData = new CameraData();
 
-	ImuThread* imuThread = new ImuThread(sensorData);
+	//DEBUGImuThread* imuThread = new ImuThread(sensorData);
 	//DmuThread* dmuThread = new DmuThread(sensorData);
 
 	DataService* dataService = new DataService(sensorData, targetData, camData);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
 	serverThread->start();
 
-	imuThread->start();
+	//DEBUGimuThread->start();
 	//dmuThread->start();
 
     char key;
@@ -44,11 +44,11 @@ int main(int argc, char *argv[])
 
     }while(key != ESC);
 
-    printf("[KPI::MAIN]::Escape Character Triggered\n");
+    syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
 
     if( serverThread->stop() != 0 )
     {
-    	printf("[KPI::MAIN] failed stop\n");
+    	syslog(LOG_NOTICE,"[KPI::MAIN] failed stop");
     	serverThread->kill();
     }
 
@@ -58,9 +58,9 @@ int main(int argc, char *argv[])
     delete camData;
     delete dataService;
     //delete dmuThread;
-    delete imuThread;
+    //DEBUGdelete imuThread;
 
-    printf("[KPI::MAIN] END\n");
+    syslog(LOG_NOTICE,"[KPI::MAIN] END");
 
     return EXIT_SUCCESS;
 }

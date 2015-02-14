@@ -55,8 +55,6 @@ void SocketServer::start()
 	memset(&server_addr, '0', sizeof(server_addr));
 	memset(&client_addr, '0', sizeof(client_addr));
 
-	//Initialize buffer structures
-	memset(sendBuff, '0', sizeof(sendBuff));
 
 	//initialize server structure
 	server_addr.sin_family = AF_INET;
@@ -68,8 +66,14 @@ void SocketServer::start()
 	//bind host address
 	if ( bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0)
 	{
-		log->error("[ERROR] Failed to Bind Socket");
-		exit(EXIT_FAILURE);
+		//int yes=1;
+		//if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
+		//{
+		//	log->error("[ERROR] setsockopt Failed to Bind existent Socket");
+			log->error("[ERROR] Failed to Bind Socket");
+			exit(EXIT_FAILURE);
+		//}
+
 	}
 
 	log->info("[INFO] Socket Server initialized");
@@ -119,7 +123,6 @@ void SocketServer::run()
 	{
 		//wait for clients
 		connfd = accept(sockfd, (struct sockaddr *) &client_addr, (socklen_t *)&client_len);
-		//connfd = accept(sockfd, (struct sockaddr *) NULL, NULL);
 
 		if( connfd < 1)
 		{
@@ -128,22 +131,13 @@ void SocketServer::run()
 		}
 		else
 		{
-			//time_t ticks = time(NULL);
-			//snprintf(sendBuff, sizeof(sendBuff), "%.24s\r\n", ctime(&ticks));
-
-
-			//(send(connfd, dataService->getData(), strlen(sendBuff),0 ) )
-			//sizeof( dataService->getData() )
-
-			if( (send(connfd, dataService->getData(), sizeof( dataService->getData() ) ,0 ) ) < 0 )
+			if( (send(connfd, dataService->getData(), dataService->getSize() ,0 ) ) < 0 )
 				log->error( "[ERROR] Failed to Send Buffer to Socket");
 
 			close( connfd);
 		}
 
-		log->info( "[DEBUG] End Send");
 	}
-
 
 	log->info( "[INFO] End Run");
 }

@@ -42,8 +42,6 @@ private:
 	struct sockaddr_in server_addr;	//server address
 	struct sockaddr_in client_addr;	//client address
 
-	char sendBuff[256];
-
 	Logger* log;
 	DataService* dataService;
 };

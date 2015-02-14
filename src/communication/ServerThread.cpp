@@ -34,32 +34,32 @@ ServerThread::ServerThread(int port, int max, DataService* dataService)
 //-----------------------------------------------------------------------------------------
 ServerThread::~ServerThread()
 {
-		delete server;
+	delete server;
 }
 //-----------------------------------------------------------------------------------------
 // Overrides BaseThread's run() method
 //-----------------------------------------------------------------------------------------
 void* ServerThread::run()
 {
-	printf("[KPI::THREAD] START\n");
+	syslog(LOG_NOTICE,"[KPI::THREAD] START");
 	server->start();
 	server->run();
 
-	printf("[KPI::THREAD] END\n");
+	syslog(LOG_NOTICE,"[KPI::THREAD] END");
 
 	return NULL;
 }
 
 int ServerThread::stop()
 {
-	printf("[KPI::THREAD] STOP\n");
+	syslog(LOG_NOTICE,"[KPI::THREAD] STOP");
 	server->stop();
 	return pthread_cancel( SERVER_THREAD_ID );
 }
 
 int ServerThread::kill()
 {
-	printf("[KPI::THREAD] KILL\n");
+	syslog(LOG_NOTICE,"[KPI::THREAD] KILL");
 	return pthread_kill( SERVER_THREAD_ID , SIGQUIT );
 }
 
