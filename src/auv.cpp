@@ -9,6 +9,8 @@
 #include "controller/HeadingController.h"
 #include "controller/HorizontalMotion.h"
 #include "dmu/DMU.h"
+#include "data/DataService.h"
+#include "sys/PWM.h"
 
 #define MAX 64
 
@@ -18,25 +20,36 @@ int main()
 {
 	printf("Main thread started!\n");
 
-	readButton(76);
+	PWM pwm;
+	pwm.initialize();
+	pwm.getPeriodHz(11);
+	pwm.getDuty(11);
 
-	SensorData* sensorData = new SensorData();
+
+//	SensorData* sensorData = new SensorData();
 //	DesiredData* targetData = new DesiredData();
+//	CameraData* camData = new CameraData();
+//	DataService* dataService = new DataService(sensorData, targetData, camData);
+//	dataService->getData();
 
-	ImuThread* imuThread = new ImuThread(sensorData);
-	DmuThread* dmuThread = new DmuThread(sensorData);
+
+
+//	SocketServerThread* thread1 = new SocketServerThread(dataService);
+
+//	ImuThread* imuThread = new ImuThread(sensorData);
+//	DmuThread* dmuThread = new DmuThread(sensorData);
 //	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);
 //	HeadingMotion* headingMotionThread = new HeadingMotion(sensorData, targetData);
 //	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
 //
-	imuThread->start();
-	dmuThread->start();
+//	imuThread->start();
+//	dmuThread->start();
 //	verticalMotionThread->start();
 //	headingMotionThread->start();
 //	horizontalMotionThread->start();
 //
-	imuThread->join();
-	dmuThread->join();
+//	imuThread->join();
+//	dmuThread->join();
 //	verticalMotionThread->join();
 //	headingMotionThread->join();
 //	horizontalMotionThread->join();
@@ -44,8 +57,8 @@ int main()
 //	delete horizontalMotionThread;
 //	delete headingMotionThread;
 //	delete verticalMotionThread;
-	delete dmuThread;
-	delete imuThread;
+//	delete dmuThread;
+//	delete imuThread;
 //	delete targetData;
 //	delete sensorData;
 

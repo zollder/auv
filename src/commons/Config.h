@@ -20,10 +20,10 @@
 #define PWM_MODULE_2_ID 2	// motors 3 & 4
 #define PWM_MODULE_3_ID 3	// motors 5 & 6
 
-#define P8_13 "pwm_test_P8_13.12"
-#define P8_19 "pwm_test_P8_19.13"
-#define P9_14 "pwm_test_P9_14.14"
-#define P9_16 "pwm_test_P9_16.15"
+#define P8_13 "pwm_test_P8_13.14"
+#define P8_19 "pwm_test_P8_19.15"
+#define P9_14 "pwm_test_P9_14.12"
+#define P9_16 "pwm_test_P9_16.13"
 #define P9_29 "pwm_test_P9_29.16"
 #define P9_31 "pwm_test_P9_31.17"
 
