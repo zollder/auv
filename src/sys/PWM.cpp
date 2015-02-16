@@ -279,7 +279,7 @@
 		int readValue = -1;
 		ifstream file;
 
-		file.open(PATH + channel + target, ios::in);
+		file.open((PATH + channel + target).c_str() , ios::in);
 
 		if(file.fail())
 		{
@@ -303,7 +303,7 @@
 	int PWM::writeRawValue(string channel, string target, int value)
 	{
 		ofstream file;
-		file.open(PATH + channel + target, ios::out);
+		file.open((PATH + channel + target).c_str() , ios::in);
 
 		if(file.fail())
 		{
