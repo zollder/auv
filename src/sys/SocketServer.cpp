@@ -153,7 +153,8 @@ void SocketServer::run()
 		}
 		else
 		{
-			if( (send(connfd, dataService->getData(), dataService->getSize() ,0 ) ) < 0 )
+			//DEBUG MODE Sending Fake Data
+			if( (send(connfd, dataService->getFakeData(), dataService->getSize() ,0 ) ) < 0 )
 				log->error( "[ERROR] Failed to Send Buffer to Socket");
 
 			close( connfd);
