@@ -11,37 +11,14 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
+#include <iostream>
+
+#include "../commons/Config.h"
 
 using namespace std;
 
 #ifndef pwm_h
 #define pwm_h
-
-/** File path components. */
-#define PATH "/sys/devices/ocp.3/"
-#define PERIOD "/period"
-#define DUTY "/duty"
-#define POLARITY "/polarity"
-#define RUN "/run"
-
-#define PWM_MODULE_1_ID 1	// motors 1 & 2
-#define PWM_MODULE_2_ID 2	// motors 3 & 4
-#define PWM_MODULE_3_ID 3	// motors 5 & 6
-
-#define P8_13 "pwm_test_P8_13.12"
-#define P8_19 "pwm_test_P8_19.13"
-#define P9_14 "pwm_test_P9_14.14"
-#define P9_16 "pwm_test_P9_16.15"
-#define P9_29 "pwm_test_P9_29.16"
-#define P9_31 "pwm_test_P9_31.17"
-
-/** Conversion constant: 1HZ <=> 1s */
-#define CONVERSION_CONST 1000000000
-
-/** Default period value: 500Hz */
-#define DEFAULT_PERIOD_HZ 500
-#define BASE_PERIOD 500	// Hz
-
 
 /**
  * PWM Interface.
@@ -98,6 +75,14 @@ class PWM
 		void startAll();
 		void stopAll();
 
+		/** Calculates and sets forward/reverse duty cycle ranges. */
+		void setForwardRange(int min, int max);
+		void setReverseRange(int min, int max);
+
+		/** Returns forward/reverse duty cycle range. */
+		int getForwardRange();
+		int getReverseRange();
+
 	private:
 
 		void resetDuty();
@@ -107,6 +92,10 @@ class PWM
 
 		int writeRawValue(string channel, string target, int value);
 		int readRawValue(string channel, string target);
+
+		// duty cycle ranges (initialized to defaults)
+		int forwardRange = FORWARD_MAX - FORWARD_MIN;
+		int reverseRange = REVERSE_MIN - REVERSE_MAX;
 };
 
 
