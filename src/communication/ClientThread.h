@@ -1,7 +1,7 @@
 /*
  * ClientThread.h
  *
- *      Author: AUV Capstone
+ *      Author: CAPSTONE Project AUV
  */
 #include "../sys/BaseThread.h"
 #include "../sys/SocketClient.h"
@@ -10,7 +10,7 @@
 #ifndef SRC_COMMUNICATION_CLIENTTHREAD_H_
 #define SRC_COMMUNICATION_CLIENTTHREAD_H_
 
-#define CLIENT_THREAD_ID 9
+#define CLIENT_THREAD_ID 10
 
 class ClientThread : public BaseThread
 {
@@ -21,19 +21,19 @@ public:
 
 	~ClientThread();
 
-	void* run();				// overrides BaseThread's run() method
+	// overrides BaseThread's run() method
+	void* run();
 
-	void recv();
+	void init(int , char *);
+
 
 	int stop();
 	int kill();
+
+	bool flag;
 
 private:
 	SocketClient* client;
 
 };
-
-
-
-
 #endif /* SRC_COMMUNICATION_CLIENTTHREAD_H_ */

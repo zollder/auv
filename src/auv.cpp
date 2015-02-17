@@ -46,11 +46,6 @@ int main(int argc, char *argv[])
 
     syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
 
-    if( serverThread->stop() != 0 )
-    {
-    	syslog(LOG_NOTICE,"[KPI::MAIN] failed stop");
-    	serverThread->kill();
-    }
 
     delete serverThread;
     delete sensorData;

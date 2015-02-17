@@ -1,28 +1,26 @@
 /*
  * SocketClient.h
  *
- *      Author: AUV Capstone Project
+ *      Author: CAPSTONE Project AUV
  */
 
 #ifndef SRC_SYS_SOCKETCLIENT_H_
 #define SRC_SYS_SOCKETCLIENT_H_
 
 
-#include <stdio.h>
+#include <stdio.h>		//printf
 #include <stdlib.h>		//EXIT FUNCTION
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <syslog.h>
+#include <sys/types.h>	//Socket Class
+#include <sys/socket.h>	//Socket Class
+#include <netinet/in.h>	//Socket Class
 #include <string.h>		//memset, strlen
 #include <unistd.h>		//close
 #include <arpa/inet.h>	//inet_pton functions
-
-#include "Logger.h"
+#include "Logger.h"		//syslog
 
 /**
- * The Client program
- * The Client is used to receive the corresponding Data back to from the server through a socket connection.
+ * The Socket Client
+ * The Client is used to Pull message from server to the corresponding Data using a socket connection.
  **/
 
 class SocketClient {
@@ -34,23 +32,21 @@ public:
 
 	~SocketClient();
 
-	void recvMsg();					//Receive Data from Server
+	void recvMsg();					//Pull Rx Data from Server
 	void start();					//initializes the client
+	void init( int , char *);		//Initialize Class
 
 
 private:
 
-	int connfd;						//client connection descriptor
-	int portNumber;					//listening port number
-	char recvBuff[1024];
-	int numBytes;
-	char *ipServer;
+	int connfd;						//Client connection descriptor
+	int portNumber;					//port number used for Connecting to server
+	float recBuff[15];				//Store DataHolder info
+	int numBytes;					// Bytes message received.
+	char *ipServer;					//Destination IP
 
-	struct sockaddr_in server_addr;	//server address
-
-
-
-	Logger *log;
+	struct sockaddr_in server_addr;	//Socket server holder
+	Logger *log;					//syslog wrapper
 };
 
 

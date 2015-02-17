@@ -12,6 +12,7 @@
 #include <sys/ioctl.h>
 #include <stdio.h>
 #include <iostream>
+#include <stdint.h>
 
 #ifndef I2C_H_
 #define I2C_H_

@@ -1,7 +1,7 @@
 /*
  * Logger.h
  *
- *  Created on: Feb 5, 2015
+ *  Author: CAPSTONE Project AUV
  */
 
 #ifndef SRC_SYS_LOGGER_H_

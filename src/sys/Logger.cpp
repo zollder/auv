@@ -1,7 +1,7 @@
 /*
  * Logger.cpp
  *
- *      Author: AUV Capstone
+ *      Author: CAPSTONE Project AUV
  */
 #include "Logger.h"
 

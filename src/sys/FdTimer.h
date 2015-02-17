@@ -5,6 +5,7 @@
  *	Inspired by: http://www.2net.co.uk/tutorial/periodic_threads#ref_1
  */
 
+#include <stdio.h>		//printf
 #include <cstdlib>
 #include <iostream>
 #include <sys/time.h>
