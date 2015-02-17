@@ -5,42 +5,64 @@
  */
 #include "SocketServer.h"
 
-#include <time.h> 		//@TEST, can remove after
-
+//-----------------------------------------------------------------------------------------
+// Constructors
+//-----------------------------------------------------------------------------------------
 SocketServer::SocketServer()
 {
-	portNumber = 5000;
-	maxUser = 2;
+	init( 5000 , 2 );
 
 }
 
 SocketServer::SocketServer( int port, int max )
 {
-	portNumber = port;
-	maxUser = max;
+	init( port , max );
 
 }
 
 SocketServer::SocketServer( int port, int max , DataService *data)
 {
-	portNumber = port;
-	maxUser = max;
+	init( port , max );
 	dataService = data;
 
 }
+//-----------------------------------------------------------------------------------------
+// initialization of variables
+//-----------------------------------------------------------------------------------------
+void SocketServer::init( int port, int max)
+{
+	portNumber = port;
+	maxUser = max;
+	dataService = -1;
 
+	// Initialize System Log
+	log = new Logger("Socket Server [KPI]");
+
+	//Initializing Socket data
+	connfd = -1;
+	sockfd = -1;
+
+	//Initialize socket structures
+	memset(&server_addr, '0', sizeof(server_addr));
+	memset(&client_addr, '0', sizeof(client_addr));
+}
+//-----------------------------------------------------------------------------------------
+// Destructor
+//-----------------------------------------------------------------------------------------
 SocketServer::~SocketServer()
 {
 	stop();
 }
-
+//-----------------------------------------------------------------------------------------
+// Class Execution
+//-----------------------------------------------------------------------------------------
 void SocketServer::start()
 {
-	// Initialize System Log
-	log = new Logger("Socket Server [KPI]");
-
-	connfd = -1;
-	sockfd = -1;
+	if( dataService == -1)
+	{
+		log->error("[ERROR] No Data Holder passing, Not supported for anything else");
+		exit(EXIT_FAILURE);
+	}
 
 	//create socket inside the kernel and return socket descriptor
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -50,11 +72,6 @@ void SocketServer::start()
 		log->error("[ERROR] Failed to Open Socket");
 		exit(EXIT_FAILURE);
 	}
-
-	//Initialize socket structures
-	memset(&server_addr, '0', sizeof(server_addr));
-	memset(&client_addr, '0', sizeof(client_addr));
-
 
 	//initialize server structure
 	server_addr.sin_family = AF_INET;
@@ -66,14 +83,19 @@ void SocketServer::start()
 	//bind host address
 	if ( bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0)
 	{
-		//int yes=1;
-		//if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
-		//{
-		//	log->error("[ERROR] setsockopt Failed to Bind existent Socket");
+		int delay=8;
+		while( bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0 && --delay)
+		{
+			//Max Linux delay is 60 seconds by default.
+			//creates TIME_WAIT for making sure all socket connection had chance to send data back or from server.
+			sleep(10);
+		}
+
+		if( delay == 0)
+		{
 			log->error("[ERROR] Failed to Bind Socket");
 			exit(EXIT_FAILURE);
-		//}
-
+		}
 	}
 
 	log->info("[INFO] Socket Server initialized");
@@ -89,7 +111,7 @@ void SocketServer::stop()
 	else
 	{
 		if ( shutdown(connfd, SHUT_RDWR) < 0)
-			log->error("[DEBUG] Invalid session descriptor");
+			log->error("[NOTICE] Invalid session descriptor");
 		else
 			log->info("[INFO] Socket Session Closed");
 
@@ -104,7 +126,7 @@ void SocketServer::stop()
 	else
 	{
 		if ( close(sockfd) < 0)
-			log->error("[ERROR] Failed to Close Socket Server");
+			log->error("[NOTICE] Failed to Close Socket Server");
 		else
 			log->info("[INFO] Socket Server Closed");
 

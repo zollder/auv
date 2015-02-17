@@ -14,22 +14,23 @@
 
 /**
  * The server program
- * The Server is used to send that corresponding Data back to the client through a socket connection.
+ * The Server is used to send corresponding Data back to the client through a socket connection.
  **/
 //-----------------------------------------------------------------------------------------------------
 class SocketServer {
 
 public:
 
-	SocketServer();					//Default Server config
-	SocketServer(int, int);			//Standard Server config( portNumber, maxConnection )
-	SocketServer(int, int, DataService *);			//Standard Server config( portNumber, maxConnection )
+	SocketServer();							//Default Server config
+	SocketServer(int, int);					//Standard Server config( portNumber, maxConnection )
+	SocketServer(int, int, DataService *);	//DataService Server config( portNumber, maxConnection , Dataservice)
 
 	~SocketServer();
 
 	void run();						//start listening to port
 	void start();					//initializes the server
 	void stop();					//close Socket Server Process
+	void init( int, int );
 
 private:
 
