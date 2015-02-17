@@ -21,6 +21,8 @@ public:
 	ServerThread(int,int);
 	ServerThread(int,int, DataService* );
 
+	void init( int , int );
+
 	~ServerThread();
 
 	void* run();				// overrides BaseThread's run() method

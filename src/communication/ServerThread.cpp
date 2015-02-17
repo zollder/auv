@@ -12,16 +12,12 @@
 //-----------------------------------------------------------------------------------------
 ServerThread::ServerThread()
 {
-	setThreadId( SERVER_THREAD_ID );
-	server = new SocketServer();
-
+	init ( 5000 , 2 );
 }
 
 ServerThread::ServerThread(int port, int max)
 {
-	setThreadId( SERVER_THREAD_ID );
-	server = new SocketServer(port , max);
-
+	init( port , max );
 }
 ServerThread::ServerThread(int port, int max, DataService* dataService)
 {
@@ -30,10 +26,24 @@ ServerThread::ServerThread(int port, int max, DataService* dataService)
 
 }
 //-----------------------------------------------------------------------------------------
+// initialization of variables
+//-----------------------------------------------------------------------------------------
+void ServerThread::init( int port , int max )
+{
+	setThreadId( SERVER_THREAD_ID );
+	server = new SocketClient( port, max );
+
+}
+//-----------------------------------------------------------------------------------------
 // Destructor
 //-----------------------------------------------------------------------------------------
 ServerThread::~ServerThread()
 {
+	if( stop() != 0 )
+	{
+	    	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] failed stop");
+	    	kill();
+	}
 	delete server;
 }
 //-----------------------------------------------------------------------------------------
@@ -53,7 +63,6 @@ void* ServerThread::run()
 int ServerThread::stop()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] STOP");
-	server->stop();
 	return pthread_cancel( SERVER_THREAD_ID );
 }
 

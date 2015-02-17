@@ -37,12 +37,15 @@ class DataService
 		float* getData()
 		{
 			// copy sensor data into array
+			copySensorData();
+			copyDesiredData();
+			copyCameraData();
 
-			//copySensorData();
-			//copyDesiredData();
-			//copyCameraData();
+			return dataHolder;
+		}
 
-			//TODO DEBUG
+		float* getFakeData()
+		{
 			copyFakeSensorData();
 			copyFakeDesiredData();
 			copyFakeCameraData();
