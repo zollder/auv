@@ -31,7 +31,7 @@ ServerThread::ServerThread(int port, int max, DataService* dataService)
 void ServerThread::init( int port , int max )
 {
 	setThreadId( SERVER_THREAD_ID );
-	server = new SocketClient( port, max );
+	server = new SocketServer( port, max );
 
 }
 //-----------------------------------------------------------------------------------------

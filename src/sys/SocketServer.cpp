@@ -33,7 +33,7 @@ void SocketServer::init( int port, int max)
 {
 	portNumber = port;
 	maxUser = max;
-	dataService = -1;
+	dataService = NULL ;
 
 	// Initialize System Log
 	log = new Logger("Socket Server [KPI]");
@@ -58,7 +58,7 @@ SocketServer::~SocketServer()
 //-----------------------------------------------------------------------------------------
 void SocketServer::start()
 {
-	if( dataService == -1)
+	if( !dataService )
 	{
 		log->error("[ERROR] No Data Holder passing, Not supported for anything else");
 		exit(EXIT_FAILURE);

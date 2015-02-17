@@ -26,9 +26,6 @@ class CameraData
 		// destructor
 		~CameraData(){};
 
-		// destructor
-		~CameraData() {};
-
 		int x = 0;
 		int y = 0;
 		int color = 0;

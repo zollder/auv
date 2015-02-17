@@ -4,7 +4,7 @@
 //============================================================================
 
 #include "communication/ServerThread.h"
-#include "src/communication/ClientThread.h"
+#include "communication/ClientThread.h"
 
 #include "imu/ImuThread.h"
 #include "dmu/DmuThread.h"
@@ -129,12 +129,12 @@ int main(int argc, char *argv[])
         //DEBUGdelete imuThread;
 
     //server start
-    if( argc == 0 || strcmp(argv[1], "server") )
+    if( argc == 1 || !(strcmp(argv[1], "server") ) )
     {
-        PWM pwm;
-        pwm.initialize();
-        pwm.getPeriodHz(11);
-        pwm.getDuty(11);
+       // PWM pwm;
+       // pwm.initialize();
+       // pwm.getPeriodHz(11);
+       // pwm.getDuty(11);
 
 		SensorData* sensorData = new SensorData();
 		DesiredData* targetData = new DesiredData();
@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 		char key;
 		do
 		{
-			key = getchar();
+			//key = getchar();
 
 		}while(key != ESC);
 
@@ -162,7 +162,7 @@ int main(int argc, char *argv[])
 		delete camData;
 		delete dataService;
     }
-    else if (strcmp(argv[1], "client"))
+    else if (!( strcmp(argv[1], "client")) )
     {
     	ClientThread* clientThread = new ClientThread(5000, "192.168.10.50");
     	clientThread->start();
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
     	char key;
     	do
     	{
-    		key = getchar();
+    		//key = getchar();
 
     	}while(key != ESC);
 

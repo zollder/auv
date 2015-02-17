@@ -5,7 +5,7 @@
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_NAME" value="/usr/bin/gdb-multiarch"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.DEBUG_ON_FORK" value="false"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.GDB_INIT" value="/home/oleg/workspace/git-hub/.gdbinit"/>
-<stringAttribute key="org.eclipse.cdt.dsf.gdb.HOST" value="192.168.0.10"/>
+<stringAttribute key="org.eclipse.cdt.dsf.gdb.HOST" value="192.168.10.50"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.NON_STOP" value="false"/>
 <stringAttribute key="org.eclipse.cdt.dsf.gdb.PORT" value="12345"/>
 <booleanAttribute key="org.eclipse.cdt.dsf.gdb.REMOTE_TCP" value="true"/>
