@@ -10,30 +10,12 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-ServerThread::ServerThread()
+ServerThread::ServerThread(SocketServer* server)
 {
-	init ( 5000 , 2 );
+	setThreadId(SERVER_THREAD_ID);
+	socketServer = server;
 }
 
-ServerThread::ServerThread(int port, int max)
-{
-	init( port , max );
-}
-ServerThread::ServerThread(int port, int max, DataService* dataService)
-{
-	setThreadId( SERVER_THREAD_ID );
-	server = new SocketServer(port , max , dataService);
-
-}
-//-----------------------------------------------------------------------------------------
-// initialization of variables
-//-----------------------------------------------------------------------------------------
-void ServerThread::init( int port , int max )
-{
-	setThreadId( SERVER_THREAD_ID );
-	server = new SocketServer( port, max );
-
-}
 //-----------------------------------------------------------------------------------------
 // Destructor
 //-----------------------------------------------------------------------------------------
@@ -41,19 +23,21 @@ ServerThread::~ServerThread()
 {
 	if( stop() != 0 )
 	{
-	    	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] failed stop");
-	    	kill();
+		syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] failed stop");
+		kill();
 	}
-	delete server;
+
+	delete socketServer;
 }
+
 //-----------------------------------------------------------------------------------------
 // Overrides BaseThread's run() method
 //-----------------------------------------------------------------------------------------
 void* ServerThread::run()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] START");
-	server->start();
-	server->run();
+	socketServer->start();
+	socketServer->run();
 
 	syslog(LOG_NOTICE,"[KPI::THREAD] END");
 
@@ -63,13 +47,13 @@ void* ServerThread::run()
 int ServerThread::stop()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] STOP");
-	return pthread_cancel( SERVER_THREAD_ID );
+	return pthread_cancel(getThreadId());
 }
 
 int ServerThread::kill()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] KILL");
-	return pthread_kill( SERVER_THREAD_ID , SIGQUIT );
+	return pthread_kill(getThreadId() , SIGQUIT);
 }
 
 

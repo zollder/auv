@@ -17,40 +17,39 @@
 
 using namespace std;
 
-#define ESC 27
-
 int main(int argc, char *argv[])
 {
 	syslog(LOG_NOTICE,"[KPI::MAIN] START");
 
 	SensorData* sensorData = new SensorData();
 	DesiredData* targetData = new DesiredData();
-//	CameraData* camData = new CameraData();
-//	DataService* dataService = new DataService(sensorData, targetData, camData);
-//	dataService->getData();
+	CameraData* camData = new CameraData();
+	DataService* dataService = new DataService(sensorData, targetData, camData);
+	SocketServer* socketServer = new SocketServer(SERVER_PORT, SERVER_CLIENTS, dataService);
 
-
-
-//	SocketServerThread* thread1 = new SocketServerThread(dataService);
-
+	ServerThread* socketServerThread = new ServerThread(socketServer);
 	ImuThread* imuThread = new ImuThread(sensorData);
 //	DmuThread* dmuThread = new DmuThread(sensorData);
 //	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);
 	HeadingController* headingControllerThread = new HeadingController(sensorData, targetData);
 //	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
 //
+	socketServerThread->start();
 	imuThread->start();
 //	dmuThread->start();
 //	verticalMotionThread->start();
 	headingControllerThread->start();
 //	horizontalMotionThread->start();
 //
+	socketServerThread->join();
 	imuThread->join();
 //	dmuThread->join();
 //	verticalMotionThread->join();
 	headingControllerThread->join();
 //	horizontalMotionThread->join();
 //
+	delete socketServer;
+	delete socketServerThread;
 //	delete horizontalMotionThread;
 	delete headingControllerThread;
 //	delete verticalMotionThread;

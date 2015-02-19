@@ -6,6 +6,22 @@
 #define config_h
 
 /* ----------------------------------------------------
+ * Escape sequence
+ ------------------------------------------------------*/
+#define ESC 27
+
+/* ----------------------------------------------------
+ * Socket server/client parameters
+ ------------------------------------------------------*/
+#define SERVER_THREAD_ID 8
+#define CLIENT_THREAD_ID 10
+
+#define CLIENT_THREAD_INTERVAL 3.0
+
+#define SERVER_PORT 5000
+#define SERVER_CLIENTS 2
+
+/* ----------------------------------------------------
  * IMU configuration parameters
  ------------------------------------------------------*/
 #define IMU_THREAD_ID 1

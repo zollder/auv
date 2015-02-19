@@ -3,37 +3,35 @@
  *
  *      Author: CAPSTONE Project AUV
  */
+
+#include <signal.h>
+
 #include "../sys/BaseThread.h"
 #include "../sys/SocketClient.h"
-#include <signal.h>
+#include "../sys/FdTimer.h"
+#include "../commons/Config.h"
 
 #ifndef SRC_COMMUNICATION_CLIENTTHREAD_H_
 #define SRC_COMMUNICATION_CLIENTTHREAD_H_
 
-#define CLIENT_THREAD_ID 10
-
 class ClientThread : public BaseThread
 {
+	public:
 
-public:
-	ClientThread();
-	ClientThread(int, char *);
+		ClientThread(SocketClient* client, float interval);
+		~ClientThread();
 
-	~ClientThread();
+		// overrides BaseThread's run() method
+		void* run();
 
-	// overrides BaseThread's run() method
-	void* run();
+		int stop();
+		int kill();
 
-	void init(int , char *);
+		bool flag;
 
+	private:
 
-	int stop();
-	int kill();
-
-	bool flag;
-
-private:
-	SocketClient* client;
-
+		FdTimer* timer;
+		SocketClient* socketClient;
 };
 #endif /* SRC_COMMUNICATION_CLIENTTHREAD_H_ */
