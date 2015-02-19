@@ -16,16 +16,18 @@
 
 class ServerThread: public BaseThread
 {
-public:
-		ServerThread(SocketServer* server);
-		~ServerThread();
-		void* run();				// overrides BaseThread's run() method
 
-		int stop();
-		int kill();
+public:
+
+	ServerThread(SocketServer* server);
+	~ServerThread();
+	void* run();				// overrides BaseThread's run() method
+
+	int stop();
+	int kill();
 
 private:
-		SocketServer* socketServer;
+	SocketServer* socketServer;
 };
 
 #endif /* SRC_COMMUNICATION_SERVERTHREAD_H_ */

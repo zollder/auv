@@ -1,6 +1,6 @@
 //============================================================================
 // Name        : auv.cpp
-// Author      : zollder
+// Author      : Main Program Execution Capstone AUV
 //============================================================================
 
 #include "communication/ServerThread.h"
@@ -25,9 +25,10 @@ int main(int argc, char *argv[])
 	DesiredData* targetData = new DesiredData();
 	CameraData* camData = new CameraData();
 	DataService* dataService = new DataService(sensorData, targetData, camData);
-	SocketServer* socketServer = new SocketServer(SERVER_PORT, SERVER_CLIENTS, dataService);
 
+	SocketServer* socketServer = new SocketServer(SERVER_PORT, SERVER_CLIENTS, dataService);
 	ServerThread* socketServerThread = new ServerThread(socketServer);
+
 	ImuThread* imuThread = new ImuThread(sensorData);
 //	DmuThread* dmuThread = new DmuThread(sensorData);
 //	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);

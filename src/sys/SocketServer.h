@@ -27,10 +27,10 @@ public:
 
 	~SocketServer();
 
-	void run();					//start listening to port
-	void start();					//initializes the server
-	void stop();					//close Socket Server Process
-	void init( int, int );
+	void run();							//start listening to port
+	void start();						//initializes the server
+	void stop();						//close Socket Server Process
+	void init( int, int );				//Initialize variables
 
 private:
 
