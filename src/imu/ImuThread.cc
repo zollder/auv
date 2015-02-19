@@ -56,7 +56,7 @@
 			sensorData->mutex.unlock();
 
 			// For testing and debugging purposes only
-			imu->printData(1);
+//			imu->printData(1);
 		}
 
 		return NULL;

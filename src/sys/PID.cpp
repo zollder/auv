@@ -58,13 +58,22 @@
 	}
 
 	//-----------------------------------------------------------------------------------------
+	/** Sets PID coefficients. */
+	//-----------------------------------------------------------------------------------------
+	void PID::setLimits(int lower, int upper)
+	{
+		min = lower;
+		max = upper;
+	}
+
+	//-----------------------------------------------------------------------------------------
 	/** Calculates PID output based on PID input and current desired value (setpoint).
 	 *  Updates cumulative PID variables.
 	 *  Handles "derivative kick" effect (http://www.controlguru.com/wp/p76.html)
 	 *  Returns calculated control signal value.
 	 */
 	//-----------------------------------------------------------------------------------------
-	float PID::calculate(float setpoint, float input, float dt)
+	int PID::calculate(float setpoint, float input, float dt)
 	{
 		// calculate current controller error (proportional term)
 		error = setpoint - input;
@@ -89,8 +98,8 @@
 			integError = 0;
 		}
 
-//		printf("Error reading polarity. Channel ID:%d\n", channelId);
+		printf("Calculated duty in %: %d\n", (int) output);
 
-		return output;
+		return (int) output;
 	}
 

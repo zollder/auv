@@ -30,7 +30,7 @@ class DesiredData
 		int depth = 0;
 
 		// desired direction (degrees relative to North)
-		float heading = 0;
+		int heading = 0;
 
 		/* desired horizontal (forward/reverse) speed (predefined levels, from 0 to 8) */
 		int speed = 0;

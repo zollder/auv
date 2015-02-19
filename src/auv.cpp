@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
 {
 	syslog(LOG_NOTICE,"[KPI::MAIN] START");
 
-//	SensorData* sensorData = new SensorData();
-//	DesiredData* targetData = new DesiredData();
+	SensorData* sensorData = new SensorData();
+	DesiredData* targetData = new DesiredData();
 //	CameraData* camData = new CameraData();
 //	DataService* dataService = new DataService(sensorData, targetData, camData);
 //	dataService->getData();
@@ -33,31 +33,31 @@ int main(int argc, char *argv[])
 
 //	SocketServerThread* thread1 = new SocketServerThread(dataService);
 
-//	ImuThread* imuThread = new ImuThread(sensorData);
+	ImuThread* imuThread = new ImuThread(sensorData);
 //	DmuThread* dmuThread = new DmuThread(sensorData);
 //	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);
-//	HeadingMotion* headingMotionThread = new HeadingMotion(sensorData, targetData);
+	HeadingController* headingControllerThread = new HeadingController(sensorData, targetData);
 //	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
 //
-//	imuThread->start();
+	imuThread->start();
 //	dmuThread->start();
 //	verticalMotionThread->start();
-//	headingMotionThread->start();
+	headingControllerThread->start();
 //	horizontalMotionThread->start();
 //
-//	imuThread->join();
+	imuThread->join();
 //	dmuThread->join();
 //	verticalMotionThread->join();
-//	headingMotionThread->join();
+	headingControllerThread->join();
 //	horizontalMotionThread->join();
 //
 //	delete horizontalMotionThread;
-//	delete headingMotionThread;
+	delete headingControllerThread;
 //	delete verticalMotionThread;
 //	delete dmuThread;
-//	delete imuThread;
-//	delete targetData;
-//	delete sensorData;
+	delete imuThread;
+	delete targetData;
+	delete sensorData;
 
 //	DMU dmu;
 //	dmu.enable();
@@ -74,50 +74,37 @@ int main(int argc, char *argv[])
 //	imu.execute(1);
 
 //	PWM pwm;
-//	pwm.initialize();
-//	pwm.getPeriodHz(11);
-//	pwm.getDuty(11);
+//	pwm.getPeriodHz(31);
+//	pwm.getDuty(31);
 //
-//	pwm.setPeriod(1, 500);
+////	pwm.setPeriod(3, 50);
 //
-//	pwm.setPolarity(11, 0);
-//	pwm.setPolarity(12, 0);
+//	pwm.start(31);
 //
-//	pwm.setDuty(11, 0);
-//	pwm.setDuty(12, 0);
+//	pwm.setDuty(31, 0);
 //
-//	pwm.start(11);
-//	pwm.start(12);
-//	printf("duty1: %d, duty2: %d\n", 0, 0);
+//	for (int i = 0; i < 5; i++)
+//	{
+//		pwm.setDuty(31, i);
+//		pwm.setDuty(32, i);
+//		sleep(2);
+//	}
 //
-//	sleep(10);
-//
-//	pwm.setDuty(11, 15);
-//	pwm.setDuty(12, 5);
-//	printf("duty1: %d, duty2: %d\n", 15, 5);
-//
-//	sleep(10);
-//
-//	pwm.setDuty(11, 30);
-//	pwm.setDuty(12, 10);
-//	printf("duty1: %d, duty2: %d\n", 30, 10);
-//
-//	sleep(10);
-//
-//	pwm.setDuty(11, 0);
-//	pwm.setDuty(12, 50);
-//	printf("duty1: %d, duty2: %d\n", 0, 50);
-//
-//	sleep(10);
-//
-//	pwm.setDuty(11, 100);
-//	pwm.setDuty(12, 0);
-//	printf("duty1: %d, duty2: %d\n", 100, 0);
-//
-//	pwm.getDuty(11);
-//	pwm.getDuty(12);
-//
-//	pwm.getPeriod(1);
+//	for (int i = 0; i > -5; i--)
+//	{
+//		pwm.setDuty(31, i);
+//		pwm.setDuty(32, i);
+//		sleep(2);
+//	}
+
+//	pwm.setDuty(31, -5);
+//	sleep(5);
+
+//	pwm.setDuty(31, 0);
+//	pwm.setDuty(32, 0);
+//	pwm.stop(31);
+//	pwm.stop(32);
+
 
         //DEBUGImuThread* imuThread = new ImuThread(sensorData);
         //DmuThread* dmuThread = new DmuThread(sensorData);
@@ -129,60 +116,60 @@ int main(int argc, char *argv[])
         //DEBUGdelete imuThread;
 
     //server start
-    if( argc == 1 || !(strcmp(argv[1], "server") ) )
-    {
-       // PWM pwm;
-       // pwm.initialize();
-       // pwm.getPeriodHz(11);
-       // pwm.getDuty(11);
-
-		SensorData* sensorData = new SensorData();
-		DesiredData* targetData = new DesiredData();
-		CameraData* camData = new CameraData();
-
-		DataService* dataService = new DataService(sensorData, targetData, camData);
-
-		ServerThread* serverThread = new ServerThread( 5000, 2 , dataService);
-
-		serverThread->start();
-
-		char key;
-		do
-		{
-			//key = getchar();
-
-		}while(key != ESC);
-
-		syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
-
-
-		delete serverThread;
-		delete sensorData;
-		delete targetData;
-		delete camData;
-		delete dataService;
-    }
-    else if (!( strcmp(argv[1], "client")) )
-    {
-    	ClientThread* clientThread = new ClientThread(5000, "192.168.10.50");
-    	clientThread->start();
-
-    	char key;
-    	do
-    	{
-    		//key = getchar();
-
-    	}while(key != ESC);
-
-    	syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
-
-    	delete clientThread;
-    }
-    else
-    {
-    	syslog(LOG_ERR,"[KPI::MAIN] Wrong Options entered, possible ones are : client or server");
-    	return EXIT_FAILURE;
-    }
+//    if( argc == 1 || !(strcmp(argv[1], "server") ) )
+//    {
+//       // PWM pwm;
+//       // pwm.initialize();
+//       // pwm.getPeriodHz(11);
+//       // pwm.getDuty(11);
+//
+//		SensorData* sensorData = new SensorData();
+//		DesiredData* targetData = new DesiredData();
+//		CameraData* camData = new CameraData();
+//
+//		DataService* dataService = new DataService(sensorData, targetData, camData);
+//
+//		ServerThread* serverThread = new ServerThread( 5000, 2 , dataService);
+//
+//		serverThread->start();
+//
+//		char key;
+//		do
+//		{
+//			//key = getchar();
+//
+//		}while(key != ESC);
+//
+//		syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
+//
+//
+//		delete serverThread;
+//		delete sensorData;
+//		delete targetData;
+//		delete camData;
+//		delete dataService;
+//    }
+//    else if (!( strcmp(argv[1], "client")) )
+//    {
+//    	ClientThread* clientThread = new ClientThread(5000, "192.168.10.50");
+//    	clientThread->start();
+//
+//    	char key;
+//    	do
+//    	{
+//    		//key = getchar();
+//
+//    	}while(key != ESC);
+//
+//    	syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
+//
+//    	delete clientThread;
+//    }
+//    else
+//    {
+//    	syslog(LOG_ERR,"[KPI::MAIN] Wrong Options entered, possible ones are : client or server");
+//    	return EXIT_FAILURE;
+//    }
 
     syslog(LOG_NOTICE,"[KPI::MAIN] END");
     return EXIT_SUCCESS;

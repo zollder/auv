@@ -27,9 +27,9 @@
 	void PWM::initialize()
 	{
 		this->stopAll();
-		this->setPeriod(1, DEFAULT_PERIOD_HZ);
-		this->setPeriod(2, DEFAULT_PERIOD_HZ);
-		this->setPeriod(3, DEFAULT_PERIOD_HZ);
+		this->setPeriod(1, PWM_PERIOD_HZ);
+		this->setPeriod(2, PWM_PERIOD_HZ);
+		this->setPeriod(3, PWM_PERIOD_HZ);
 		this->resetDuty();
 		this->resetPolarity();
 	}

@@ -20,6 +20,7 @@
 		setThreadId(HC_THREAD_ID);
 		timer = new FdTimer(getThreadId(), HC_INTERVAL);
 		pwm = new PWM();
+		yawPid = new PID(YAW_KP, YAW_KI, YAW_KD);
 
 		sensorData = sensorData_p;
 		desiredData = desiredData_p;
@@ -33,6 +34,7 @@
 		printf("Destroying HeadingController controller thread ...\n");
 		delete pwm;
 		delete timer;
+		delete yawPid;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -40,18 +42,20 @@
 	//-----------------------------------------------------------------------------------------
 	void* HeadingController::run()
 	{
+		yawPid->reset();
+
+		pwm->setPeriod(PWM_MODULE_3_ID, PWM_PERIOD_HZ);
+
+		pwm->setPolarity(31, 0);
+		pwm->setPolarity(32, 0);
+
+		pwm->setDuty(31, 0);
+		pwm->setDuty(32, 0);
+
+		pwm->start(31);
+		pwm->start(32);
+
 		timer->start();
-
-		pwm->setPeriod(PWM_MODULE_2_ID, BASE_PERIOD);
-
-		pwm->setPolarity(21, 0);
-		pwm->setPolarity(22, 0);
-
-		pwm->setDuty(21, 0);
-		pwm->setDuty(22, 0);
-
-		pwm->start(21);
-		pwm->start(22);
 
 		while(1)
 		{
@@ -59,9 +63,6 @@
 
 			// read current and desired position-related values
 			this->getherData();
-
-			// write calculated duty cycle values
-			this->adjustDutyCycle();
 
 			// determine if the device should turn or drift and use an appropriate algorithm
 			if (rightDrift or leftDrift)
@@ -91,7 +92,7 @@
 		desiredData->mutex.unlock();
 
 		sensorData->mutex.lock();
-			currentYaw = sensorData->yaw;
+			actualHeading = floor(sensorData->yaw + 0.5);
 		sensorData->mutex.unlock();
 	}
 
@@ -101,20 +102,11 @@
 	//-----------------------------------------------------------------------------------------
 	void HeadingController::calculateCorrectiveDuty()
 	{
-		// TODO: needs control algorithm
+		yawDuty = yawPid->calculate(desiredHeading, actualHeading, HC_INTERVAL)/2;
 
-		// for testing purposes only
-		normalizedYaw = currentYaw/2;
-		if (currentYaw > 0)
-		{
-			newDuty3 = normalizedYaw;
-			newDuty4 = normalizedYaw;
-		}
-		else
-		{
-			newDuty3 = -normalizedYaw;
-			newDuty4 = -normalizedYaw;
-		}
+		frontDuty = yawDuty;
+		rearDuty = yawDuty;
+
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -132,16 +124,16 @@
 	void HeadingController::adjustDutyCycle()
 	{
 		// verify if the difference is large enough to apply the changes, if necessary
-		if (abs(newDuty3 - currentDuty3) > 0)
+		if (abs(frontDuty - lastFrontDuty) > 0)
 		{
-			pwm->setDuty(21, newDuty3);
-			currentDuty3 = newDuty3;
+			pwm->setDuty(31, frontDuty);
+			lastFrontDuty = frontDuty;
 		}
 
-		if (abs(newDuty4 - currentDuty4) > 0)
+		if (abs(rearDuty - lastRearDuty) > 0)
 		{
-			pwm->setDuty(22, newDuty4);
-			currentDuty4 = newDuty4;
+			pwm->setDuty(32, rearDuty);
+			lastRearDuty = rearDuty;
 		}
 	}
 
