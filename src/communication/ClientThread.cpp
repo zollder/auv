@@ -9,58 +9,31 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-ClientThread::ClientThread()
+ClientThread::ClientThread(SocketClient* client, float interval)
 {
-	init( 5000, "127.0.0.1" );
+	setThreadId(CLIENT_THREAD_ID);
+	socketClient = client;
+	flag = false;
 
+	timer = new FdTimer(getThreadId(), interval);
 }
 
-ClientThread::ClientThread( int port , char *ip)
-{
-	init( port , ip );
-
-}
-//-----------------------------------------------------------------------------------------
-// initialization of variables
-//-----------------------------------------------------------------------------------------
-void::ClientThread::init( int port , char *ip )
-{
-	flag=false;
-	setThreadId( CLIENT_THREAD_ID );
-	client = new SocketClient( port, ip );
-
-}
 //-----------------------------------------------------------------------------------------
 // Destructor
 //-----------------------------------------------------------------------------------------
 ClientThread::~ClientThread()
 {
-	flag=false;
+	flag = false;
 
-    if( stop() != 0 )
+    if(stop() != 0)
     {
     	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] failed stop");
     	kill();
     }
 
-	delete client;
-}
-//-----------------------------------------------------------------------------------------
-// Cleanup
-//-----------------------------------------------------------------------------------------
-int ClientThread::stop()
-{
-	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] STOP");
-	return pthread_cancel( CLIENT_THREAD_ID );
-
+	delete socketClient;
 }
 
-int ClientThread::kill()
-{
-	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] KILL");
-	return pthread_kill( CLIENT_THREAD_ID , SIGQUIT );
-
-}
 //-----------------------------------------------------------------------------------------
 // Overrides BaseThread's run() method
 //-----------------------------------------------------------------------------------------
@@ -68,16 +41,34 @@ void* ClientThread::run()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] START");
 
-	flag=true;
+	flag = true;
+	timer->start();
 
 	while(flag)
 	{
-		client->start();
-		client->recvMsg();
-		sleep(3);
+		timer->waitTimerEvent();
+
+		socketClient->start();
+		socketClient->recvMsg();
 	}
 
 	return NULL;
+}
+
+//-----------------------------------------------------------------------------------------
+// Cleanup
+//-----------------------------------------------------------------------------------------
+int ClientThread::stop()
+{
+	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] STOP");
+	return pthread_cancel(getThreadId());
+
+}
+
+int ClientThread::kill()
+{
+	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] KILL");
+	return pthread_kill(getThreadId(), SIGQUIT);
 
 }
 

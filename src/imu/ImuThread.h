@@ -8,12 +8,10 @@
 #include "../sys/FdTimer.h"
 #include "../data/SensorData.h"
 #include "../imu/IMU.h"
+#include "../commons/Config.h"
 
 #ifndef imuthread_h
 #define imuthread_h
-
-#define IMU_THREAD_ID 1
-#define IMU_INTERVAL 0.02	// 20ms
 
 //-----------------------------------------------------------------------------------------
 // ImuThread interface.

@@ -10,12 +10,10 @@
 #include "../data/DesiredData.h"
 #include "../sys/PWM.h"
 #include "../sys/PID.h"
+#include "../commons/Config.h"
 
 #ifndef altitudecontroller_h
 #define altitudecontroller_h
-
-#define AC_THREAD_ID 6
-#define AC_INTERVAL 0.05	// 20 ms
 
 //-----------------------------------------------------------------------------------------
 // AltitudeController interface.
@@ -23,15 +21,14 @@
 class AltitudeController : public BaseThread
 {
 	/* altitude controller PID coefficients (constants) */
-	const float altKp = 100;
-	const float altKi = 20;
-	const float altKd = 10;
-
+	const float altKp = 0;
+	const float altKi = 0;
+	const float altKd = 0;
 
 	/* pitch controller coefficients */
-	const float pitchKp = 100;
-	const float pitchKi = 20;
-	const float pitchKd = 10;
+	const float pitchKp = 0.25;
+	const float pitchKi = 0;
+	const float pitchKd = 0;
 
 	//-----------------------------------------------------------------------------------------
 	// Public members

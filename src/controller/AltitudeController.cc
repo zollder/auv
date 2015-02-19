@@ -21,8 +21,8 @@
 		timer = new FdTimer(getThreadId(), AC_INTERVAL);
 
 		pwm = new PWM();
-		altitudePid = new PID(altKp, altKi, altKd);
-		pitchPid = new PID(pitchKp, pitchKi, pitchKd);
+		altitudePid = new PID(ALT_KP, ALT_KI, ALT_KD);
+		pitchPid = new PID(PITCH_KP, PITCH_KI, PITCH_KD);
 
 		sensorData = sensorData_p;
 		desiredData = desiredData_p;
@@ -104,7 +104,6 @@
 	//-----------------------------------------------------------------------------------------
 	void AltitudeController::getherData()
 	{
-//		printf("Calculating corrective duty values ...\n");
 		desiredData->mutex.lock();
 			desiredDepth = desiredData->depth;
 		desiredData->mutex.unlock();
@@ -120,7 +119,6 @@
 	//-----------------------------------------------------------------------------------------
 	void AltitudeController::calculateAltitudeDuty()
 	{
-//		printf("Calculating base duty value ...\n");
 		baseDuty = altitudePid->calculate(desiredDepth, actualDepth, AC_INTERVAL);
 	}
 
@@ -129,7 +127,6 @@
 	//-----------------------------------------------------------------------------------------
 	void AltitudeController::calculatePitchDuty()
 	{
-//		printf("Calculating corrective duty values ...\n");
 		pitchDuty = pitchPid->calculate(0, actualPitch, AC_INTERVAL)/2;
 	}
 
@@ -138,8 +135,6 @@
 	//-----------------------------------------------------------------------------------------
 	void AltitudeController::adjustDutyCycle()
 	{
-//		printf("Adjusting duty cycle for motors 1 & 2 ...\n");
-
 		// find front/rear motor duties
 		if (actualPitch < 0)
 		{

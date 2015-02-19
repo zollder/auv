@@ -34,7 +34,10 @@ class PID
 		void setBoundaries(float min, float max);
 
 		/** calculates and returns controller output. */
-		float calculate(float setpoint, float input, float dt);
+		int calculate(float setpoint, float input, float dt);
+
+		/** calculates and returns controller output. */
+		void setLimits(int lower, int upper);
 
 	private:
 
@@ -52,7 +55,7 @@ class PID
 		float output = 0;
 
 		/* boundary values */
-		float min = 0;
+		float min = -70;
 		float max = 70;
 };
 

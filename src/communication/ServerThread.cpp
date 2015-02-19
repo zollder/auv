@@ -22,11 +22,13 @@ ServerThread::~ServerThread()
 {
 	if( stop() != 0 )
 	{
-	    	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] failed stop");
-	    	kill();
+		syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] failed stop");
+		kill();
 	}
-	delete server;
+
+	delete socketServer;
 }
+
 //-----------------------------------------------------------------------------------------
 // Overrides BaseThread's run() method
 //-----------------------------------------------------------------------------------------
@@ -44,13 +46,13 @@ void* ServerThread::run()
 int ServerThread::stop()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] STOP");
-	return pthread_cancel( SERVER_THREAD_ID );
+	return pthread_cancel(getThreadId());
 }
 
 int ServerThread::kill()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] KILL");
-	return pthread_kill( SERVER_THREAD_ID , SIGQUIT );
+	return pthread_kill(getThreadId() , SIGQUIT);
 }
 
 
