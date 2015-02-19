@@ -8,8 +8,9 @@
 #include <netinet/in.h>
 #include <string.h>		//memset, strlen
 #include <unistd.h>		//close
-#include "../data/DataService.h"
 
+/** Dependencies */
+#include "../data/DataService.h"
 #include "Logger.h"
 
 /**
@@ -21,29 +22,28 @@ class SocketServer {
 
 public:
 
-	SocketServer();							//Default Server config
-	SocketServer(int, int);					//Standard Server config( portNumber, maxConnection )
+	SocketServer(DataService *);		//Default Server Config
 	SocketServer(int, int, DataService *);	//DataService Server config( portNumber, maxConnection , Dataservice)
 
 	~SocketServer();
 
-	void run();						//start listening to port
+	void run();					//start listening to port
 	void start();					//initializes the server
 	void stop();					//close Socket Server Process
 	void init( int, int );
 
 private:
 
-	int sockfd;						//server socket descriptor
-	int connfd;						//client connection descriptor
-	int portNumber;					//listening port number
-	int maxUser;					//maximum number of users connected
-	int client_len;					//length of the client IP
+	int sockfd = 0;						//server socket descriptor
+	int connfd = 0;						//client connection descriptor
+	int portNumber = 0;					//listening port number
+	int maxUser = 0;					//maximum number of users connected
+	int client_len = 0;					//length of the client IP
 
 	struct sockaddr_in server_addr;	//server address
 	struct sockaddr_in client_addr;	//client address
 
-	Logger* log;
+	Logger* logger;
 	DataService* dataService;
 };
 
