@@ -10,29 +10,10 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-ServerThread::ServerThread()
+ServerThread::ServerThread(SocketServer* server)
 {
-	init ( 5000 , 2 );
-}
-
-ServerThread::ServerThread(int port, int max)
-{
-	init( port , max );
-}
-ServerThread::ServerThread(int port, int max, DataService* dataService)
-{
-	setThreadId( SERVER_THREAD_ID );
-	server = new SocketServer(port , max , dataService);
-
-}
-//-----------------------------------------------------------------------------------------
-// initialization of variables
-//-----------------------------------------------------------------------------------------
-void ServerThread::init( int port , int max )
-{
-	setThreadId( SERVER_THREAD_ID );
-	server = new SocketServer( port, max );
-
+	setThreadId( SOCKET_SERVER_THREAD_ID );
+	socketServer = server;
 }
 //-----------------------------------------------------------------------------------------
 // Destructor
@@ -52,8 +33,8 @@ ServerThread::~ServerThread()
 void* ServerThread::run()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] START");
-	server->start();
-	server->run();
+	socketServer->start();
+	socketServer->run();
 
 	syslog(LOG_NOTICE,"[KPI::THREAD] END");
 

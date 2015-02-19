@@ -11,17 +11,13 @@
 #ifndef SRC_COMMUNICATION_SERVERTHREAD_H_
 #define SRC_COMMUNICATION_SERVERTHREAD_H_
 
-#define SERVER_THREAD_ID 8
+#define SOCKET_SERVER_THREAD_ID 8
 
 class ServerThread: public BaseThread
 {
 
 public:
-	ServerThread();
-	ServerThread(int,int);
-	ServerThread(int,int, DataService* );
-
-	void init( int , int );
+	ServerThread(SocketServer* );
 
 	~ServerThread();
 
@@ -31,7 +27,7 @@ public:
 	int kill();
 
 private:
-		SocketServer* server;
+		SocketServer* socketServer;
 
 };
 
