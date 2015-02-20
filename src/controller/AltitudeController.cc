@@ -48,16 +48,17 @@
 		altitudePid->reset();
 		pitchPid->reset();
 
-		pwm->setPeriod(PWM_MODULE_1_ID, BASE_PERIOD);
+		printf("------------------STUPID_1---------------------");
 
-		pwm->setPolarity(11, 0);
-		pwm->setPolarity(12, 0);
+		pwm->setPeriod(PWM_MODULE_2_ID, BASE_PERIOD);
 
-		pwm->setDuty(11, 0);
-		pwm->setDuty(12, 0);
+		pwm->setDuty(21, 0);
+		pwm->setDuty(22, 0);
 
-		pwm->start(11);
-		pwm->start(12);
+		pwm->start(21);
+		pwm->start(22);
+
+		printf("------------------STUPID_2---------------------");
 
 		timer->start();
 
@@ -77,7 +78,7 @@
 			// write calculated duty cycle values
 			this->adjustDutyCycle();
 
-			printf("----------------------------------1:%d 2:%d\n", lastFrontDuty, lastRearDuty);
+//			printf("----------------------------------1:%d 2:%d\n", lastFrontDuty, lastRearDuty);
 		}
 
 		return NULL;
@@ -136,28 +137,22 @@
 	void AltitudeController::adjustDutyCycle()
 	{
 		// find front/rear motor duties
-		if (actualPitch < 0)
-		{
-			frontDuty = baseDuty + pitchDuty;
-			rearDuty = baseDuty - pitchDuty;
-		}
-		else
-		{
-			frontDuty = baseDuty - pitchDuty;
-			rearDuty = baseDuty + pitchDuty;
-		}
+		frontDuty = baseDuty - pitchDuty;
+		rearDuty = baseDuty + pitchDuty;
 
 		// verify if the difference is large enough to apply the changes, if necessary
 		if (abs(frontDuty - lastFrontDuty) > 1)
 		{
-			pwm->setDuty(11, frontDuty);
+			pwm->setDuty(21, frontDuty);
 			lastFrontDuty = frontDuty;
 		}
 
 		if (abs(rearDuty - lastRearDuty) > 1)
 		{
-			pwm->setDuty(12, rearDuty);
+			pwm->setDuty(22, rearDuty);
 			lastRearDuty = rearDuty;
 		}
+
+		printf("----------------------------------1:%d 2:%d\n", frontDuty, rearDuty);
 	}
 

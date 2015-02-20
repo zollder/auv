@@ -26,34 +26,34 @@ int main(int argc, char *argv[])
 	CameraData* camData = new CameraData();
 	DataService* dataService = new DataService(sensorData, targetData, camData);
 
-	SocketServer* socketServer = new SocketServer(SERVER_PORT, SERVER_CLIENTS, dataService);
-	ServerThread* socketServerThread = new ServerThread(socketServer);
+	//SocketServer* socketServer = new SocketServer(SERVER_PORT, SERVER_CLIENTS, dataService);
+	//ServerThread* socketServerThread = new ServerThread(socketServer);
 
 	ImuThread* imuThread = new ImuThread(sensorData);
 //	DmuThread* dmuThread = new DmuThread(sensorData);
-//	VerticalMotion* verticalMotionThread = new VerticalMotion(sensorData, targetData);
+	AltitudeController* altitudeControllerThread = new AltitudeController(sensorData, targetData);
 	HeadingController* headingControllerThread = new HeadingController(sensorData, targetData);
 //	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
 //
-	socketServerThread->start();
+	//socketServerThread->start();
 	imuThread->start();
 //	dmuThread->start();
-//	verticalMotionThread->start();
+	altitudeControllerThread->start();
 	headingControllerThread->start();
 //	horizontalMotionThread->start();
 //
-	socketServerThread->join();
+	//socketServerThread->join();
 	imuThread->join();
 //	dmuThread->join();
-//	verticalMotionThread->join();
+	altitudeControllerThread->join();
 	headingControllerThread->join();
 //	horizontalMotionThread->join();
 //
-	delete socketServer;
-	delete socketServerThread;
+	//delete socketServer;
+	//delete socketServerThread;
 //	delete horizontalMotionThread;
 	delete headingControllerThread;
-//	delete verticalMotionThread;
+	delete altitudeControllerThread;
 //	delete dmuThread;
 	delete imuThread;
 	delete targetData;

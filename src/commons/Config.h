@@ -41,12 +41,12 @@
  * Altitude controller parameters
  ------------------------------------------------------*/
 #define AC_THREAD_ID 6
-#define AC_INTERVAL 0.05	// 50 ms
+#define AC_INTERVAL 0.1	// 100 ms
 
  //(TODO: replace with constants when configured)
 
 // altimeter controller coefficients
-#define ALT_KP 0.25
+#define ALT_KP 0
 #define ALT_KI 0
 #define ALT_KD 0
 
