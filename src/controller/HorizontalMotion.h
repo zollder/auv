@@ -9,12 +9,10 @@
 #include "../data/SensorData.h"
 #include "../data/DesiredData.h"
 #include "../sys/PWM.h"
+#include "../commons/Config.h"
 
 #ifndef horizontalmotion_h
 #define horizontalmotion_h
-
-#define HM_THREAD_ID 5
-#define HM_INTERVAL 0.05	// 50 ms
 
 //-----------------------------------------------------------------------------------------
 // HorizontalMotion interface.

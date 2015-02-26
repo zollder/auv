@@ -9,8 +9,9 @@
 #include "../data/SensorData.h"
 #include "../data/DesiredData.h"
 #include "../sys/PWM.h"
-#include "../sys/PID.h"
 #include "../commons/Config.h"
+
+#include "PID.h"
 
 #ifndef headingcontroller_h
 #define headingcontroller_h

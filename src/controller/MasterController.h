@@ -8,12 +8,10 @@
 #include "../sys/FdTimer.h"
 #include "../data/SensorData.h"
 #include "../data/DesiredData.h"
+#include "../commons/Config.h"
 
 #ifndef mastercontroller_h
 #define mastercontroller_h
-
-#define MC_THREAD_ID 7
-#define MC_INTERVAL 0.1	// 100 ms
 
 //-----------------------------------------------------------------------------------------
 // MasterController interface.

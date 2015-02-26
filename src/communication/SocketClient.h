@@ -4,6 +4,9 @@
  *      Author: CAPSTONE Project AUV
  */
 
+#include "../sys/FdTimer.h"
+#include "../commons/Config.h"
+
 #ifndef SRC_SYS_SOCKETCLIENT_H_
 #define SRC_SYS_SOCKETCLIENT_H_
 
@@ -16,7 +19,7 @@
 #include <string.h>		//memset, strlen
 #include <unistd.h>		//close
 #include <arpa/inet.h>	//inet_pton functions
-#include "Logger.h"		//syslog
+#include "../sys/Logger.h"		//syslog
 
 /**
  * The Socket Client
@@ -27,17 +30,19 @@ class SocketClient {
 
 public:
 
-	SocketClient();					//Default Server config
-	SocketClient(int, char *);		//Standard Server config( portNumber, IP Address )
+	SocketClient(int timerId);					//Default Server config
+	SocketClient(int timerId, int serverPort, char* serverIp);		//Standard Server config( portNumber, IP Address )
 
 	~SocketClient();
 
 	void recvMsg();					//Pull Rx Data from Server
 	void start();					//initializes the client
-	void init( int , char *);		//Initialize Class
+	void init(int timerId, int serverPort, char* serverIp);		//Initialize Class
 
 
 private:
+
+	FdTimer* retryTimer;
 
 	int connfd;						//Client connection descriptor
 	int portNumber;					//port number used for Connecting to server

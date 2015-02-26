@@ -8,8 +8,6 @@
 #include <sstream>
 #include <stdio.h>
 
-#include "../data/Mutex.h"
-
 #ifndef basethread_h
 #define basethread_h
 

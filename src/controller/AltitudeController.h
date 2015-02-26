@@ -9,8 +9,9 @@
 #include "../data/SensorData.h"
 #include "../data/DesiredData.h"
 #include "../sys/PWM.h"
-#include "../sys/PID.h"
 #include "../commons/Config.h"
+
+#include "PID.h"
 
 #ifndef altitudecontroller_h
 #define altitudecontroller_h
