@@ -26,9 +26,25 @@ class CameraData
 		// destructor
 		~CameraData(){};
 
-		int x = 0;
-		int y = 0;
-		int color = 0;
+		// front (f) camera data holders
+		int objtId_f = 0;
+		int objColor_f = 0;
+		int objOffsetX_f = 0;
+		int objOffsetY_f = 0;
+		int radius_f = 0;
+		int objWidth_f = 0;
+		int objHeight_f = 0;
+		int objAngle_f = 0;
+
+		// bottom (b) camera data holders
+		int objtId_b = 0;
+		int objColor_b = 0;
+		int objOffsetX_b = 0;
+		int objOffsetY_b = 0;
+		int radius_b = 0;
+		int objWidth_b = 0;
+		int objHeight_b = 0;
+		int objAngle_b = 0;
 
 		// read/write protection mechanism
 		Mutex mutex;

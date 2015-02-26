@@ -8,29 +8,26 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-SocketServer::SocketServer(DataService *data)
+SocketServer::SocketServer(DataService* service)
 {
-	init(SERVER_PORT, SERVER_CLIENTS);
-	dataService = data;
+	init(service, PORT, CLIENTS);
 }
 
-SocketServer::SocketServer(int port, int connections , DataService *data)
+SocketServer::SocketServer(DataService* service, int port, int connections)
 {
-	init(port, connections);
-	dataService = data;
+	init(service, port, connections);
 }
 
 //-----------------------------------------------------------------------------------------
 // initialization of variables
 //-----------------------------------------------------------------------------------------
-void SocketServer::init(int port, int connections)
+void SocketServer::init(DataService* service, int port, int connections)
 {
+	dataService = service;
 	portNumber = port;
 	maxUser = connections;
-	//dataService = NULL ;
 
 	// Initialize System Log
-	//DEBUG logger = new Logger((char*) "Socket Server [KPI]");
 	logger = new Logger("Socket Server [KPI]");
 
 	//Initializing Socket data

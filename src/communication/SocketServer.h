@@ -23,15 +23,15 @@ class SocketServer
 {
 	public:
 
-		SocketServer(DataService *);		//Default Server Config
-		SocketServer(int, int, DataService *);	//DataService Server config( portNumber, maxConnection , Dataservice)
+		SocketServer(DataService*);		//Default Server Config
+		SocketServer(DataService*, int, int);	//DataService Server config( portNumber, maxConnection , Dataservice)
 
 		~SocketServer();
 
 		void run();							//start listening to port
 		void start();						//initializes the server
 		void stop();						//close Socket Server Process
-		void init( int, int );				//Initialize variables
+		void init(DataService*, int, int);				//Initialize variables
 
 	private:
 

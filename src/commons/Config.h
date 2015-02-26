@@ -47,8 +47,8 @@
 #define U3_FRONT_IP "192.168.0.12"
 #define U3_BOTTOM_IP "192.168.0.11"
 
-#define SERVER_PORT 5000
-#define SERVER_CLIENTS 2
+#define PORT 5000
+#define CLIENTS 2
 
 #define RETRY_COUNTER 10
 

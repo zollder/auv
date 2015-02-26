@@ -9,22 +9,19 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-SocketClient::SocketClient(int timerId)
+SocketClient::SocketClient(DataService* service, int timerId, int port, char *ip)
 {
-	init(timerId, SERVER_PORT, BBB_IP);
-}
-
-SocketClient::SocketClient(int timerId, int port, char *ip)
-{
-	init(timerId, port, ip);
+	init(dataService, timerId, port, ip);
 }
 //-----------------------------------------------------------------------------------------
 // initialization of variables
 //-----------------------------------------------------------------------------------------
-void SocketClient::init(int timerId, int port , char *ip)
+void SocketClient::init(DataService* service, int timerId, int port , char *ip)
 {
 	// initialize single-shot timer for retry logic
 	retryTimer = new FdTimer(timerId, CLIENT_RETRY_INTERVAL);
+
+	dataService = service;
 
 	portNumber = port;
 	ipServer = ip;
@@ -106,21 +103,19 @@ void SocketClient::recvMsg()
 	//Attempt to connect to the server
 	int result = connect(connfd, (struct sockaddr *) &server_addr, sizeof(server_addr));
 	if(result < 0)
-	{
 		log->error("[ERROR] Failed to Connect to Server");
 		//should not terminate program but continuously retry versus exit(EXIT_FAILURE);
-	}
 	else
-	{
 		while ((numBytes = recv(connfd, recBuff, sizeof(recBuff), MSG_WAITALL)) > 0)
 		{
+			dataService->saveData(recBuff);
+
 			recBuff[numBytes] = 0;
-			for( int  x = 0; x < 15 ; x++ )
+			for(int x = 0; x < 15 ; x++)
 				printf("%.2f\t", recBuff[x]);
 
 			printf("\n");
 		}
-	}
 
 	//Cleanup
 	close(connfd);

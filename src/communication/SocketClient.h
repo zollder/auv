@@ -4,6 +4,7 @@
  *      Author: CAPSTONE Project AUV
  */
 
+#include "../data/DataService.h"
 #include "../sys/FdTimer.h"
 #include "../commons/Config.h"
 
@@ -22,26 +23,25 @@
 #include "../sys/Logger.h"		//syslog
 
 /**
- * The Socket Client
- * The Client is used to Pull message from server to the corresponding Data using a socket connection.
- **/
-
+ * SocketClient interface.
+ * Is used to pull messages from the server and save their content in the corresponding data holder.
+ */
 class SocketClient {
 
 public:
 
-	SocketClient(int timerId);					//Default Server config
-	SocketClient(int timerId, int serverPort, char* serverIp);		//Standard Server config( portNumber, IP Address )
+	// Constructor
+	SocketClient(DataService* dataService, int timerId, int serverPort, char* serverIp);
 
 	~SocketClient();
 
 	void recvMsg();					//Pull Rx Data from Server
 	void start();					//initializes the client
-	void init(int timerId, int serverPort, char* serverIp);		//Initialize Class
-
+	void init(DataService* service, int timerId, int serverPort, char* serverIp);
 
 private:
 
+	DataService* dataService;
 	FdTimer* retryTimer;
 
 	int connfd;						//Client connection descriptor
@@ -53,7 +53,5 @@ private:
 	struct sockaddr_in server_addr;	//Socket server holder
 	Logger *log;					//syslog wrapper
 };
-
-
 
 #endif /* SRC_SYS_SOCKETCLIENT_H_ */

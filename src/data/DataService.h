@@ -26,8 +26,6 @@ class DataService
 			sensorData = sData;
 			desiredData = dData;
 			cameraData = cData;
-
-			memset(dataHolder, 0, sizeof(dataHolder));	//TODO maybe remove not necessary
 		}
 
 		// destructor
@@ -46,6 +44,46 @@ class DataService
 		int getSize()
 		{
 			return sizeof(dataHolder);
+		}
+
+		void saveData(float data[15])
+		{
+			/**
+			 * Use id (1st array element) to choose an appropriate data holder to save the data to
+			 * 1: front camera
+			 * 2: bottom camera
+			 */
+			switch ((int) data[0])
+			{
+				case 1:
+					cameraData->mutex.lock();
+						cameraData->objtId_f = (int) data[1];
+						cameraData->objColor_f = (int) data[2];
+						cameraData->objOffsetX_f = (int) data[3];
+						cameraData->objOffsetY_f = (int) data[4];
+						cameraData->radius_f = (int) data[5];
+						cameraData->objWidth_f = (int) data[6];
+						cameraData->objHeight_f = (int) data[7];
+						cameraData->objAngle_f = (int) data[8];
+					cameraData->mutex.unlock();
+					break;
+
+				case 2:
+					cameraData->mutex.lock();
+						cameraData->objtId_b = (int) data[1];
+						cameraData->objColor_b = (int) data[2];
+						cameraData->objOffsetX_b = (int) data[3];
+						cameraData->objOffsetY_b = (int) data[4];
+						cameraData->radius_b = (int) data[5];
+						cameraData->objWidth_b = (int) data[6];
+						cameraData->objHeight_b = (int) data[7];
+						cameraData->objAngle_b = (int) data[8];
+					cameraData->mutex.unlock();
+					break;
+
+				default:
+					printf("Unsupported id: %d.\n", (int) data[0]);
+			};
 		}
 
 	private:
@@ -77,12 +115,16 @@ class DataService
 			desiredData->mutex.unlock();
 		}
 
+		// 1: front camera data, 2: bottom camera data
 		void copyCameraData()
 		{
 			cameraData->mutex.lock();
-				dataHolder[9] = cameraData->color;
-				dataHolder[10] = cameraData->x;
-				dataHolder[11] = cameraData->y;
+				dataHolder[9] = cameraData->objOffsetX_f;
+				dataHolder[10] = cameraData->objOffsetY_f;
+				dataHolder[11] = cameraData->objAngle_f;
+				dataHolder[12] = cameraData->objOffsetX_b;
+				dataHolder[13] = cameraData->objOffsetY_b;
+				dataHolder[14] = cameraData->objAngle_b;
 			cameraData->mutex.unlock();
 		}
 };
