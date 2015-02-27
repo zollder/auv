@@ -27,24 +27,24 @@ class CameraData
 		~CameraData(){};
 
 		// front (f) camera data holders
-		int objtId_f = 0;
+		int objId_f = 0;
 		int objColor_f = 0;
-		int objOffsetX_f = 0;
-		int objOffsetY_f = 0;
-		int radius_f = 0;
-		int objWidth_f = 0;
-		int objHeight_f = 0;
-		int objAngle_f = 0;
+		float objOffsetX_f = 0;
+		float objOffsetY_f = 0;
+		float radius_f = 0;
+		float objWidth_f = 0;
+		float objHeight_f = 0;
+		float objAngle_f = 0;
 
 		// bottom (b) camera data holders
 		int objtId_b = 0;
 		int objColor_b = 0;
-		int objOffsetX_b = 0;
-		int objOffsetY_b = 0;
-		int radius_b = 0;
-		int objWidth_b = 0;
-		int objHeight_b = 0;
-		int objAngle_b = 0;
+		float objOffsetX_b = 0;
+		float objOffsetY_b = 0;
+		float radius_b = 0;
+		float objWidth_b = 0;
+		float objHeight_b = 0;
+		float objAngle_b = 0;
 
 		// read/write protection mechanism
 		Mutex mutex;

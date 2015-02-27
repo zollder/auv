@@ -144,8 +144,8 @@ void SocketServer::run()
 		}
 		else
 		{
-			//DEBUG MODE Sending Fake Data
-			if( (send(connfd, dataService->getData(), dataService->getSize(), 0)) < 0)
+			int result = send(connfd, dataService->getData(), dataService->getSize(), 0);
+			if(result < 0)
 				logger->error("[ERROR] buffer dispatch error.");
 
 			close(connfd);

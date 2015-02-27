@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 	SensorData* sensorData = new SensorData();
 	DesiredData* targetData = new DesiredData();
 	CameraData* camData = new CameraData();
+
 	DataService* dataService = new DataService(sensorData, targetData, camData);
 	SocketServer* socketServer = new SocketServer(dataService, PORT, CLIENTS);
 	SocketClient* clientFront = new SocketClient(dataService, RETRY_TIMER_FRONT_ID, PORT, U3_FRONT_IP);

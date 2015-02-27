@@ -48,4 +48,4 @@ class SocketServer
 		DataService* dataService;
 };
 
-#endif /* SRC_SYS_SocketServer_H_ */
+#endif

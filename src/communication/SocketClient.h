@@ -11,7 +11,6 @@
 #ifndef SRC_SYS_SOCKETCLIENT_H_
 #define SRC_SYS_SOCKETCLIENT_H_
 
-
 #include <stdio.h>		//printf
 #include <stdlib.h>		//EXIT FUNCTION
 #include <sys/types.h>	//Socket Class

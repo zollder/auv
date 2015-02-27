@@ -3,6 +3,9 @@
  *  Created on: 07.02.2015
  *	Author: zollder
  */
+
+#include <stdio.h>
+
 #include "SensorData.h"
 #include "DesiredData.h"
 #include "CameraData.h"
@@ -34,10 +37,9 @@ class DataService
 		float* getData()
 		{
 			// copy sensor data into array
-			copySensorData();
-			copyDesiredData();
-			copyCameraData();
-
+			this->copySensorData();
+			this->copyDesiredData();
+			this->copyCameraData();
 			return dataHolder;
 		}
 
@@ -53,18 +55,19 @@ class DataService
 			 * 1: front camera
 			 * 2: bottom camera
 			 */
-			switch ((int) data[0])
+			int camId = (int) data[0];
+			switch (camId)
 			{
 				case 1:
 					cameraData->mutex.lock();
-						cameraData->objtId_f = (int) data[1];
+						cameraData->objId_f = (int) data[1];
 						cameraData->objColor_f = (int) data[2];
-						cameraData->objOffsetX_f = (int) data[3];
-						cameraData->objOffsetY_f = (int) data[4];
-						cameraData->radius_f = (int) data[5];
-						cameraData->objWidth_f = (int) data[6];
-						cameraData->objHeight_f = (int) data[7];
-						cameraData->objAngle_f = (int) data[8];
+						cameraData->objOffsetX_f = data[3];
+						cameraData->objOffsetY_f = data[4];
+						cameraData->objAngle_f = data[5];
+						cameraData->radius_f = data[6];
+						cameraData->objWidth_f = data[7];
+						cameraData->objHeight_f = data[8];
 					cameraData->mutex.unlock();
 					break;
 
@@ -72,17 +75,17 @@ class DataService
 					cameraData->mutex.lock();
 						cameraData->objtId_b = (int) data[1];
 						cameraData->objColor_b = (int) data[2];
-						cameraData->objOffsetX_b = (int) data[3];
-						cameraData->objOffsetY_b = (int) data[4];
-						cameraData->radius_b = (int) data[5];
-						cameraData->objWidth_b = (int) data[6];
-						cameraData->objHeight_b = (int) data[7];
-						cameraData->objAngle_b = (int) data[8];
+						cameraData->objOffsetX_b = data[3];
+						cameraData->objOffsetY_b = data[4];
+						cameraData->objAngle_b = data[5];
+						cameraData->radius_b = data[6];
+						cameraData->objWidth_b = data[7];
+						cameraData->objHeight_b = data[8];
 					cameraData->mutex.unlock();
 					break;
 
 				default:
-					printf("Unsupported id: %d.\n", (int) data[0]);
+					printf("Unsupported id: %d.\n", camId);
 			};
 		}
 
@@ -96,6 +99,7 @@ class DataService
 
 		void copySensorData()
 		{
+			printf("Reading sensor data ...\n");
 			sensorData->mutex.lock();
 				dataHolder[0] = sensorData->roll;
 				dataHolder[1] = sensorData->pitch;
@@ -118,6 +122,7 @@ class DataService
 		// 1: front camera data, 2: bottom camera data
 		void copyCameraData()
 		{
+			printf("Reading camera data ...\n");
 			cameraData->mutex.lock();
 				dataHolder[9] = cameraData->objOffsetX_f;
 				dataHolder[10] = cameraData->objOffsetY_f;

@@ -11,7 +11,7 @@
 //-----------------------------------------------------------------------------------------
 SocketClient::SocketClient(DataService* service, int timerId, int port, char *ip)
 {
-	init(dataService, timerId, port, ip);
+	init(service, timerId, port, ip);
 }
 //-----------------------------------------------------------------------------------------
 // initialization of variables
@@ -109,12 +109,6 @@ void SocketClient::recvMsg()
 		while ((numBytes = recv(connfd, recBuff, sizeof(recBuff), MSG_WAITALL)) > 0)
 		{
 			dataService->saveData(recBuff);
-
-			recBuff[numBytes] = 0;
-			for(int x = 0; x < 15 ; x++)
-				printf("%.2f\t", recBuff[x]);
-
-			printf("\n");
 		}
 
 	//Cleanup
