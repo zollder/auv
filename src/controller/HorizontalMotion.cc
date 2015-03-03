@@ -79,13 +79,13 @@
 	{
 		/*printf("Collecting data ...\n");*/
 		desiredData->mutex.lock();
-			this->rightDrift = desiredData->rightDrift;
-			this->leftDrift = desiredData->leftDrift;
+			this->drift = desiredData->drift;
+			this->driftDirection = desiredData->driftDirection;
 			this->reverse = desiredData->reverse;
 			this->speed = desiredData->speed;
 		desiredData->mutex.unlock();
 
-		if (rightDrift or leftDrift)
+		if (drift)
 			this->drifting = true;
 		else
 			this->drifting = false;

@@ -36,8 +36,8 @@ class DesiredData
 		int speed = 0;
 
 		// desired drift properties
-		bool rightDrift = false;
-		bool leftDrift = false;
+		bool drift = false;
+		int driftDirection = 0;	// 0:left, 1:right
 		float driftAngle = 0;
 
 		// forward/reverse flag

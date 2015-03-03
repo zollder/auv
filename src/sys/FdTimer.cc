@@ -81,8 +81,6 @@
 			printf("Error creating timer %d.\n", timerId);
 			exit(EXIT_FAILURE);
 		}
-		else
-			printf("Timer %d started.\n", timerId);
 
 		return result;
 	}
@@ -102,8 +100,6 @@
 			printf("Error creating timer %d.\n", timerId);
 			exit(EXIT_FAILURE);
 		}
-		else
-			printf("Timer %d started.\n", timerId);
 
 		return result;
 	}

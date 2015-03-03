@@ -22,8 +22,7 @@
 #define SERVER_THREAD_ID 8
 #define CLIENT_U3_FRONT_ID 9
 #define CLIENT_U3_BOTTOM_ID 10
-#define RETRY_TIMER_FRONT_ID 11
-#define RETRY_TIMER_BOTTOM_ID 11
+#define RETRY_TIMER_ID 11
 
 /* ----------------------------------------------------
  * timer intervals

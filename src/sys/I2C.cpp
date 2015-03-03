@@ -40,7 +40,7 @@ using namespace std;
 		ssize_t result = write(fileDescriptor, writeBuffer, 2);
 		if (result != 2) {
 			printf("Failed to write to I2C device.\n");
-			exit(1);
+//			exit(1);
 		}
 
 		close(fileDescriptor);
@@ -63,7 +63,7 @@ using namespace std;
 		ssize_t result = write(fileDescriptor, writeBuffer, 1);
 		if (result != 1) {
 			printf("Failed to write to I2C device.\n");
-			exit(1);
+//			exit(1);
 		}
 
 		close(fileDescriptor);
@@ -135,7 +135,7 @@ using namespace std;
 		if (fileDescriptor < 0)
 		{
 			perror("Failed to open the i2c bus");
-			exit(1);
+//			exit(1);
 		}
 
 		return fileDescriptor;
@@ -151,6 +151,6 @@ using namespace std;
 		if (ioCtrResult < 0)
 		{
 			printf("Failed to acquire bus access and/or talk to slave.\n");
-			exit(1);
+//			exit(1);
 		}
 	}

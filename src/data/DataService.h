@@ -99,30 +99,31 @@ class DataService
 
 		void copySensorData()
 		{
-			printf("Reading sensor data ...\n");
+			/*printf("Reading sensor data ...\n");*/
 			sensorData->mutex.lock();
 				dataHolder[0] = sensorData->roll;
 				dataHolder[1] = sensorData->pitch;
 				dataHolder[2] = sensorData->yaw;
 				dataHolder[3] = sensorData->depth;
-				dataHolder[4] = sensorData->temperature;
 			sensorData->mutex.unlock();
 		}
 
 		void copyDesiredData ()
 		{
+			/*printf("Reading desired data ...\n");*/
 			desiredData->mutex.lock();
-				dataHolder[5] = desiredData->heading;
-				dataHolder[6] = desiredData->depth;
-				dataHolder[7] = desiredData->speed;
-				dataHolder[8] = desiredData->reverse ? 1 : 0;
+				dataHolder[4] = (float) desiredData->heading;
+				dataHolder[5] = (float) desiredData->depth;
+				dataHolder[6] = (float) desiredData->speed;
+				dataHolder[7] = desiredData->reverse ? 1.0 : 0.0;
+				dataHolder[8] = desiredData->drift ? 1.0 : 0.0;
 			desiredData->mutex.unlock();
 		}
 
 		// 1: front camera data, 2: bottom camera data
 		void copyCameraData()
 		{
-			printf("Reading camera data ...\n");
+			/*printf("Reading camera data ...\n");*/
 			cameraData->mutex.lock();
 				dataHolder[9] = cameraData->objOffsetX_f;
 				dataHolder[10] = cameraData->objOffsetY_f;

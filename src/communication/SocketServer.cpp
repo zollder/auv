@@ -53,7 +53,7 @@ SocketServer::~SocketServer()
 //-----------------------------------------------------------------------------------------
 void SocketServer::start()
 {
-	if( !dataService )
+	if (!dataService)
 	{
 		logger->error("[ERROR] missing data source.");
 		exit(EXIT_FAILURE);
@@ -80,14 +80,14 @@ void SocketServer::start()
 	if (result < 0)
 	{
 		int delay = 8;
-		while( bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0 && --delay)
+		while (bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0 && --delay)
 		{
 			//Max Linux delay is 60 seconds by default.
 			//creates TIME_WAIT for making sure all socket connection had chance to send data back or from server.
 			sleep(10);
 		}
 
-		if( delay == 0)
+		if (delay == 0)
 		{
 			logger->error("[ERROR] failed to bind socket.");
 			exit(EXIT_FAILURE);
@@ -104,7 +104,8 @@ void SocketServer::stop()
 		logger->notice("[NOTICE] session already closed.");
 	else
 	{
-		if ( shutdown(connfd, SHUT_RDWR) < 0)
+		int result = shutdown(connfd, SHUT_RDWR);
+		if (result < 0)
 			logger->error("[NOTICE] invalid session descriptor.");
 		else
 			logger->info("[INFO] socket session closed.");
@@ -117,7 +118,7 @@ void SocketServer::stop()
 		logger->notice("[NOTICE] socket server already closed");
 	else
 	{
-		if ( close(sockfd) < 0)
+		if (close(sockfd) < 0)
 			logger->error("[NOTICE] failed to close socket server.");
 		else
 			logger->info("[INFO] socket server closed.");
@@ -145,7 +146,7 @@ void SocketServer::run()
 		else
 		{
 			int result = send(connfd, dataService->getData(), dataService->getSize(), 0);
-			if(result < 0)
+			if (result < 0)
 				logger->error("[ERROR] buffer dispatch error.");
 
 			close(connfd);

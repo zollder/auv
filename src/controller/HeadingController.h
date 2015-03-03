@@ -53,8 +53,8 @@ class HeadingController : public BaseThread
 		int desiredHeading = 0;
 
 		// drift-related instance variables
-		bool rightDrift = false;
-		bool leftDrift = false;
+		bool drift = false;
+		int driftDirection = 0;	// 0:left, 1:right
 		float driftAngle = 0;
 
 		/* duty cycle related instance variables */
