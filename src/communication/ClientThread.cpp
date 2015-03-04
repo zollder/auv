@@ -9,9 +9,9 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-ClientThread::ClientThread(SocketClient* client, float interval)
+ClientThread::ClientThread(SocketClient* client, int threadId, float interval)
 {
-	setThreadId(CLIENT_THREAD_ID);
+	setThreadId(threadId);
 	socketClient = client;
 	flag = false;
 
@@ -62,13 +62,11 @@ int ClientThread::stop()
 {
 	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] STOP");
 	return pthread_cancel(getThreadId());
-
 }
 
 int ClientThread::kill()
 {
 	syslog(LOG_NOTICE,"[KPI::CLIENT THREAD] KILL");
 	return pthread_kill(getThreadId(), SIGQUIT);
-
 }
 

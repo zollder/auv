@@ -9,12 +9,10 @@
 #include "../data/SensorData.h"
 #include "../data/DesiredData.h"
 #include "../sys/PWM.h"
+#include "../commons/Config.h"
 
 #ifndef horizontalmotion_h
 #define horizontalmotion_h
-
-#define HM_THREAD_ID 5
-#define HM_INTERVAL 0.05	// 50 ms
 
 //-----------------------------------------------------------------------------------------
 // HorizontalMotion interface.
@@ -56,8 +54,8 @@ class HorizontalMotion : public BaseThread
 		/* predefined speed levels */
 		int speedLevel[9] = {0,5,10,15,20,25,50,75,100};
 
-		bool rightDrift = false;
-		bool leftDrift = false;
+		bool drift = false;
+		int driftDirection = 0;	// 0:left, 1:right
 
 		/* duty cycle related instance variables */
 		int currentDuty = 0;

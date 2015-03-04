@@ -10,7 +10,7 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-ServerThread::ServerThread(SocketServer* server)
+ServerThread::ServerThread(SocketServer* server, int id)
 {
 	setThreadId( SERVER_THREAD_ID );
 	socketServer = server;

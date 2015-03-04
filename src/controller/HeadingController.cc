@@ -65,7 +65,7 @@
 			this->getherData();
 
 			// determine if the device should turn or drift and use an appropriate algorithm
-			if (rightDrift or leftDrift)
+			if (drift)
 				this->calculateDriftDuty();
 			else
 				this->calculateCorrectiveDuty();
@@ -86,8 +86,8 @@
 	{
 		desiredData->mutex.lock();
 			desiredHeading = desiredData->heading;
-			rightDrift = desiredData->rightDrift;
-			leftDrift = desiredData->leftDrift;
+			drift = desiredData->drift;
+			driftDirection = desiredData->driftDirection;
 			driftAngle = desiredData->driftAngle;
 		desiredData->mutex.unlock();
 

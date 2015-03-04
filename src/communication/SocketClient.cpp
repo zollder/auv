@@ -9,22 +9,20 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-SocketClient::SocketClient()
+SocketClient::SocketClient(DataService* service, int timerId, int port, char *ip)
 {
-	init( 5000, "127.0.0.1" );
-
-}
-
-SocketClient::SocketClient(int port, char *ip )
-{
-	init( port , ip);
-
+	init(service, timerId, port, ip);
 }
 //-----------------------------------------------------------------------------------------
 // initialization of variables
 //-----------------------------------------------------------------------------------------
-void SocketClient::init(int port , char *ip)
+void SocketClient::init(DataService* service, int timerId, int port , char *ip)
 {
+	// initialize single-shot timer for retry logic
+	retryTimer = new FdTimer(timerId, CLIENT_RETRY_INTERVAL);
+
+	dataService = service;
+
 	portNumber = port;
 	ipServer = ip;
 
@@ -44,7 +42,7 @@ void SocketClient::init(int port , char *ip)
 //-----------------------------------------------------------------------------------------
 SocketClient::~SocketClient()
 {
-	if ( close(connfd) < 0)
+	if (close(connfd) < 0)
 		log->error("[ERROR] Failed to Close Socket Client");
 	else
 		log->info("[INFO] Socket Client Closed");
@@ -52,61 +50,68 @@ SocketClient::~SocketClient()
 	connfd = -1;
 
 	delete log;
-
+	delete retryTimer;
 }
+
 //-----------------------------------------------------------------------------------------
-// Class Execution
+/** Starts (creates) a socket inside the kernel and returns socket descriptor.
+ * 	Implements retry logic with configurable interval and # of attempts. */
 //-----------------------------------------------------------------------------------------
 void SocketClient::start()
 {
+	bool retry = true;
+	int counter = RETRY_COUNTER;
 
-	//create socket inside the kernel and return socket descriptor
-	connfd = socket(AF_INET, SOCK_STREAM, 0);
-
-	if (connfd < 0)
+	while (retry)
 	{
-		log->error("[ERROR] Failed to Open Socket");
-		exit(EXIT_FAILURE);
+		//create socket inside the kernel and return socket descriptor
+		connfd = socket(AF_INET, SOCK_STREAM, 0);
+
+		if (connfd >= 0)
+			retry = false;
+		else if (connfd < 0 and counter >= 0)
+		{
+			counter--;
+			printf("Failed to open a socket (attempt %d)\n", RETRY_COUNTER - counter);
+			retryTimer->startSingle();
+			retryTimer->waitTimerEvent();
+		}
+		else
+		{
+			log->error("[ERROR] Failed to Open Socket");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(portNumber);
 
-	if( inet_pton(AF_INET, ipServer , &server_addr.sin_addr) <= 0 )
+	if (inet_pton(AF_INET, ipServer, &server_addr.sin_addr) <= 0)
 	{
 		log->error("[ERROR] Unable to open inet_pton");
 		exit(EXIT_FAILURE);
 	}
-
 }
 
+//-----------------------------------------------------------------------------------------
+/** Connects to a remote server.
+ *  Reads a message (array of floats) from the server.
+ *  Closes the connection upon successful read. */
+//-----------------------------------------------------------------------------------------
 void SocketClient::recvMsg()
 {
-	//Attempt to connect onto the server
-	if( connect( connfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0 )
-	{
+	//Attempt to connect to the server
+	int result = connect(connfd, (struct sockaddr *) &server_addr, sizeof(server_addr));
+	if(result < 0)
 		log->error("[ERROR] Failed to Connect to Server");
 		//should not terminate program but continuously retry versus exit(EXIT_FAILURE);
-	}
 	else
-	{
-		while ( ( numBytes = recv( connfd, recBuff, sizeof( recBuff ) , MSG_WAITALL ) ) > 0)
+		while ((numBytes = recv(connfd, recBuff, sizeof(recBuff), MSG_WAITALL)) > 0)
 		{
-			recBuff[numBytes] = 0;
-
-	//Not necessary
-	//		if(numBytes < 0)
-	//			log->error("[ERROR] Read Error");
-
-			for( int  x = 0; x < 15 ; x++ )
-				printf("%.2f\t", recBuff[x]);
-			printf("\n");
-
+			dataService->saveData(recBuff);
 		}
-	}
 
 	//Cleanup
 	close(connfd);
 	connfd= -1;
-
 }

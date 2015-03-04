@@ -5,19 +5,17 @@
  *	https://github.com/vic320/Arduino-MS5803-14BA/blob/master/MS5803.cpp
  */
 
+#include <stdio.h>
+
 #include "../sys/I2C.h"
 #include "../commons/Vector.h"
 #include "../sys/FdTimer.h"
-#include <stdio.h>
+#include "../commons/Config.h"
 
 using namespace std;
 
 #ifndef ms5803_h
 #define ms5803_h
-
-/* DMU's single-shot timer ID */
-#define DMU_SH_TIMER 3
-#define DMU_SH_TIMER_DELAY 0.01	// 10ms
 
 // read/write bit is set by ioCtr in I2C.cpp
 #define PTS_ADDRESS 0x76

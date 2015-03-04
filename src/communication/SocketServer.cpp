@@ -8,30 +8,26 @@
 //-----------------------------------------------------------------------------------------
 // Constructors
 //-----------------------------------------------------------------------------------------
-SocketServer::SocketServer( DataService *data )
+SocketServer::SocketServer(DataService* service)
 {
-	init( 5000 , 2 );
-	dataService = data;
-
+	init(service, PORT, CLIENTS);
 }
 
-SocketServer::SocketServer( int port, int max , DataService *data)
+SocketServer::SocketServer(DataService* service, int port, int connections)
 {
-	init( port , max );
-	dataService = data;
-
+	init(service, port, connections);
 }
+
 //-----------------------------------------------------------------------------------------
 // initialization of variables
 //-----------------------------------------------------------------------------------------
-void SocketServer::init( int port, int max)
+void SocketServer::init(DataService* service, int port, int connections)
 {
+	dataService = service;
 	portNumber = port;
-	maxUser = max;
-	dataService = NULL ;
+	maxUser = connections;
 
 	// Initialize System Log
-	//DEBUG logger = new Logger((char*) "Socket Server [KPI]");
 	logger = new Logger("Socket Server [KPI]");
 
 	//Initializing Socket data
@@ -42,6 +38,7 @@ void SocketServer::init( int port, int max)
 	memset(&server_addr, '0', sizeof(server_addr));
 	memset(&client_addr, '0', sizeof(client_addr));
 }
+
 //-----------------------------------------------------------------------------------------
 // Destructor
 //-----------------------------------------------------------------------------------------
@@ -50,14 +47,15 @@ SocketServer::~SocketServer()
 	stop();
 	delete logger;
 }
+
 //-----------------------------------------------------------------------------------------
 // Class Execution
 //-----------------------------------------------------------------------------------------
 void SocketServer::start()
 {
-	if( !dataService )
+	if (!dataService)
 	{
-		logger->error("[ERROR] No Data Holder passing, Not supported for anything else");
+		logger->error("[ERROR] missing data source.");
 		exit(EXIT_FAILURE);
 	}
 
@@ -66,7 +64,7 @@ void SocketServer::start()
 
 	if (sockfd < 0)
 	{
-		logger->error("[ERROR] Failed to Open Socket");
+		logger->error("[ERROR] failed to open socket.");
 		exit(EXIT_FAILURE);
 	}
 
@@ -78,52 +76,52 @@ void SocketServer::start()
 	client_len = sizeof(client_addr);
 
 	//bind host address
-	if ( bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0)
+	int result = bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr));
+	if (result < 0)
 	{
-		int delay=8;
-		while( bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0 && --delay)
+		int delay = 8;
+		while (bind(sockfd, (struct sockaddr *) &server_addr, sizeof(server_addr) ) < 0 && --delay)
 		{
 			//Max Linux delay is 60 seconds by default.
 			//creates TIME_WAIT for making sure all socket connection had chance to send data back or from server.
 			sleep(10);
 		}
 
-		if( delay == 0)
+		if (delay == 0)
 		{
-			logger->error("[ERROR] Failed to Bind Socket");
+			logger->error("[ERROR] failed to bind socket.");
 			exit(EXIT_FAILURE);
 		}
 	}
 
-	logger->info("[INFO] Socket Server initialized");
+	logger->info("[INFO] socket server successfully initialized.");
 }
 
 void SocketServer::stop()
 {
 	// Closing Active Session
 	if (connfd < 0)
-		logger->notice("[NOTICE] Session already Closed");
+		logger->notice("[NOTICE] session already closed.");
 	else
 	{
-		if ( shutdown(connfd, SHUT_RDWR) < 0)
-			logger->error("[NOTICE] Invalid session descriptor");
+		int result = shutdown(connfd, SHUT_RDWR);
+		if (result < 0)
+			logger->error("[NOTICE] invalid session descriptor.");
 		else
-			logger->info("[INFO] Socket Session Closed");
+			logger->info("[INFO] socket session closed.");
 
 		connfd = -1;
 	}
 
 	// Closing Server Socket
 	if (sockfd < 0)
-	{
-		logger->notice("[NOTICE] Socket Server already closed");
-	}
+		logger->notice("[NOTICE] socket server already closed");
 	else
 	{
-		if ( close(sockfd) < 0)
-			logger->error("[NOTICE] Failed to Close Socket Server");
+		if (close(sockfd) < 0)
+			logger->error("[NOTICE] failed to close socket server.");
 		else
-			logger->info("[INFO] Socket Server Closed");
+			logger->info("[INFO] socket server closed.");
 
 		sockfd = -1;
 	}
@@ -132,28 +130,27 @@ void SocketServer::stop()
 void SocketServer::run()
 {
 	// Start Listening for clients
-	listen( sockfd, maxUser );
-	logger->info("[INFO] Listening");
+	listen(sockfd, maxUser);
+	logger->info("[INFO] listening ...");
 
-	while( sockfd > 1)
+	while (sockfd > 1)
 	{
 		//wait for clients
 		connfd = accept(sockfd, (struct sockaddr *) &client_addr, (socklen_t *)&client_len);
 
-		if( connfd < 1)
+		if (connfd < 1)
 		{
-			logger->error( "[ERROR] Failed to Accept Connection");
-			close( connfd);
+			logger->error( "[ERROR] failed to accept connection.");
+			close(connfd);
 		}
 		else
 		{
-			//DEBUG MODE Sending Fake Data
-			if( (send(connfd, dataService->getFakeData(), dataService->getSize() ,0 ) ) < 0 )
-				logger->error( "[ERROR] Failed to Send Buffer to Socket");
+			int result = send(connfd, dataService->getData(), dataService->getSize(), 0);
+			if (result < 0)
+				logger->error("[ERROR] buffer dispatch error.");
 
-			close( connfd);
+			close(connfd);
 		}
-
 	}
 
 	logger->info( "[INFO] End Run");

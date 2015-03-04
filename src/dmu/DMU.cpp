@@ -121,5 +121,5 @@
 		 * P actual = P measured - P sea-level
 		 * depth (centimeters) = depth (meters) x 100 */
 
-		depth = (int) ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
+		depth = ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
 	}

@@ -30,7 +30,7 @@ class SensorData
 		float pitch = 0;
 		float yaw = 0;
 
-		int depth = 0;
+		float depth = 0;
 		float temperature = 0;
 
 		// read/write protection mechanism
