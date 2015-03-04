@@ -6,13 +6,11 @@
 #include "../sys/BaseThread.h"
 #include "../sys/SocketServer.h"
 #include <signal.h>
-
 #include "../commons/Config.h"
 
 #ifndef SRC_COMMUNICATION_SERVERTHREAD_H_
 #define SRC_COMMUNICATION_SERVERTHREAD_H_
 
-#define SOCKET_SERVER_THREAD_ID 8
 
 class ServerThread: public BaseThread
 {

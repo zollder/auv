@@ -18,7 +18,8 @@
  * The Server is used to send corresponding Data back to the client through a socket connection.
  **/
 //-----------------------------------------------------------------------------------------------------
-class SocketServer {
+class SocketServer 
+{
 
 public:
 
