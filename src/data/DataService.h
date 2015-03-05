@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "../commons/Config.h"
 #include "SensorData.h"
 #include "DesiredData.h"
 #include "CameraData.h"
@@ -89,6 +90,14 @@ class DataService
 			};
 		}
 
+//TODO		void reset(char ip)
+//		{
+//			if (ip == "192.168.0.11")
+//				printf("bottom server dead");
+//			else if (ip == "192.168.0.12")
+//				printf("front server dead");
+//		}
+
 	private:
 
 		SensorData* sensorData;
@@ -123,7 +132,6 @@ class DataService
 		// 1: front camera data, 2: bottom camera data
 		void copyCameraData()
 		{
-			/*printf("Reading camera data ...\n");*/
 			cameraData->mutex.lock();
 				dataHolder[9] = cameraData->objOffsetX_f;
 				dataHolder[10] = cameraData->objOffsetY_f;

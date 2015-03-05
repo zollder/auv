@@ -48,8 +48,6 @@
 		altitudePid->reset();
 		pitchPid->reset();
 
-		printf("------------------STUPID_1---------------------");
-
 		pwm->setPeriod(PWM_MODULE_2_ID, BASE_PERIOD);
 
 		pwm->setDuty(21, 0);
@@ -57,8 +55,6 @@
 
 		pwm->start(21);
 		pwm->start(22);
-
-		printf("------------------STUPID_2---------------------");
 
 		timer->start();
 

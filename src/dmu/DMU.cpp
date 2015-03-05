@@ -121,5 +121,10 @@
 		 * P actual = P measured - P sea-level
 		 * depth (centimeters) = depth (meters) x 100 */
 
-		depth = ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
+		depth_tmp = ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
+		depth_tmp = depth_tmp + DEPTH_COMPENSATOR;
+
+		//disregard connection errors that causes high negative values.
+		if (depth_tmp > 0 && depth_tmp < 600)
+			depth = depth_tmp;
 	}

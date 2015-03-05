@@ -65,6 +65,7 @@ class DMU
 		float temperature = 0;
 		float pressure = 0;
 		float depth = 0;
+		float depth_tmp = 0;
 
 		//-----------------------------------------------------------------------------------------
 		// Private members

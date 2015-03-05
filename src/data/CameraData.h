@@ -25,6 +25,7 @@ class CameraData
 
 		// destructor
 		~CameraData(){};
+		int camId = 0;
 
 		// front (f) camera data holders
 		int objId_f = 0;

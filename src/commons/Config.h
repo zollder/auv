@@ -9,6 +9,7 @@
  * Escape sequence
  ------------------------------------------------------*/
 #define ESC 27
+#define DEPTH_COMPENSATOR 14.0
 
 /* ----------------------------------------------------
  * thread IDs
@@ -43,8 +44,8 @@
  * Socket server/client parameters
  ------------------------------------------------------*/
 #define BBB_IP "192.168.0.10"
-#define U3_FRONT_IP "192.168.0.12"
 #define U3_BOTTOM_IP "192.168.0.11"
+#define U3_FRONT_IP "192.168.0.12"
 
 #define PORT 5000
 #define CLIENTS 2

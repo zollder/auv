@@ -64,7 +64,8 @@
 				sensorData->depth = dmu->depth;
 			sensorData->mutex.unlock();
 
-//			printf("DMU data:   %10.2f    %10.2f    %10d \n", dmu->temperature, dmu->pressure, dmu->depth);
+			//DEBUG
+			printf("DMU data:   %10.2f    %10.2f    %10.2f\n", dmu->temperature, dmu->pressure, dmu->depth );
 		}
 
 		return NULL;
