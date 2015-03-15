@@ -27,7 +27,7 @@ class DesiredData
 		~DesiredData() {}
 
 		// desired depth in cm (integer can be used)
-		int depth = 0;
+		int depth = 10;
 
 		// desired direction (degrees relative to North)
 		int heading = 0;

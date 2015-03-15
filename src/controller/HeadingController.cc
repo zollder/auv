@@ -44,16 +44,13 @@
 	{
 		yawPid->reset();
 
-		pwm->setPeriod(PWM_MODULE_3_ID, PWM_PERIOD_HZ);
+		pwm->setPeriod(PWM_MODULE_2_ID, PWM_PERIOD_HZ);
 
-		pwm->setPolarity(31, 0);
-		pwm->setPolarity(32, 0);
+		pwm->setDuty(21, 0);
+		pwm->setDuty(22, 0);
 
-		pwm->setDuty(31, 0);
-		pwm->setDuty(32, 0);
-
-		pwm->start(31);
-		pwm->start(32);
+		pwm->start(21);
+		pwm->start(22);
 
 		timer->start();
 
@@ -94,6 +91,8 @@
 		sensorData->mutex.lock();
 			actualHeading = floor(sensorData->yaw + 0.5);
 		sensorData->mutex.unlock();
+
+//		printf("Heading: %10d, \n", actualHeading);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -126,13 +125,13 @@
 		// verify if the difference is large enough to apply the changes, if necessary
 		if (abs(frontDuty - lastFrontDuty) > 0)
 		{
-			pwm->setDuty(31, frontDuty);
+			pwm->setDuty(21, frontDuty);
 			lastFrontDuty = frontDuty;
 		}
 
 		if (abs(rearDuty - lastRearDuty) > 0)
 		{
-			pwm->setDuty(32, rearDuty);
+			pwm->setDuty(22, rearDuty);
 			lastRearDuty = rearDuty;
 		}
 	}

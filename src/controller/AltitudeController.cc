@@ -48,13 +48,13 @@
 		altitudePid->reset();
 		pitchPid->reset();
 
-		pwm->setPeriod(PWM_MODULE_2_ID, BASE_PERIOD);
+		pwm->setPeriod(PWM_MODULE_1_ID, BASE_PERIOD);
 
-		pwm->setDuty(21, 0);
-		pwm->setDuty(22, 0);
+		pwm->setDuty(11, 0);
+		pwm->setDuty(12, 0);
 
-		pwm->start(21);
-		pwm->start(22);
+		pwm->start(11);
+		pwm->start(12);
 
 		timer->start();
 
@@ -139,16 +139,16 @@
 		// verify if the difference is large enough to apply the changes, if necessary
 		if (abs(frontDuty - lastFrontDuty) > 1)
 		{
-			pwm->setDuty(21, frontDuty);
+			pwm->setDuty(11, frontDuty);
 			lastFrontDuty = frontDuty;
 		}
 
 		if (abs(rearDuty - lastRearDuty) > 1)
 		{
-			pwm->setDuty(22, rearDuty);
+			pwm->setDuty(12, rearDuty);
 			lastRearDuty = rearDuty;
 		}
 
-		printf("----------------------------------1:%d 2:%d\n", frontDuty, rearDuty);
+//		printf("----------------------------------1:%d 2:%d\n", frontDuty, rearDuty);
 	}
 

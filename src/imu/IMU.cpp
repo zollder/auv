@@ -147,8 +147,8 @@
 		// gravity compensation
 		offset[5]= offset[5] - GRAVITY*SENSOR_SIGN[5];
 
-		printf("offset: %d, %d, %d, %d, %d, %d\n",
-				offset[0], offset[1], offset[2], offset[3], offset[4], offset[5]);
+		//DEBUG
+		//printf("offset: %d, %d, %d, %d, %d, %d\n", offset[0], offset[1], offset[2], offset[3], offset[4], offset[5]);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -167,8 +167,6 @@
 		gyroData.x = SENSOR_SIGN[0] * (rawData[0] - offset[0]);
 		gyroData.y = SENSOR_SIGN[1] * (rawData[1] - offset[1]);
 		gyroData.z = SENSOR_SIGN[2] * (rawData[2] - offset[2]);
-
-		/* printf("%d  %d  %d     \n", gyroData->x, gyroData->y, gyroData->z); */
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -187,8 +185,6 @@
 		accData.x = SENSOR_SIGN[3] * (rawData[3] - offset[3]);
 		accData.y = SENSOR_SIGN[4] * (rawData[4] - offset[4]);
 		accData.z = SENSOR_SIGN[5] * (rawData[5] - offset[5]);
-
-		/*printf("%d  %d  %d     \n", accelData->x, accelData->y, accelData->z);*/
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -202,8 +198,6 @@
 		magData.x = SENSOR_SIGN[6] * compass->magnetRawData.x;
 		magData.y = SENSOR_SIGN[7] * compass->magnetRawData.y;
 		magData.z = SENSOR_SIGN[8] * compass->magnetRawData.z;
-
-		/*printf("raw: %d  %d  %d     \n", magData->x, magData->y, magData->z);*/
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -224,8 +218,6 @@
 		corrMagData.y = (float) (magData.y - SENSOR_SIGN[7] * M_Y_MIN) / (M_Y_MAX - M_Y_MIN) - SENSOR_SIGN[7] * 0.5;
 		corrMagData.z = (float) (magData.z - SENSOR_SIGN[8] * M_Z_MIN) / (M_Z_MAX - M_Z_MIN) - SENSOR_SIGN[8] * 0.5;
 
-		/*printf ("\033[1Aroll: %.2f \tpitch: %.2f  \tyaw: %.2f\n", c_magnetom_x, c_magnetom_y, c_magnetom_z);*/
-
 		// Tilt compensated Magnetic filed X:
 		magX = corrMagData.x * cos_pitch + corrMagData.y * sin_roll * sin_pitch + corrMagData.z * cos_roll * sin_pitch;
 
@@ -234,8 +226,6 @@
 
 		// Magnetic Heading
 		magHeading = atan2(-magY, magX);
-
-		/*printf ("\033[1Aroll: %.2f\n", MAG_Heading);*/
 	}
 
 	//-----------------------------------------------------------------------------------------

@@ -98,7 +98,7 @@
 			integError = 0;
 		}
 
-		printf("Calculated duty in %: %d\n", (int) output);
+		printf("Duty: %5d, E: %5.0f, IE: %5.0f, DE: %5.0f\n", (int) output, error, integError, derivError);
 
 		return (int) output;
 	}
