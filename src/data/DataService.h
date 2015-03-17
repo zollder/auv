@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 
+#include "../commons/Config.h"
 #include "SensorData.h"
 #include "DesiredData.h"
 #include "CameraData.h"
@@ -73,14 +74,11 @@ class DataService
 
 				case 2:
 					cameraData->mutex.lock();
-						cameraData->objtId_b = (int) data[1];
-						cameraData->objColor_b = (int) data[2];
-						cameraData->objOffsetX_b = data[3];
-						cameraData->objOffsetY_b = data[4];
-						cameraData->objAngle_b = data[5];
-						cameraData->radius_b = data[6];
-						cameraData->objWidth_b = data[7];
-						cameraData->objHeight_b = data[8];
+						cameraData->objOffsetX_b = data[1];
+						cameraData->objOffsetY_b = data[2];
+						cameraData->objAngle_b = data[3];
+						cameraData->objWidth_b = data[4];
+						cameraData->objHeight_b = data[5];
 					cameraData->mutex.unlock();
 					break;
 
@@ -89,17 +87,25 @@ class DataService
 			};
 		}
 
-	private:
-
 		SensorData* sensorData;
 		DesiredData* desiredData;
 		CameraData* cameraData;
+
+//TODO		void reset(char ip)
+//		{
+//			if (ip == "192.168.0.11")
+//				printf("bottom server dead");
+//			else if (ip == "192.168.0.12")
+//				printf("front server dead");
+//		}
+
+	private:
 
 		float dataHolder[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 		void copySensorData()
 		{
-			/*printf("Reading sensor data ...\n");*/
+			//printf("Reading sensor data ...\n");
 			sensorData->mutex.lock();
 				dataHolder[0] = sensorData->roll;
 				dataHolder[1] = sensorData->pitch;
@@ -110,7 +116,7 @@ class DataService
 
 		void copyDesiredData ()
 		{
-			/*printf("Reading desired data ...\n");*/
+			//printf("Reading desired data ...\n");
 			desiredData->mutex.lock();
 				dataHolder[4] = (float) desiredData->heading;
 				dataHolder[5] = (float) desiredData->depth;
@@ -123,11 +129,12 @@ class DataService
 		// 1: front camera data, 2: bottom camera data
 		void copyCameraData()
 		{
-			/*printf("Reading camera data ...\n");*/
+			//printf("Reading camera data ...\n");
 			cameraData->mutex.lock();
 				dataHolder[9] = cameraData->objOffsetX_f;
 				dataHolder[10] = cameraData->objOffsetY_f;
 				dataHolder[11] = cameraData->objAngle_f;
+
 				dataHolder[12] = cameraData->objOffsetX_b;
 				dataHolder[13] = cameraData->objOffsetY_b;
 				dataHolder[14] = cameraData->objAngle_b;

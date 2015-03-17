@@ -13,7 +13,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	HorizontalMotion::HorizontalMotion(SensorData* sensorData_p, DesiredData* desiredData_p)
+	HorizontalMotion::HorizontalMotion(DataService* service)
 	{
 		printf("Constructing HorizontalMotion controller thread...\n");
 
@@ -21,8 +21,7 @@
 		timer = new FdTimer(getThreadId(), HM_INTERVAL);
 		pwm = new PWM();
 
-		sensorData = sensorData_p;
-		desiredData = desiredData_p;
+		this->dataService = service;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -60,13 +59,8 @@
 			// read current and desired position-related values
 			this->getherData();
 
-			// calculate duty cycle
-			this->calculateDuty();
-
 			// write calculated duty cycle values
 			this->adjustDutyCycle();
-
-			printf("------------5&6:%d\n", currentDuty);
 		}
 
 		return NULL;
@@ -78,33 +72,15 @@
 	void HorizontalMotion::getherData()
 	{
 		/*printf("Collecting data ...\n");*/
-		desiredData->mutex.lock();
-			this->drift = desiredData->drift;
-			this->driftDirection = desiredData->driftDirection;
-			this->reverse = desiredData->reverse;
-			this->speed = desiredData->speed;
-		desiredData->mutex.unlock();
+		dataService->desiredData->mutex.lock();
+			this->reverse = dataService->desiredData->reverse;
+			this->newSpeed = dataService->desiredData->speed;
+		dataService->desiredData->mutex.unlock();
 
-		if (drift)
-			this->drifting = true;
-		else
-			this->drifting = false;
-	}
-
-	//-----------------------------------------------------------------------------------------
-	/** Calculates duty for each motor based on the desired speed.
-	 *  Stores calculated values in the corresponding instance variables. */
-	//-----------------------------------------------------------------------------------------
-	void HorizontalMotion::calculateDuty()
-	{
-		// TODO: implement forward/reverse direction logic
-
-		/*printf("Calculating duty values ...\n");*/
-
-		if (drifting)
-			this->speed = 0;
-
-		newDuty = speedLevel[speed];
+//		if (drift)
+//			this->drifting = true;
+//		else
+//			this->drifting = false;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -112,20 +88,23 @@
 	//-----------------------------------------------------------------------------------------
 	void HorizontalMotion::adjustDutyCycle()
 	{
-		/*printf("Adjusting duty cycle for motors 1 & 2 ...\n");*/
-/*
-		if (reverse)
-			// TODO: switch to reverse
-		else
-			// TODO: switch to forward
-*/
-
-		// verify if the difference is large enough to apply the changes, if necessary
-		if (newDuty != currentDuty)
+		if (reverse == false)
 		{
-			pwm->setDuty(31, newDuty);
-			pwm->setDuty(32, newDuty);
-			currentDuty = newDuty;
+			// verify if the difference is large enough to apply the changes, if necessary
+			if (newSpeed != currentSpeed)
+			{
+				pwm->setDuty(32, speedLevel[newSpeed]);
+				currentSpeed = newSpeed;
+			}
 		}
+		else
+		{
+			if (newSpeed != currentSpeed)
+			{
+				pwm->setDuty(32, -(speedLevel[newSpeed]));
+				currentSpeed = newSpeed;
+			}
+		}
+
 	}
 

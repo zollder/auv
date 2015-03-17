@@ -6,8 +6,7 @@
 
 #include "../sys/BaseThread.h"
 #include "../sys/FdTimer.h"
-#include "../data/SensorData.h"
-#include "../data/DesiredData.h"
+#include "../data/DataService.h"
 #include "../sys/PWM.h"
 #include "../commons/Config.h"
 
@@ -25,7 +24,7 @@ class HorizontalMotion : public BaseThread
 	public:
 
 		// constructor
-		HorizontalMotion(SensorData* sData, DesiredData* dData);
+		HorizontalMotion(DataService* service);
 
 		// destructor
 		~HorizontalMotion();
@@ -42,28 +41,22 @@ class HorizontalMotion : public BaseThread
 		PWM* pwm;
 
 		/* data source definitions */
-		DesiredData* desiredData;
-		SensorData* sensorData;
+		DataService* dataService;
 
 		/* motion-related flags */
-		bool moving = false;
-		bool drifting = false;
 		bool reverse  = false;
-		int speed = 0;
-
-		/* predefined speed levels */
-		int speedLevel[9] = {0,5,10,15,20,25,50,75,100};
-
 		bool drift = false;
 		int driftDirection = 0;	// 0:left, 1:right
 
-		/* duty cycle related instance variables */
-		int currentDuty = 0;
-		int newDuty = 0;
+		int newSpeed = 0;
+		int currentSpeed = 0;
+
+		/* predefined speed levels */
+		int speedLevel[7] = {0,5,15,30,50,75,100};
+
 
 		/* private helper methods */
 		void getherData(void);
-		void calculateDuty(void);
 		void adjustDutyCycle(void);
 };
 

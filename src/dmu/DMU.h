@@ -65,6 +65,10 @@ class DMU
 		float temperature = 0;
 		float pressure = 0;
 		float depth = 0;
+		float depth_tmp = -1;
+		float depth_compensator = 0;
+		bool init = true;
+		int depth_count = 20;
 
 		//-----------------------------------------------------------------------------------------
 		// Private members

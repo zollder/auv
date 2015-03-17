@@ -13,7 +13,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	AltitudeController::AltitudeController(SensorData* sensorData_p, DesiredData* desiredData_p)
+	AltitudeController::AltitudeController(DataService* service)
 	{
 		printf("Constructing AltitudeController controller thread...\n");
 
@@ -24,8 +24,7 @@
 		altitudePid = new PID(ALT_KP, ALT_KI, ALT_KD);
 		pitchPid = new PID(PITCH_KP, PITCH_KI, PITCH_KD);
 
-		sensorData = sensorData_p;
-		desiredData = desiredData_p;
+		dataService = service;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -48,17 +47,13 @@
 		altitudePid->reset();
 		pitchPid->reset();
 
-		printf("------------------STUPID_1---------------------");
+		pwm->setPeriod(PWM_MODULE_1_ID, BASE_PERIOD);
 
-		pwm->setPeriod(PWM_MODULE_2_ID, BASE_PERIOD);
+		pwm->setDuty(11, 0);
+		pwm->setDuty(12, 0);
 
-		pwm->setDuty(21, 0);
-		pwm->setDuty(22, 0);
-
-		pwm->start(21);
-		pwm->start(22);
-
-		printf("------------------STUPID_2---------------------");
+		pwm->start(11);
+		pwm->start(12);
 
 		timer->start();
 
@@ -105,14 +100,14 @@
 	//-----------------------------------------------------------------------------------------
 	void AltitudeController::getherData()
 	{
-		desiredData->mutex.lock();
-			desiredDepth = desiredData->depth;
-		desiredData->mutex.unlock();
+		dataService->desiredData->mutex.lock();
+			desiredDepth = dataService->desiredData->depth;
+		dataService->desiredData->mutex.unlock();
 
-		sensorData->mutex.lock();
-			actualPitch = sensorData->pitch;
-			actualDepth = sensorData->depth;
-		sensorData->mutex.unlock();
+		dataService->sensorData->mutex.lock();
+			actualPitch = dataService->sensorData->pitch;
+			actualDepth = dataService->sensorData->depth;
+		dataService->sensorData->mutex.unlock();
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -143,16 +138,16 @@
 		// verify if the difference is large enough to apply the changes, if necessary
 		if (abs(frontDuty - lastFrontDuty) > 1)
 		{
-			pwm->setDuty(21, frontDuty);
+			pwm->setDuty(11, frontDuty);
 			lastFrontDuty = frontDuty;
 		}
 
 		if (abs(rearDuty - lastRearDuty) > 1)
 		{
-			pwm->setDuty(22, rearDuty);
+			pwm->setDuty(12, rearDuty);
 			lastRearDuty = rearDuty;
 		}
 
-		printf("----------------------------------1:%d 2:%d\n", frontDuty, rearDuty);
+//		printf("----------------------------------1:%d 2:%d\n", frontDuty, rearDuty);
 	}
 

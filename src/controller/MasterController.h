@@ -6,8 +6,7 @@
 
 #include "../sys/BaseThread.h"
 #include "../sys/FdTimer.h"
-#include "../data/SensorData.h"
-#include "../data/DesiredData.h"
+#include "../data/DataService.h"
 #include "../commons/Config.h"
 
 #ifndef mastercontroller_h
@@ -24,7 +23,7 @@ class MasterController : public BaseThread
 	public:
 
 		// constructor
-		MasterController(SensorData* sData, DesiredData* dData);
+		MasterController(DataService* service);
 
 		// destructor
 		~MasterController();
@@ -40,8 +39,7 @@ class MasterController : public BaseThread
 		FdTimer* timer;
 
 		/* data source definitions */
-		DesiredData* desiredData;
-		SensorData* sensorData;
+		DataService* dataService;
 
 		/* position-related local data holders */
 		int actualDepth = 0;

@@ -13,7 +13,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	HeadingController::HeadingController(SensorData* sensorData_p, DesiredData* desiredData_p)
+	HeadingController::HeadingController(DataService* service)
 	{
 		printf("Constructing HeadingController controller thread...\n");
 
@@ -22,8 +22,7 @@
 		pwm = new PWM();
 		yawPid = new PID(YAW_KP, YAW_KI, YAW_KD);
 
-		sensorData = sensorData_p;
-		desiredData = desiredData_p;
+		dataService = service;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -44,16 +43,13 @@
 	{
 		yawPid->reset();
 
-		pwm->setPeriod(PWM_MODULE_3_ID, PWM_PERIOD_HZ);
+		pwm->setPeriod(PWM_MODULE_2_ID, PWM_PERIOD_HZ);
 
-		pwm->setPolarity(31, 0);
-		pwm->setPolarity(32, 0);
+		pwm->setDuty(21, 0);
+		pwm->setDuty(22, 0);
 
-		pwm->setDuty(31, 0);
-		pwm->setDuty(32, 0);
-
-		pwm->start(31);
-		pwm->start(32);
+		pwm->start(21);
+		pwm->start(22);
 
 		timer->start();
 
@@ -84,16 +80,18 @@
 	//-----------------------------------------------------------------------------------------
 	void HeadingController::getherData()
 	{
-		desiredData->mutex.lock();
-			desiredHeading = desiredData->heading;
-			drift = desiredData->drift;
-			driftDirection = desiredData->driftDirection;
-			driftAngle = desiredData->driftAngle;
-		desiredData->mutex.unlock();
+		dataService->desiredData->mutex.lock();
+			desiredHeading = dataService->desiredData->heading;
+			drift = dataService->desiredData->drift;
+			driftDirection = dataService->desiredData->driftDirection;
+			driftAngle = dataService->desiredData->driftAngle;
+		dataService->desiredData->mutex.unlock();
 
-		sensorData->mutex.lock();
-			actualHeading = floor(sensorData->yaw + 0.5);
-		sensorData->mutex.unlock();
+		dataService->sensorData->mutex.lock();
+			actualHeading = floor(dataService->sensorData->yaw + 0.5);
+		dataService->sensorData->mutex.unlock();
+
+//		printf("Heading: %10d, \n", actualHeading);
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -126,13 +124,13 @@
 		// verify if the difference is large enough to apply the changes, if necessary
 		if (abs(frontDuty - lastFrontDuty) > 0)
 		{
-			pwm->setDuty(31, frontDuty);
+			pwm->setDuty(21, frontDuty);
 			lastFrontDuty = frontDuty;
 		}
 
 		if (abs(rearDuty - lastRearDuty) > 0)
 		{
-			pwm->setDuty(32, rearDuty);
+			pwm->setDuty(22, rearDuty);
 			lastRearDuty = rearDuty;
 		}
 	}

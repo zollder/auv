@@ -62,25 +62,13 @@ void SocketClient::start()
 	bool retry = true;
 	int counter = RETRY_COUNTER;
 
-	while (retry)
-	{
-		//create socket inside the kernel and return socket descriptor
-		connfd = socket(AF_INET, SOCK_STREAM, 0);
+	//create socket inside the kernel and return socket descriptor
+	connfd = socket(AF_INET, SOCK_STREAM, 0);
 
-		if (connfd >= 0)
-			retry = false;
-		else if (connfd < 0 and counter >= 0)
-		{
-			counter--;
-			printf("Failed to open a socket (attempt %d)\n", RETRY_COUNTER - counter);
-			retryTimer->startSingle();
-			retryTimer->waitTimerEvent();
-		}
-		else
-		{
-			log->error("[ERROR] Failed to Open Socket");
-			exit(EXIT_FAILURE);
-		}
+	if (connfd < 0)
+	{
+		log->error("[ERROR] Failed to Open Socket");
+		exit(EXIT_FAILURE);
 	}
 
 	server_addr.sin_family = AF_INET;
@@ -103,13 +91,14 @@ void SocketClient::recvMsg()
 	//Attempt to connect to the server
 	int result = connect(connfd, (struct sockaddr *) &server_addr, sizeof(server_addr));
 	if(result < 0)
-		log->error("[ERROR] Failed to Connect to Server");
+	{
 		//should not terminate program but continuously retry versus exit(EXIT_FAILURE);
+		log->error("[ERROR] Failed to Connect to Server");
+		//TODOdataService->reset((const char)ipServer);
+	}
 	else
 		while ((numBytes = recv(connfd, recBuff, sizeof(recBuff), MSG_WAITALL)) > 0)
-		{
 			dataService->saveData(recBuff);
-		}
 
 	//Cleanup
 	close(connfd);

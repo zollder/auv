@@ -6,9 +6,8 @@
 
 #include "../sys/BaseThread.h"
 #include "../sys/FdTimer.h"
-#include "../data/SensorData.h"
-#include "../data/DesiredData.h"
 #include "../sys/PWM.h"
+#include "../data/DataService.h"
 #include "../commons/Config.h"
 
 #include "PID.h"
@@ -27,7 +26,7 @@ class HeadingController : public BaseThread
 	public:
 
 		// constructor
-		HeadingController(SensorData* sData, DesiredData* dData);
+		HeadingController(DataService* service);
 
 		// destructor
 		~HeadingController();
@@ -45,8 +44,7 @@ class HeadingController : public BaseThread
 		PID* yawPid;
 
 		/* data source definitions */
-		DesiredData* desiredData;
-		SensorData* sensorData;
+		DataService* dataService;
 
 		/* position-related data holders */
 		int actualHeading = 0;
