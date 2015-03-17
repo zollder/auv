@@ -1,4 +1,5 @@
 #! /bin/bash
+# chkconfig: 345 99 10
 #
 # Starts the Autonomous Underwater Vehicle main program
 # description: Starts the AUV

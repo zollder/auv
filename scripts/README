@@ -1,4 +1,4 @@
-
+##Autostart AUV
 Step1:
     touch /var/run/auvd.pid
     echo 29928 > /var/run/auvd.pid
@@ -6,9 +6,18 @@ Step2:
     cp auvd /etc/init.d/
 step3:
     chmod 755 /etc/init.d/auvd
+    chmod +x /etc/init.d/auvd
 step4:
     update-rc.d auvd defaults
 
 Optional:
     remove from init boot up
     update-rc.d -f auvd defaults
+
+##Autostart Watchdog
+step1:
+    cp watch-auv.sh /etc/init.d/
+step2:
+    chmod +x /etc/init.d/watch-auv.sh
+step3
+   chkconfig watch-auv.sh on
