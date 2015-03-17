@@ -33,33 +33,33 @@ int main(int argc, char *argv[])
 //	ServerThread* socketServerThread = new ServerThread(socketServer, SERVER_THREAD_ID);
 //	ClientThread* frontClientThread = new ClientThread(clientFront, CLIENT_U3_FRONT_ID, CLIENT_U3_FRONT_INTERVAL);
 //	ClientThread* bottomClientThread = new ClientThread(clientBottom, CLIENT_U3_BOTTOM_ID, CLIENT_U3_BOTTOM_INTERVAL);
-//	ImuThread* imuThread = new ImuThread(sensorData);
+	ImuThread* imuThread = new ImuThread(sensorData);
 	DmuThread* dmuThread = new DmuThread(sensorData);
 
 	//	DmuThread* dmuThread = new DmuThread(sensorData);
-	AltitudeController* altitudeControllerThread = new AltitudeController(sensorData, targetData);
-//	HeadingController* headingControllerThread = new HeadingController(sensorData, targetData);
-//	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(sensorData, targetData);
-//
+	AltitudeController* altitudeControllerThread = new AltitudeController(dataService);
+	HeadingController* headingControllerThread = new HeadingController(dataService);
+//	HorizontalMotion* horizontalMotionThread = new HorizontalMotion(dataService);
+
 //	socketServerThread->start();
 //	frontClientThread->start();
 //	bottomClientThread->start();
-//	imuThread->start();
+	imuThread->start();
 	dmuThread->start();
 	altitudeControllerThread->start();
-//	headingControllerThread->start();
+	headingControllerThread->start();
 //	horizontalMotionThread->start();
 //
 //	socketServerThread->join();
 //	frontClientThread->join();
 //	bottomClientThread->join();
-//	imuThread->join();
+	imuThread->join();
 	dmuThread->join();
 	altitudeControllerThread->join();
-//	headingControllerThread->join();
+	headingControllerThread->join();
 //	horizontalMotionThread->join();
 //
-//	delete imuThread;
+	delete imuThread;
 //	delete bottomClientThread;
 //	delete frontClientThread;
 //	delete socketServerThread;
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 //	delete clientFront;
 //	delete socketServer;
 //	delete horizontalMotionThread;
-//	delete headingControllerThread;
+	delete headingControllerThread;
 	delete altitudeControllerThread;
 	delete dmuThread;
 	delete dataService;

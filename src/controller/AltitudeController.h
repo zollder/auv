@@ -6,9 +6,8 @@
 
 #include "../sys/BaseThread.h"
 #include "../sys/FdTimer.h"
-#include "../data/SensorData.h"
-#include "../data/DesiredData.h"
 #include "../sys/PWM.h"
+#include "../data/DataService.h"
 #include "../commons/Config.h"
 
 #include "PID.h"
@@ -37,7 +36,7 @@ class AltitudeController : public BaseThread
 	public:
 
 		// constructor
-		AltitudeController(SensorData* sData, DesiredData* dData);
+		AltitudeController(DataService* service);
 
 		// destructor
 		~AltitudeController();
@@ -61,8 +60,7 @@ class AltitudeController : public BaseThread
 		PID* pitchPid;
 
 		/* data source definitions */
-		DesiredData* desiredData;
-		SensorData* sensorData;
+		DataService* dataService;
 
 		/* position-related data holders */
 		float actualPitch = 0;

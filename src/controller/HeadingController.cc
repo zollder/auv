@@ -13,7 +13,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	HeadingController::HeadingController(SensorData* sensorData_p, DesiredData* desiredData_p)
+	HeadingController::HeadingController(DataService* service)
 	{
 		printf("Constructing HeadingController controller thread...\n");
 
@@ -22,8 +22,7 @@
 		pwm = new PWM();
 		yawPid = new PID(YAW_KP, YAW_KI, YAW_KD);
 
-		sensorData = sensorData_p;
-		desiredData = desiredData_p;
+		dataService = service;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -81,16 +80,16 @@
 	//-----------------------------------------------------------------------------------------
 	void HeadingController::getherData()
 	{
-		desiredData->mutex.lock();
-			desiredHeading = desiredData->heading;
-			drift = desiredData->drift;
-			driftDirection = desiredData->driftDirection;
-			driftAngle = desiredData->driftAngle;
-		desiredData->mutex.unlock();
+		dataService->desiredData->mutex.lock();
+			desiredHeading = dataService->desiredData->heading;
+			drift = dataService->desiredData->drift;
+			driftDirection = dataService->desiredData->driftDirection;
+			driftAngle = dataService->desiredData->driftAngle;
+		dataService->desiredData->mutex.unlock();
 
-		sensorData->mutex.lock();
-			actualHeading = floor(sensorData->yaw + 0.5);
-		sensorData->mutex.unlock();
+		dataService->sensorData->mutex.lock();
+			actualHeading = floor(dataService->sensorData->yaw + 0.5);
+		dataService->sensorData->mutex.unlock();
 
 //		printf("Heading: %10d, \n", actualHeading);
 	}

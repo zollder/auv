@@ -13,7 +13,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	AltitudeController::AltitudeController(SensorData* sensorData_p, DesiredData* desiredData_p)
+	AltitudeController::AltitudeController(DataService* service)
 	{
 		printf("Constructing AltitudeController controller thread...\n");
 
@@ -24,8 +24,7 @@
 		altitudePid = new PID(ALT_KP, ALT_KI, ALT_KD);
 		pitchPid = new PID(PITCH_KP, PITCH_KI, PITCH_KD);
 
-		sensorData = sensorData_p;
-		desiredData = desiredData_p;
+		dataService = service;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -101,14 +100,14 @@
 	//-----------------------------------------------------------------------------------------
 	void AltitudeController::getherData()
 	{
-		desiredData->mutex.lock();
-			desiredDepth = desiredData->depth;
-		desiredData->mutex.unlock();
+		dataService->desiredData->mutex.lock();
+			desiredDepth = dataService->desiredData->depth;
+		dataService->desiredData->mutex.unlock();
 
-		sensorData->mutex.lock();
-			actualPitch = sensorData->pitch;
-			actualDepth = sensorData->depth;
-		sensorData->mutex.unlock();
+		dataService->sensorData->mutex.lock();
+			actualPitch = dataService->sensorData->pitch;
+			actualDepth = dataService->sensorData->depth;
+		dataService->sensorData->mutex.unlock();
 	}
 
 	//-----------------------------------------------------------------------------------------

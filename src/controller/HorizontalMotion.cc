@@ -13,7 +13,7 @@
 	//-----------------------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------------------
-	HorizontalMotion::HorizontalMotion(SensorData* sensorData_p, DesiredData* desiredData_p)
+	HorizontalMotion::HorizontalMotion(DataService* service)
 	{
 		printf("Constructing HorizontalMotion controller thread...\n");
 
@@ -21,8 +21,7 @@
 		timer = new FdTimer(getThreadId(), HM_INTERVAL);
 		pwm = new PWM();
 
-		sensorData = sensorData_p;
-		desiredData = desiredData_p;
+		this->dataService = service;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -73,12 +72,10 @@
 	void HorizontalMotion::getherData()
 	{
 		/*printf("Collecting data ...\n");*/
-		desiredData->mutex.lock();
-			this->drift = desiredData->drift;
-			this->driftDirection = desiredData->driftDirection;
-			this->reverse = desiredData->reverse;
-			this->newSpeed = desiredData->speed;
-		desiredData->mutex.unlock();
+		dataService->desiredData->mutex.lock();
+			this->reverse = dataService->desiredData->reverse;
+			this->newSpeed = dataService->desiredData->speed;
+		dataService->desiredData->mutex.unlock();
 
 //		if (drift)
 //			this->drifting = true;
@@ -91,12 +88,11 @@
 	//-----------------------------------------------------------------------------------------
 	void HorizontalMotion::adjustDutyCycle()
 	{
-		if ( reverse == false)
+		if (reverse == false)
 		{
 			// verify if the difference is large enough to apply the changes, if necessary
 			if (newSpeed != currentSpeed)
 			{
-				pwm->setDuty(31, speedLevel[newSpeed]);
 				pwm->setDuty(32, speedLevel[newSpeed]);
 				currentSpeed = newSpeed;
 			}
@@ -105,8 +101,7 @@
 		{
 			if (newSpeed != currentSpeed)
 			{
-				pwm->setDuty(31, -(speedLevel[newSpeed]) );
-				pwm->setDuty(32, -(speedLevel[newSpeed]) );
+				pwm->setDuty(32, -(speedLevel[newSpeed]));
 				currentSpeed = newSpeed;
 			}
 		}

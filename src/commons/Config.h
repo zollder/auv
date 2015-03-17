@@ -107,8 +107,8 @@
 /* Default forward/reverse duty cycle limits (ns) */
 #define NEUTRAL 1500000
 #define FORWARD_MIN 1545000
-#define FORWARD_MAX 2000000
+#define FORWARD_MAX 1900000
 #define REVERSE_MIN 1455000
-#define REVERSE_MAX 1000000
+#define REVERSE_MAX 1100000
 
 #endif

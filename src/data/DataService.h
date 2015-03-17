@@ -87,6 +87,10 @@ class DataService
 			};
 		}
 
+		SensorData* sensorData;
+		DesiredData* desiredData;
+		CameraData* cameraData;
+
 //TODO		void reset(char ip)
 //		{
 //			if (ip == "192.168.0.11")
@@ -96,10 +100,6 @@ class DataService
 //		}
 
 	private:
-
-		SensorData* sensorData;
-		DesiredData* desiredData;
-		CameraData* cameraData;
 
 		float dataHolder[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
