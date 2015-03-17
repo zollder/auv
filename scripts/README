@@ -1,0 +1,14 @@
+
+Step1:
+    touch /var/run/auvd.pid
+    echo 29928 > /var/run/auvd.pid
+Step2:
+    cp auvd /etc/init.d/
+step3:
+    chmod 755 /etc/init.d/auvd
+step4:
+    update-rc.d auvd defaults
+
+Optional:
+    remove from init boot up
+    update-rc.d -f auvd defaults
