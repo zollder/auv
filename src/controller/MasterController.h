@@ -41,24 +41,36 @@ class MasterController : public BaseThread
 		/* data source definitions */
 		DataService* dataService;
 
+		float sensorData[10] = {0,0,0,0,0};
+		float camData[10] = {0,0,0,0,0,0,0,0,0,0};
+
 		/* position-related local data holders */
-		int actualDepth = 0;
-		float actualPitch = 0;
-		int normalizedPitch = 0;
 		int currentDepth = 0;
+		int actualDepth = 0;
 		int desiredDepth = 0;
 
-		/* duty cycle related instance variables */
-		int currentDuty1 = 0;
-		int currentDuty2 = 0;
+		int currentHeading = 0;
+		int actualHeading = 0;
+		int desiredHeading = 0;
 
-		int baseDuty = 0;
+		int currentSpeed = 0;
+		int desiredSpeed = 0;
+		bool reverse = false;
 
-		int correctiveDuty1 = 0;
-		int correctiveDuty2 = 0;
+		bool drift = false;
+		int driftDirection = 0;
 
-		/* private helper methods */
-		void detectMission(void);
+
+		// copies latest data into local variables
+		void copyMeasuredData();
+		void saveDesiredData();
+
+		/* mission detector */
+		int detectMission(void);
+
+		/* mission executors */
+		void executeSubmerge(void);
+		void excecuteEmerge(void);
 		void executeDefault(void);
 		void executeLine(void);
 		void executeGate(void);

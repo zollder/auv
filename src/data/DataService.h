@@ -24,7 +24,16 @@ class DataService
 	//-----------------------------------------------------------------------------------------
 	public:
 
-		// constructor
+		SensorData* sensorData;
+		CameraData* cameraData;
+		DesiredData* desiredData;
+
+		float sensorDataHolder[10] = {0,0,0,0,0,0,0,0,0,0};
+		float cameraDataHolder[10] = {0,0,0,0,0,0,0,0,0,0};
+
+		//-----------------------------------------------------------------------------------------
+		/** Constructor and destructor. */
+		//-----------------------------------------------------------------------------------------
 		DataService(SensorData* sData, DesiredData* dData, CameraData* cData)
 		{
 			sensorData = sData;
@@ -35,6 +44,9 @@ class DataService
 		// destructor
 		~DataService() {}
 
+		//-----------------------------------------------------------------------------------------
+		/** Copies and returns sensor and camera data for socket server. */
+		//-----------------------------------------------------------------------------------------
 		float* getData()
 		{
 			// copy sensor data into array
@@ -44,11 +56,9 @@ class DataService
 			return dataHolder;
 		}
 
-		int getSize()
-		{
-			return sizeof(dataHolder);
-		}
-
+		//-----------------------------------------------------------------------------------------
+		/** Saves camera data received from cameras. */
+		//-----------------------------------------------------------------------------------------
 		void saveData(float data[15])
 		{
 			/**
@@ -87,20 +97,34 @@ class DataService
 			};
 		}
 
-		SensorData* sensorData;
-		DesiredData* desiredData;
-		CameraData* cameraData;
+		//-----------------------------------------------------------------------------------------
+		/** Returns the size of the socket data holder array. */
+		//-----------------------------------------------------------------------------------------
+		int getSize()
+		{
+			return sizeof(dataHolder);
+		}
 
-//TODO		void reset(char ip)
-//		{
-//			if (ip == "192.168.0.11")
-//				printf("bottom server dead");
-//			else if (ip == "192.168.0.12")
-//				printf("front server dead");
-//		}
+		//-----------------------------------------------------------------------------------------
+		/** Returns the size of the socket data holder array. */
+		//-----------------------------------------------------------------------------------------
+		int getSize()
+		{
+			return sizeof(dataHolder);
+		}
+
+
+		//TODO		void reset(char ip)
+		//		{
+		//			if (ip == "192.168.0.11")
+		//				printf("bottom server dead");
+		//			else if (ip == "192.168.0.12")
+		//				printf("front server dead");
+		//		}
 
 	private:
 
+		// holds sensor and camera data for transmission over the socket
 		float dataHolder[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 		void copySensorData()
