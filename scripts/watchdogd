@@ -1,47 +1,30 @@
 #! /bin/bash
 #
 ### BEGIN INIT INFO
-# Provides:          auvd
+# Provides:          watchdogd
 # Required-Start:    $remote_fs $syslog $time
 # Required-Stop:     $remote_fs $syslog $time
 # Should-Start:      $network $named slapd autofs ypbind nscd nslcd
 # Should-Stop:       $network $named slapd autofs ypbind nscd nslcd
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Starts the AUV
-# Description:       Starts the Autonomous Underwater Vehicle main program
+# Short-Description: Starts the Watchdogd
+# Description:       Starts the Watchdog that monitors execution of AUV and flushes device tree overlay for pwm
 ### END INIT INFO
 
-service="auvd"
-prog="/root/auv"
-pidfile="/var/run/auvd.pid"
-lockfile="/var/lock/subsys/auvd"
+service="watchdogd"
+prog="/root/watch-av.sh"
+pidfile="/var/run/watch-av.pid"
+lockfile="/var/lock/subsys/watchdogd"
 
 # Sanity checks.
 [ -x ${prog} ] || exit -1
-
-stop_pwm() {
-        echo 0 > /sys/devices/ocp.3/pwm_test_P8_13.14/run
-        echo 0 > /sys/devices/ocp.3/pwm_test_P8_19.15/run
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_14.12/run
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_16.13/run
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_29.16/run
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_31.17/run
-
-        echo 0 > /sys/devices/ocp.3/pwm_test_P8_13.14/duty
-        echo 0 > /sys/devices/ocp.3/pwm_test_P8_19.15/duty
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_14.12/duty
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_16.13/duty
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_29.16/duty
-        echo 0 > /sys/devices/ocp.3/pwm_test_P9_31.17/duty
-}
 
 start() {
         echo -n $"Starting ${service}: "
         if [ -e ${lockfile} ]; then
                 if [ -e ${pidfile} ] && [ -e /proc/`cat ${pidfile}` ]; then
                         echo
-                        failure
                         echo -n $"cannot start ${service}: ${service} is already running.";
                         echo
                         return 1
@@ -67,9 +50,8 @@ stop() {
         #killproc -p ${pidfile}
         start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile ${pidfile} --exec ${prog}
         RETVAL=$?
-        #pkill -f auvd
+        pkill -f $prog
 
-        stop_pwm
         echo
         [ $RETVAL -eq 0 ] && rm -f ${lockfile};
         return $RETVAL
