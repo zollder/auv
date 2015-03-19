@@ -5,6 +5,7 @@
  */
 
 #include "Mutex.h"
+#include "../commons/Dto.h"
 
 #ifndef desireddata_h
 #define desireddata_h
@@ -27,7 +28,7 @@ class DesiredData
 		~DesiredData() {}
 
 		// desired depth in cm (integer can be used)
-		int depth = 10;
+		int depth = 0;
 
 		// desired direction (degrees relative to North)
 		int heading = 0;
@@ -45,6 +46,26 @@ class DesiredData
 
 		// read/write protection mechanism
 		Mutex mutex;
+
+		void setData(dto<int> data)
+		{
+			mutex.lock();
+				depth = data.m1;
+				heading = data.m2;
+				speed = data.m3;
+			mutex.unlock();
+		}
+
+		void resetData()
+		{
+			mutex.lock();
+				depth = 0;
+				heading = 0;
+				speed = 0;
+				drift = false;
+				reverse = false;
+			mutex.unlock();
+		}
 };
 
 #endif

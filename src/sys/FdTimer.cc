@@ -94,7 +94,7 @@
 		resetSingle();
 
 		// start the timer and running status accordingly
-		int result = timerfd_settime (timerRef, 0, &timer, NULL);
+		int result = timerfd_settime(timerRef, 0, &timer, NULL);
 		if (result != 0)
 		{
 			printf("Error creating timer %d.\n", timerId);

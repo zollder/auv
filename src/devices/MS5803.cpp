@@ -23,6 +23,7 @@
 	MS5803::~MS5803()
 	{
 		printf("Destroying MS5803 ...\n");
+		delete delayTimer;
 		delete ptsWire;
 	}
 

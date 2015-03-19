@@ -117,31 +117,14 @@
 	//-----------------------------------------------------------------------------------------
 	void DMU::calculateDepth()
 	{
-		//Calibrate sensor
-	//	if( init )
-	//	{
-	//		depth_tmp = ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
+		/* P(pascal) = P(mBar) x 100
+		 * P actual = P measured - P sea-level
+		 * depth (centimeters) = depth (meters) x 100 */
 
-			//disregard connection errors that causes high negative values.
-	//		if (--depth_count == 0 )
-	//		{
-	//			depth_compensator = abs(depth_tmp);
-	//			init = false;
-	//		}
-	//		printf("In the INIT: raw: %10.2f compensator: %10.2f\n", depth_tmp, depth_compensator);
+		depth_tmp = ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
+		depth_tmp = depth_tmp + DEPTH_COMPENSATOR;
 
-	//	}
-	//	else
-	//	{
-			/* P(pascal) = P(mBar) x 100
-			 * P actual = P measured - P sea-level
-			 * depth (centimeters) = depth (meters) x 100 */
-
-			depth_tmp = ((pressure - sea_level_pressure) * 100) * 100 / (density * gravity);
-			depth_tmp = depth_tmp + DEPTH_COMPENSATOR;
-
-			//disregard connection errors that causes high negative values.
-			if (depth_tmp > 0 && depth_tmp < 600)
-				depth = depth_tmp;
-		//}
+		//disregard connection errors that causes high negative values.
+		if (depth_tmp > 0 && depth_tmp < 600)
+			depth = depth_tmp;
 	}

@@ -5,6 +5,7 @@
  */
 
 #include "Mutex.h"
+#include "../commons/Dto.h"
 
 #ifndef cameradata_h
 #define cameradata_h
@@ -49,6 +50,42 @@ class CameraData
 
 		// read/write protection mechanism
 		Mutex mutex;
+
+		//-----------------------------------------------------------------------------------------
+		/** Copies and returns front camera data as an array of floats. */
+		//-----------------------------------------------------------------------------------------
+		dto<int> getDataFront()
+		{
+			dto<int> data;
+			mutex.lock();
+				data.m1 = (int) objOffsetX_f;
+				data.m2 = (int) objOffsetY_f;
+				data.m3 = (int) objAngle_f;
+				data.m4 = (int) objWidth_f;
+				data.m5 = (int) objHeight_f;
+				data.m6 = (int) radius_f;
+			mutex.unlock();
+
+			return data;
+		}
+
+		//-----------------------------------------------------------------------------------------
+		/** Copies and returns bottom camera data as an array of floats. */
+		//-----------------------------------------------------------------------------------------
+		dto<int> getDataBottom()
+		{
+			dto<int> data;
+			mutex.lock();
+				data.m1 = (int) objOffsetX_b;
+				data.m2 = (int) objOffsetY_b;
+				data.m3 = (int) objAngle_b;
+				data.m4 = (int) objWidth_b;
+				data.m5 = (int) objHeight_b;
+				data.m6 = (int) radius_b;
+			mutex.unlock();
+
+			return data;
+		}
 };
 
 #endif

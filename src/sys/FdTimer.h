@@ -59,6 +59,9 @@ class FdTimer
 
 		int getTimerId();
 
+		// sets seconds and nanoseconds portions of the time interval
+		void setInterval(double interval);
+
 	//-----------------------------------------------------------------------------------------
 	// Private members
 	//-----------------------------------------------------------------------------------------
@@ -85,9 +88,6 @@ class FdTimer
 
 		// returns nanoseconds portion of the time interval
 		long getNanoseconds();
-
-		// sets seconds and nanoseconds portions of the time interval
-		void setInterval(double interval);
 
 		// creates timer
 		void createTimer();

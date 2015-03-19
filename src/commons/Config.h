@@ -15,15 +15,17 @@
  * thread IDs
  ------------------------------------------------------*/
 #define IMU_THREAD_ID 1
-#define DMU_SH_TIMER 3		/* DMU's single-shot timer ID */
-#define HC_THREAD_ID 4
-#define HM_THREAD_ID 5
-#define AC_THREAD_ID 6
-#define MC_THREAD_ID 7
-#define SERVER_THREAD_ID 8
-#define CLIENT_U3_FRONT_ID 9
-#define CLIENT_U3_BOTTOM_ID 10
-#define RETRY_TIMER_ID 11
+#define HC_THREAD_ID 2
+#define HM_THREAD_ID 3
+#define AC_THREAD_ID 4
+#define MC_THREAD_ID 5
+#define SERVER_THREAD_ID 6
+#define CLIENT_U3_FRONT_ID 7
+#define CLIENT_U3_BOTTOM_ID 8
+#define RETRY_TIMER_ID 9
+
+#define DMU_SH_TIMER 10		/* DMU's single-shot timer ID */
+#define MC_SH_TIMER 11		/* MC's single-shot timer ID */
 
 /* ----------------------------------------------------
  * timer intervals

@@ -28,9 +28,6 @@ class DataService
 		CameraData* cameraData;
 		DesiredData* desiredData;
 
-		float sensorDataHolder[10] = {0,0,0,0,0,0,0,0,0,0};
-		float cameraDataHolder[10] = {0,0,0,0,0,0,0,0,0,0};
-
 		//-----------------------------------------------------------------------------------------
 		/** Constructor and destructor. */
 		//-----------------------------------------------------------------------------------------
@@ -50,9 +47,7 @@ class DataService
 		float* getData()
 		{
 			// copy sensor data into array
-			this->copySensorData();
-			this->copyDesiredData();
-			this->copyCameraData();
+			this->copyData();
 			return dataHolder;
 		}
 
@@ -105,29 +100,12 @@ class DataService
 			return sizeof(dataHolder);
 		}
 
-		//-----------------------------------------------------------------------------------------
-		/** Returns the size of the socket data holder array. */
-		//-----------------------------------------------------------------------------------------
-		int getSize()
-		{
-			return sizeof(dataHolder);
-		}
-
-
-		//TODO		void reset(char ip)
-		//		{
-		//			if (ip == "192.168.0.11")
-		//				printf("bottom server dead");
-		//			else if (ip == "192.168.0.12")
-		//				printf("front server dead");
-		//		}
-
 	private:
 
 		// holds sensor and camera data for transmission over the socket
 		float dataHolder[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
-		void copySensorData()
+		void copyData()
 		{
 			//printf("Reading sensor data ...\n");
 			sensorData->mutex.lock();
@@ -136,10 +114,7 @@ class DataService
 				dataHolder[2] = sensorData->yaw;
 				dataHolder[3] = sensorData->depth;
 			sensorData->mutex.unlock();
-		}
 
-		void copyDesiredData ()
-		{
 			//printf("Reading desired data ...\n");
 			desiredData->mutex.lock();
 				dataHolder[4] = (float) desiredData->heading;
@@ -148,11 +123,8 @@ class DataService
 				dataHolder[7] = desiredData->reverse ? 1.0 : 0.0;
 				dataHolder[8] = desiredData->drift ? 1.0 : 0.0;
 			desiredData->mutex.unlock();
-		}
 
-		// 1: front camera data, 2: bottom camera data
-		void copyCameraData()
-		{
+			// 1: front camera data, 2: bottom camera data
 			//printf("Reading camera data ...\n");
 			cameraData->mutex.lock();
 				dataHolder[9] = cameraData->objOffsetX_f;

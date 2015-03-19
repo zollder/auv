@@ -5,9 +5,10 @@
  */
 
 #include "Mutex.h"
+#include "../commons/Dto.h"
 
-#ifndef sensdata_h
-#define sensdata_h
+#ifndef sensordata_h
+#define sensordata_h
 
 //-----------------------------------------------------------------------------------------
 // SensorData interface.
@@ -19,6 +20,13 @@ class SensorData
 	// Public members
 	//-----------------------------------------------------------------------------------------
 	public:
+
+		struct MeasuredData
+		{
+			int pitch = 0;
+			int yaw = 0;
+			int depth = 0;
+		};
 
 		// constructor
 		SensorData() {}
@@ -35,6 +43,21 @@ class SensorData
 
 		// read/write protection mechanism
 		Mutex mutex;
+
+		//-----------------------------------------------------------------------------------------
+		/** Copies and returns sensor data in a Dto structure of integers. */
+		//-----------------------------------------------------------------------------------------
+		dto<int> getSensorData()
+		{
+			dto<int> data;
+			mutex.lock();
+				data.m1 = (int) pitch;
+				data.m2 = (int) yaw;
+				data.m3 = (int) depth;
+			mutex.unlock();
+
+			return data;
+		}
 };
 
 #endif

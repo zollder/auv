@@ -1,9 +1,9 @@
 /*
- * SensorData.h
+ * Vector.h
  */
 
-#ifndef sensordata_h
-#define sensordata_h
+#ifndef vector_h
+#define vector_h
 
 	template <typename T> struct Vector
 	{
