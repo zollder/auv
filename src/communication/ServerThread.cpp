@@ -12,7 +12,7 @@
 //-----------------------------------------------------------------------------------------
 ServerThread::ServerThread(SocketServer* server, int id)
 {
-	setThreadId(id);
+	setThreadId( SERVER_THREAD_ID );
 	socketServer = server;
 }
 //-----------------------------------------------------------------------------------------
@@ -34,6 +34,7 @@ ServerThread::~ServerThread()
 void* ServerThread::run()
 {
 	syslog(LOG_NOTICE,"[KPI::THREAD] START");
+
 	socketServer->start();
 	socketServer->run();
 

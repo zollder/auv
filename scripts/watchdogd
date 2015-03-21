@@ -1,0 +1,79 @@
+#! /bin/bash
+#
+### BEGIN INIT INFO
+# Provides:          watchdogd
+# Required-Start:    $remote_fs $syslog $time
+# Required-Stop:     $remote_fs $syslog $time
+# Should-Start:      $network $named slapd autofs ypbind nscd nslcd
+# Should-Stop:       $network $named slapd autofs ypbind nscd nslcd
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts the Watchdogd
+# Description:       Starts the Watchdog that monitors execution of AUV and flushes device tree overlay for pwm
+### END INIT INFO
+
+service="watchdogd"
+prog="/root/watch-av.sh"
+pidfile="/var/run/watch-av.pid"
+lockfile="/var/lock/subsys/watchdogd"
+
+# Sanity checks.
+[ -x ${prog} ] || exit -1
+
+start() {
+        echo -n $"Starting ${service}: "
+        if [ -e ${lockfile} ]; then
+                if [ -e ${pidfile} ] && [ -e /proc/`cat ${pidfile}` ]; then
+                        echo
+                        echo -n $"cannot start ${service}: ${service} is already running.";
+                        echo
+                        return 1
+                fi
+        fi
+        #start_daemon --pidfile=${pidfile} ${prog}
+        start-stop-daemon --start --quiet --background --make-pidfile --pidfile $pidfile --exec $prog
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch ${lockfile};
+        return $RETVAL
+}
+
+stop() {
+        echo -n $"Stopping ${service}: "
+        if [ ! -e ${lockfile} ]; then
+                echo
+                echo -n $"cannot stop ${service}: ${service} is not running."
+                echo
+                rm -f ${pidfile} ${lockfile};
+                return 1;
+        fi
+        #killproc -p ${pidfile}
+        start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile ${pidfile} --exec ${prog}
+        RETVAL=$?
+        pkill -f $prog
+
+        echo
+        [ $RETVAL -eq 0 ] && rm -f ${lockfile};
+        return $RETVAL
+}
+
+restart() {
+        stop
+        start
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                restart
+                ;;
+        *)
+                echo $"Usage: $0 {start|stop|restart}"
+                exit 1
+esac
+

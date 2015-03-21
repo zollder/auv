@@ -144,52 +144,52 @@ int main(int argc, char *argv[])
 //       // pwm.getPeriodHz(11);
 //       // pwm.getDuty(11);
 //
-//		SensorData* sensorData = new SensorData();
-//		DesiredData* targetData = new DesiredData();
-//		CameraData* camData = new CameraData();
+//      SensorData* sensorData = new SensorData();
+//      DesiredData* targetData = new DesiredData();
+//      CameraData* camData = new CameraData();
 //
-//		DataService* dataService = new DataService(sensorData, targetData, camData);
+//      DataService* dataService = new DataService(sensorData, targetData, camData);
 //
-//		ServerThread* serverThread = new ServerThread( 5000, 2 , dataService);
+//      ServerThread* serverThread = new ServerThread( 5000, 2 , dataService);
 //
-//		serverThread->start();
+//      serverThread->start();
 //
-//		char key;
-//		do
-//		{
-//			//key = getchar();
+//      char key;
+//      do
+//      {
+//          //key = getchar();
 //
-//		}while(key != ESC);
+//      }while(key != ESC);
 //
-//		syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
+//      syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
 //
 //
-//		delete serverThread;
-//		delete sensorData;
-//		delete targetData;
-//		delete camData;
-//		delete dataService;
+//      delete serverThread;
+//      delete sensorData;
+//      delete targetData;
+//      delete camData;
+//      delete dataService;
 //    }
 //    else if (!( strcmp(argv[1], "client")) )
 //    {
-//    	ClientThread* clientThread = new ClientThread(5000, "192.168.10.50");
-//    	clientThread->start();
+//      ClientThread* clientThread = new ClientThread(5000, "192.168.10.50");
+//      clientThread->start();
 //
-//    	char key;
-//    	do
-//    	{
-//    		//key = getchar();
+//      char key;
+//      do
+//      {
+//          //key = getchar();
 //
-//    	}while(key != ESC);
+//      }while(key != ESC);
 //
-//    	syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
+//      syslog(LOG_NOTICE,"[KPI::MAIN]::Escape Character Triggered");
 //
-//    	delete clientThread;
+//      delete clientThread;
 //    }
 //    else
 //    {
-//    	syslog(LOG_ERR,"[KPI::MAIN] Wrong Options entered, possible ones are : client or server");
-//    	return EXIT_FAILURE;
+//      syslog(LOG_ERR,"[KPI::MAIN] Wrong Options entered, possible ones are : client or server");
+//      return EXIT_FAILURE;
 //    }
 
     syslog(LOG_NOTICE,"[KPI::MAIN] END");

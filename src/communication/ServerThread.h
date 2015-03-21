@@ -15,18 +15,18 @@
 
 class ServerThread: public BaseThread
 {
-	public:
+    public:
 
-		ServerThread(SocketServer* server, int id);
-		~ServerThread();
-		void* run();				// overrides BaseThread's run() method
+        ServerThread(SocketServer* server, int id);
+        ~ServerThread();
+        void* run();                // overrides BaseThread's run() method
 
-		int stop();
-		int kill();
+        int stop();
+        int kill();
 
-	private:
+    private:
 
-		SocketServer* socketServer;
+        SocketServer* socketServer;
 };
 
 #endif
