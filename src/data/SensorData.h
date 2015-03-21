@@ -34,9 +34,9 @@ class SensorData
 		// destructor
 		~SensorData() {}
 
-		float roll = 0;
-		float pitch = 0;
-		float yaw = 0;
+		float roll = 2;
+		float pitch = 3;
+		float yaw = 4;
 
 		float depth = 0;
 		float temperature = 0;

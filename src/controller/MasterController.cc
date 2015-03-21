@@ -35,6 +35,13 @@
 	//-----------------------------------------------------------------------------------------
 	MasterController::~MasterController()
 	{
+		imuThread->join();
+		dmuThread->join();
+
+		altitudeControllerThread->join();
+		headingControllerThread->join();
+		horizontalMotionThread->join();
+
 		printf("Destroying MasterController thread ...\n");
 		delete periodicTimer;
 		delete delayTimer;

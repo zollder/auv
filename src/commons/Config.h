@@ -34,11 +34,11 @@
 #define DMU_SH_TIMER_DELAY 0.01	// 10ms
 
 #define CLIENT_U3_FRONT_INTERVAL 0.5
-#define CLIENT_U3_BOTTOM_INTERVAL 1.0
+#define CLIENT_U3_BOTTOM_INTERVAL 0.5
 #define CLIENT_RETRY_INTERVAL 0.1
 
 #define HC_INTERVAL 0.05	// 50 ms
-#define MC_INTERVAL 0.1	// 100 ms
+#define MC_INTERVAL 0.5	// 100 ms
 #define AC_INTERVAL 0.05	// 100 ms
 #define HM_INTERVAL 0.1	// 100 ms
 
