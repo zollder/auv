@@ -53,6 +53,19 @@ class DesiredData
 				depth = data.m1;
 				heading = data.m2;
 				speed = data.m3;
+				if (data.m4 == 0) reverse = false; else reverse = true;
+				if (data.m5 == 0) drift = false; else drift = true;
+			mutex.unlock();
+		}
+
+		void setData(int dp, int hd, int spd, bool dir, bool dft)
+		{
+			mutex.lock();
+				depth = dp;
+				heading = hd;
+				speed = spd;
+				reverse = dir;
+				drift = dft;
 			mutex.unlock();
 		}
 

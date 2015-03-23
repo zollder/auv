@@ -1,10 +1,14 @@
 /*
- * SensorData.h
+ * Dto.h
  */
 
 #ifndef dto_h
 #define dto_h
 
+	/**
+	 * Generic data transfer structure.
+	 * Is used as a data holder to transfer data between objects.
+	 */
 	template <typename T> struct dto
 	{
 		/** Instance variables. */

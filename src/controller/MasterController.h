@@ -60,23 +60,21 @@ class MasterController : public BaseThread
 		/* data source definitions */
 		DataService* dataService;
 
+		/* actual/measured sensor data holders */
 		dto<int> sensorData;
 		dto<int> frontCam;
 		dto<int> bottomCam;
 
 		/* position-related local data holders */
 		int currentDepth = 0;
-		int actualDepth = 0;
 		int desiredDepth = 0;
 
 		int currentHeading = 0;
-		int actualHeading = 0;
 		int desiredHeading = 0;
 
 		int currentSpeed = 0;
 		int desiredSpeed = 0;
 		bool reverse = false;
-
 		bool drift = false;
 		int driftDirection = 0;
 

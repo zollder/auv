@@ -9,7 +9,7 @@
  * Escape sequence
  ------------------------------------------------------*/
 #define ESC 27
-#define DEPTH_COMPENSATOR -5.0
+#define DEPTH_COMPENSATOR 0.0
 
 /* ----------------------------------------------------
  * thread IDs

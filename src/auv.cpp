@@ -15,6 +15,8 @@
 #include "data/DesiredData.h"
 #include "data/CameraData.h"
 
+#include "dmu/DmuThread.h"
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -26,33 +28,37 @@ int main(int argc, char *argv[])
 	CameraData* camData = new CameraData();
 	DataService* dataService = new DataService(sensorData, targetData, camData);
 
-	SocketServer* socketServer = new SocketServer(dataService, PORT, CLIENTS);
-	SocketClient* clientFront = new SocketClient(dataService, RETRY_TIMER_ID, PORT, U3_FRONT_IP);
-	SocketClient* clientBottom = new SocketClient(dataService, RETRY_TIMER_ID, PORT, U3_BOTTOM_IP);
+//	SocketServer* socketServer = new SocketServer(dataService, PORT, CLIENTS);
+//	SocketClient* clientFront = new SocketClient(dataService, RETRY_TIMER_ID, PORT, U3_FRONT_IP);
+//	SocketClient* clientBottom = new SocketClient(dataService, RETRY_TIMER_ID, PORT, U3_BOTTOM_IP);
 
-	ServerThread* socketServerThread = new ServerThread(socketServer, SERVER_THREAD_ID);
-	ClientThread* frontClientThread = new ClientThread(clientFront, CLIENT_U3_FRONT_ID, CLIENT_U3_FRONT_INTERVAL);
-	ClientThread* bottomClientThread = new ClientThread(clientBottom, CLIENT_U3_BOTTOM_ID, CLIENT_U3_BOTTOM_INTERVAL);
+//	ServerThread* socketServerThread = new ServerThread(socketServer, SERVER_THREAD_ID);
+//	ClientThread* frontClientThread = new ClientThread(clientFront, CLIENT_U3_FRONT_ID, CLIENT_U3_FRONT_INTERVAL);
+//	ClientThread* bottomClientThread = new ClientThread(clientBottom, CLIENT_U3_BOTTOM_ID, CLIENT_U3_BOTTOM_INTERVAL);
 
-//	MasterController* masterController = new MasterController(dataService);
+	MasterController* masterController = new MasterController(dataService);
 
-	socketServerThread->start();
-	frontClientThread->start();
-	bottomClientThread->start();
-//	masterController->start();
+//	DmuThread* dmuThread = new DmuThread(dataService->sensorData);
+//	dmuThread->start();
 
-	socketServerThread->join();
-	frontClientThread->join();
-	bottomClientThread->join();
-//	masterController->join();
+//	socketServerThread->start();
+//	frontClientThread->start();
+//	bottomClientThread->start();
+	masterController->start();
 
-	delete bottomClientThread;
-	delete frontClientThread;
-	delete socketServerThread;
-	delete clientBottom;
-	delete clientFront;
-	delete socketServer;
-//	delete masterController;
+//	dmuThread->join();
+//	socketServerThread->join();
+//	frontClientThread->join();
+//	bottomClientThread->join();
+	masterController->join();
+
+//	delete bottomClientThread;
+//	delete frontClientThread;
+//	delete socketServerThread;
+//	delete clientBottom;
+//	delete clientFront;
+//	delete socketServer;
+	delete masterController;
 	delete dataService;
 	delete camData;
 	delete targetData;

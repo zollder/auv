@@ -72,8 +72,6 @@
 
 			// write calculated duty cycle values
 			this->adjustDutyCycle();
-
-//			printf("----------------------------------1:%d 2:%d\n", lastFrontDuty, lastRearDuty);
 		}
 
 		return NULL;
@@ -115,7 +113,9 @@
 	//-----------------------------------------------------------------------------------------
 	void AltitudeController::calculateAltitudeDuty()
 	{
-		baseDuty = altitudePid->calculate(desiredDepth, actualDepth, AC_INTERVAL);
+		/* Enable when the pressure sensor is fixed, use constants in the meantime. */
+//		baseDuty = altitudePid->calculate(desiredDepth, actualDepth, AC_INTERVAL);
+		baseDuty = 10;
 	}
 
 	//-----------------------------------------------------------------------------------------
@@ -147,7 +147,5 @@
 			pwm->setDuty(12, rearDuty);
 			lastRearDuty = rearDuty;
 		}
-
-//		printf("----------------------------------1:%d 2:%d\n", frontDuty, rearDuty);
 	}
 
